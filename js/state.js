@@ -54,6 +54,9 @@
       rootType: null,
       rootQuality: null,
       affinityElements: [],
+      // 灵根重选（设计稿 3.2）：已重roll次数 + 上次灵根显示串（用于对比提示）
+      rerollCount: 0,
+      lastRootDisplay: null,
       attrs: attrs,
       position: null,
       playstyle: null,
@@ -68,6 +71,14 @@
       assists: 0,
       matches: 0,
       wins: 0,
+      // 增强版比赛（设计稿第五章）：自由属性点 + 评级分布
+      freePoints: 0,
+      ratingDist: { S: 0, A: 0, B: 0, C: 0, D: 0 },
+      // 心魔值（设计稿第五章评级表：D评级+10；心魔劫本体后续版本实现）
+      demonValue: 0,
+      // 羁绊系统（设计稿第五章·羁绊与技能）：进度值 + 已解锁羁绊id列表
+      bondProgress: { agui: 0, zhaolin: 0, canglan: 0 },
+      bondsUnlocked: [],
       // 流程控制
       currentEventId: null,
       matchContext: null

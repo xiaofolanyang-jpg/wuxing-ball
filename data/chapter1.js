@@ -73,13 +73,27 @@ window.CHAPTER1 = { events: [
       }
     },
     choices: [
+      { id: "A", text: "确认灵根，上路", next: "ch1_school_choice" },
+      { id: "B", text: "重新觉醒（剩余{rerollLeft}次）", reroll: true, when: { rerollLeft: true }, next: "ch1_root_result" }
+    ]
+  },
+
+  // 2b. 确认灵根后·选择去向（三选一）
+  {
+    id: "ch1_school_choice",
+    chapter: 1,
+    text: [
+      "庙祝合上那卷泛黄的册子，收回柜中，看着你问：",
+      "「灵根定了，往后的路是你自己的。说吧——去哪儿？」"
+    ],
+    choices: [
       { id: "A", text: "留在青云足校，从家门口开始证明自己", effects: { flags: { school: "local" }, reputation: 5 }, next: "ch1_enter_school_local" },
       { id: "B", text: "远赴帝都赤焰书院，天才就该去天才堆里", effects: { flags: { school: "capital" }, stamina: -10, reputation: 8 }, next: "ch1_enter_school_capital" },
       { id: "C", text: "先回家问问娘的意见", effects: { attrs: { resolve: 2 }, spiritStones: 10, flags: { familyLine: true } }, next: "ch1_ask_mother" }
     ]
   },
 
-  // 2b. 家庭支线·回家问娘（初始道具）
+  // 2c. 家庭支线·回家问娘（初始道具）
   {
     id: "ch1_ask_mother",
     chapter: 1,
@@ -93,7 +107,7 @@ window.CHAPTER1 = { events: [
     next: "ch1_choice_school"
   },
 
-  // 2c. 回家后回到足校二选一
+  // 2d. 回家后回到足校二选一
   {
     id: "ch1_choice_school",
     chapter: 1,
@@ -113,7 +127,7 @@ window.CHAPTER1 = { events: [
       "老人叹气，却也露出赞许：「好。脚跟扎得稳，球才踢得远。三日后，足校有人来接你。」",
       "回程的秋风卷起落叶，你攥紧拳头，掌心微微发烫——那是灵根在血脉里第一次苏醒的征兆。"
     ],
-    next: "ch1_position_test"
+    next: "ch1_roommate"
   },
 
   // 4b. 入学（帝都）
@@ -125,7 +139,23 @@ window.CHAPTER1 = { events: [
       "老人铺纸研墨，朱砂在烛火里像一簇小火苗：「赤焰书院卧虎藏龙，天才在那儿不会被埋没。路远，且苦——你可要想清楚。」",
       "三日后，你背上行囊，踏上北上帝都的官道。身后是生养你的青云城，前方是未知的修途。"
     ],
-    next: "ch1_position_test"
+    next: "ch1_roommate"
+  },
+
+  // 4c. 入学·认识室友阿贵（设计稿第二章事件4：阿贵同校自动同宿舍）
+  {
+    id: "ch1_roommate",
+    chapter: 1,
+    text: [
+      "报到那天，你拎着行囊找到宿舍。还没推门，就听见里面传来一个熟悉的大嗓门。",
+      "开门的是个黑壮少年——阿贵！当年荒球场上一起踢破布球的发小，如今铺盖就摆在你对床。",
+      "「你也来了？！」阿贵蹦起来，照你肩膀就是一拳，笑得眼睛眯成缝：「太好了！往后咱哥俩有个照应。你负责进球，我负责给你传球、跑位——我这体力和跑动，全宿舍没人比得上！」"
+    ],
+    system: "【室友·阿贵 加入你的青训岁月。往后的比赛里，他会不知疲倦地为你奔跑拉扯。】",
+    choices: [
+      { id: "A", text: "笑着锤他胸口：「行，以后咱俩互相照应！」", effects: { relationships: { agui: 20 }, bonds: { agui: 20 }, flags: { aguiRoommate: true }, reputation: 2 }, next: "ch1_position_test" },
+      { id: "B", text: "翻个白眼：「少来，跟我一个宿舍，打呼噜都嫌你吵。」", effects: { relationships: { agui: 15 }, bonds: { agui: 15 }, flags: { aguiRoommate: true }, attrs: { resolve: 1 } }, next: "ch1_position_test" }
+    ]
   },
 
   // 5. 位置测试
@@ -133,7 +163,7 @@ window.CHAPTER1 = { events: [
     id: "ch1_position_test",
     chapter: 1,
     text: [
-      "入校第一日，便是位置测试。教头把一筐皮球踢到场地中央：「想站哪儿，自己用脚说话。」",
+      "入校第一日，便是位置测试。铁叔把一筐皮球踢到场地中央：「想站哪儿，自己用脚说话。」",
       "你望着那片绿茵，心跳如鼓。站的位置，将决定你这辈子在球场上干什么。"
     ],
     choices: [
@@ -148,7 +178,7 @@ window.CHAPTER1 = { events: [
     id: "ch1_first_train",
     chapter: 1,
     type: "train",
-    text: "入队第一月，教头把你领进修炼房：「灵根是顺风，不是锁死。亲和属性练得快，非亲和属性也能练——只是慢些。你每月有3点修炼点，爱点哪儿点哪儿。」",
+    text: "入队第一月，铁叔把你领进修炼房：「灵根是顺风，不是锁死。亲和属性练得快，非亲和属性也能练——只是慢些。你每月有3点修炼点，爱点哪儿点哪儿。」",
     next: "ch1_rival_intro"
   },
 
@@ -159,9 +189,9 @@ window.CHAPTER1 = { events: [
     text: [
       "第二个月的队内对抗，你撞上了一个硬茬。",
       "那人比同龄人高半头，眼里带着刺。一记铲断把你连人带球放翻，他俯身冷笑：「天品？哼，灵根克你，就是废物。」",
-      "教头拉起你，低声道：「这是赵玄，{elementAdj}的性子，专挑你的灵根克。记住这天——五年后，你俩还要在更大的场子上碰。」"
+      "铁叔拉起你，低声道：「这是赵凛，{elementAdj}的性子，专挑你的灵根克。记住这天——五年后，你俩还要在更大的场子上碰。」"
     ],
-    system: "【宿敌·赵玄 已记入名册。灵根相克：他被你克，或你被他克，赛场相见见真章。】",
+    system: "【宿敌·赵凛 已记入名册。灵根相克：他被你克，或你被他克，赛场相见见真章。】",
     choices: [
       { id: "A", text: "咬牙咽下，记仇——来日方长", effects: { relationships: { rival: -20 }, flags: { rivalGrudge: true } }, next: "ch1_mentor_event" },
       { id: "B", text: "当场约战，三个月后再分高下", effects: { relationships: { rival: -10 }, flags: { rivalChallenge: true }, reputation: 5 }, next: "ch1_mentor_event" }
@@ -200,7 +230,7 @@ window.CHAPTER1 = { events: [
     id: "ch1_youth_match",
     chapter: 1,
     type: "match",
-    text: "教头宣布：今日队内赛，{position}组的全员上阵。你换上号衣，听见看台上有人在喊你的名字——许是庙祝老人来了。",
+    text: "铁叔宣布：今日队内赛，{position}组的全员上阵。你换上号衣，听见看台上有人在喊你的名字——许是庙祝老人来了。",
     opponent: { name: "青训B队", element: "水", strength: 22 },
     pool: "youth",
     fallback_choices: [
@@ -221,10 +251,10 @@ window.CHAPTER1 = { events: [
       }
     ],
     result: {
-      bigwin: { text: "终场哨响，你方大胜。教头拍你肩膀：「有点意思。」", effects: { reputation: 8 } },
+      bigwin: { text: "终场哨响，你方大胜。铁叔拍你肩膀：「有点意思。」", effects: { reputation: 8 } },
       win:     { text: "终场哨响，小胜一球。你抹了把汗，心里踏实了些。", effects: { reputation: 4 } },
       draw:    { text: "平局收场。不算出彩，也不丢人。", effects: { reputation: 1 } },
-      lose:    { text: "输了。你低着头走下场，听见赵玄在笑。", effects: { reputation: -3, stamina: -5 } }
+      lose:    { text: "输了。你低着头走下场，听见赵凛在笑。", effects: { reputation: -3, stamina: -5 } }
     },
     next: "ch1_playstyle"
   },
@@ -234,7 +264,7 @@ window.CHAPTER1 = { events: [
     id: "ch1_playstyle",
     chapter: 1,
     text: [
-      "赛季过半，教头把你叫到跟前：「位置定了，可同位置也有不同踢法。你想走哪条路？」",
+      "赛季过半，铁叔把你叫到跟前：「位置定了，可同位置也有不同踢法。你想走哪条路？」",
       "踢法决定你日后在球场上遇到什么样的关键时刻。"
     ],
     choices: [
@@ -250,14 +280,14 @@ window.CHAPTER1 = { events: [
     id: "ch1_conflict",
     chapter: 1,
     text: [
-      "选拔在即，你与赵玄的矛盾激化。训练场上，他故意撞翻你的队友，还挑衅地望着你。",
-      "教头不在。四周都是等着看戏的眼睛。"
+      "选拔在即，你与赵凛的矛盾激化。训练场上，他故意撞翻你的队友，还挑衅地望着你。",
+      "铁叔不在。四周都是等着看戏的眼睛。"
     ],
     choices: [
-      { id: "A", text: "当面理论，不怵他", check: { attrs: ["resolve", "strength"], difficulty: 30, tag: "决断+对抗" },
-        success: { text: "你一步不退，赵玄反倒被你的气势压住，悻悻走开。队友们眼中有了光。", effects: { reputation: 6, relationships: { rival: -5 }, flags: { conflictWin: true } } },
-        fail: { text: "争执中你被推了个趔趄，颜面尽失。赵玄大笑离去。", effects: { reputation: -4, relationships: { rival: -10 }, flags: { conflictLose: true } } },
-        critical: { text: "【灵光一闪】你一言定风波，全队为你站台。赵玄脸色铁青。", effects: { reputation: 12, flags: { conflictWin: true } } }
+      { id: "A", text: "当面理论，不怵他", check: { attrs: ["resolve", "strength"], difficulty: 30, tag: "决断+对抗" }, next: "ch1_train_05",
+        success: { text: "你一步不退，赵凛反倒被你的气势压住，悻悻走开。队友们眼中有了光。", effects: { reputation: 6, relationships: { rival: -5 }, flags: { conflictWin: true } } },
+        fail: { text: "争执中你被推了个趔趄，颜面尽失。赵凛大笑离去。", effects: { reputation: -4, relationships: { rival: -10 }, flags: { conflictLose: true } } },
+        critical: { text: "【灵光一闪】你一言定风波，全队为你站台。赵凛脸色铁青。", effects: { reputation: 12, flags: { conflictWin: true } } }
       },
       { id: "B", text: "忍下，把劲头留到选拔赛", effects: { flags: { conflictBide: true }, attrs: { resolve: 1 } }, next: "ch1_train_05" }
     ]
@@ -277,8 +307,8 @@ window.CHAPTER1 = { events: [
     id: "ch1_selection",
     chapter: 1,
     type: "match",
-    text: "选拔赛。对手是宿敌赵玄领衔的青训A队。看台上，几名一线队球探正低头记录。你深吸一口气，踏上绿茵。",
-    opponent: { name: "青训A队·赵玄", element: "水", strength: 38 },
+    text: "选拔赛。对手是宿敌赵凛领衔的青训A队。看台上，几名一线队球探正低头记录。你深吸一口气，踏上绿茵。",
+    opponent: { name: "青训A队·赵凛", element: "水", strength: 38 },
     fallback_choices: [
       { id: "A", text: "接直塞单刀赴会", check: { attrs: ["speed", "burst"], difficulty: 38, tag: "速度+爆发" },
         success: { text: "你{elementAdj}地甩开后卫，面对门将推射得手！", effects: { reputation: 10, goals: 1, attrs: { speed: 1 } } },
@@ -297,10 +327,10 @@ window.CHAPTER1 = { events: [
       }
     ],
     result: {
-      bigwin: { text: "终场哨响，大胜！球探们交头接耳，赵玄铁青着脸不发一言。你听见一线队的召唤近了。", effects: { reputation: 12, flags: { selected: true, keySuccess: true } } },
+      bigwin: { text: "终场哨响，大胜！球探们交头接耳，赵凛铁青着脸不发一言。你听见一线队的召唤近了。", effects: { reputation: 12, flags: { selected: true, keySuccess: true } } },
       win:     { text: "小胜一球。球探点了点头，在名册上圈了你的名字。", effects: { reputation: 6, flags: { selected: true } } },
       draw:    { text: "平局。你表现中规中矩，球探没有特别记下你。", effects: { reputation: 2, flags: { selected: false } } },
-      lose:    { text: "输了。赵玄在终场前绝杀了你方。球探摇头离席。", effects: { reputation: -5, stamina: -8, flags: { selected: false } } }
+      lose:    { text: "输了。赵凛在终场前绝杀了你方。球探摇头离席。", effects: { reputation: -5, stamina: -8, flags: { selected: false } } }
     },
     next: "ch1_end"
   },
@@ -311,7 +341,7 @@ window.CHAPTER1 = { events: [
     chapter: 1,
     text: [
       "赛季落幕。无论输赢，青训的这一年都烙进了你的骨头。",
-      "教头把你叫到办公室，递来一份名单：「一线队看上你了。收拾收拾，该去更大的场子了。」",
+      "铁叔把你叫到办公室，递来一份名单：「一线队看上你了。收拾收拾，该去更大的场子了。」",
       "窗外，青云城的雪落了下来。你想起蹴鞠庙那块亮起的测灵石——一切，都从那一道光开始。"
     ],
     system: "【第一章·觉醒 完。你的灵根已成形，接下来，是职业联赛的淬炼。】",

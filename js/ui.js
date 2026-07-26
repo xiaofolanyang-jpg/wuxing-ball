@@ -163,7 +163,7 @@
         const btn = document.createElement("button");
         btn.className = "choice-btn fade-in";
         const label = document.createElement("span");
-        label.textContent = choice.text;
+        label.textContent = global.Story.interpolate(choice.text);
         btn.appendChild(label);
         // 检定标签
         if (choice.check) {
@@ -255,12 +255,120 @@
     res.style.cssText = "margin-top:14px;font-size:13px;color:var(--text-dim);text-align:center;";
     res.innerHTML = "声望 " + st.reputation + " · 体力 " + st.stamina + " · 灵石 " + st.spiritStones +
       " · 进球 " + st.goals + " · 助攻 " + st.assists + " · 比赛 " + st.matches + "胜" + st.wins;
+    // 评级分布 + 自由属性点 + 心魔值（设计稿第五章·状态总览）
+    const rd = st.ratingDist || {};
+    res.innerHTML += "<br>评级分布 S×" + (rd.S || 0) + " A×" + (rd.A || 0) + " B×" + (rd.B || 0) +
+      " C×" + (rd.C || 0) + " D×" + (rd.D || 0) +
+      " · 自由属性点 " + (st.freePoints || 0) + " · 心魔值 " + (st.demonValue || 0);
     panel.appendChild(res);
 
+    // 羁绊图鉴（设计稿第五章·羁绊页面展示：已解锁彩色/进行中进度）
+    if (CONFIG.bonds) {
+      const bt = document.createElement("div");
+      bt.style.cssText = "margin-top:14px;font-size:13px;";
+      const bTitle = document.createElement("div");
+      bTitle.style.cssText = "color:var(--gold);font-weight:bold;text-align:center;margin-bottom:6px;";
+      bTitle.textContent = "── 羁绊图鉴 ──";
+      bt.appendChild(bTitle);
+      const unlocked = st.bondsUnlocked || [];
+      Object.keys(CONFIG.bonds).forEach(bid => {
+        const b = CONFIG.bonds[bid];
+        const prog = (st.bondProgress && st.bondProgress[bid]) || 0;
+        const row = document.createElement("div");
+        row.style.cssText = "margin-bottom:8px;padding:6px 8px;border:1px solid rgba(255,255,255,0.08);border-radius:6px;text-align:center;";
+        if (unlocked.indexOf(bid) >= 0) {
+          row.innerHTML = "<b style='color:var(--gold);'>★ " + b.name + "</b>（" + b.type + "·" + b.target + "）<br>" +
+            "<span style='color:var(--text-dim);font-size:12px;'>" + b.effect + "<br>" + b.story + "</span>";
+        } else {
+          row.innerHTML = "<b style='color:var(--text-dim);'>◇ " + b.name + "</b>（" + b.type + "·" + b.target + "）<br>" +
+            "<span style='color:var(--text-dim);font-size:12px;'>进度 " + Math.min(prog, b.threshold) + "/" + b.threshold + " · " + b.effect + "</span>";
+        }
+        bt.appendChild(row);
+      });
+      panel.appendChild(bt);
+    }
+
+    // 按钮行：灵石商店 + 收起
+    const btnRow = document.createElement("div");
+    btnRow.style.cssText = "display:flex;gap:10px;justify-content:center;margin-top:12px;";
+    const shopBtn = document.createElement("button");
+    shopBtn.className = "close-btn";
+    shopBtn.textContent = "灵石商店";
+    shopBtn.addEventListener("click", () => showShopPanel());
     const close = document.createElement("button");
     close.className = "close-btn";
     close.textContent = "收起";
     close.addEventListener("click", () => ov.classList.remove("show"));
+    btnRow.appendChild(shopBtn);
+    btnRow.appendChild(close);
+    panel.appendChild(btnRow);
+
+    ov.appendChild(panel);
+    ov.classList.add("show");
+  }
+
+  /* ============================================================
+     灵石商店（设计稿第七章·资源系统：灵石购买丹药/功法）
+     ============================================================ */
+  function applyShopItem(item) {
+    const st = global.State.current;
+    if (item.id === "pill_qi") {
+      st.stamina = Math.min(100, st.stamina + 30);
+    } else if (item.id === "pill_body") {
+      const affEls = (st.affinityElements && st.affinityElements.length) ? st.affinityElements : CONFIG.elementOrder;
+      const el = affEls[Math.floor(Math.random() * affEls.length)];
+      const attrs = CONFIG.attrs[el];
+      const a = attrs[Math.floor(Math.random() * attrs.length)];
+      st.attrs[a] = Math.min(999, st.attrs[a] + 2);
+    } else if (item.id === "manual_ball") {
+      st.trainPoints = (st.trainPoints || 0) + 1;
+    }
+  }
+
+  function showShopPanel() {
+    const st = global.State.current;
+    if (!st) return;
+    const ov = document.getElementById("overlay");
+    ov.innerHTML = "";
+    const panel = document.createElement("div");
+    panel.className = "overlay-panel";
+
+    const title = document.createElement("div");
+    title.className = "overlay-title";
+    title.textContent = "灵石商店";
+    panel.appendChild(title);
+
+    const money = document.createElement("div");
+    money.style.cssText = "text-align:center;color:var(--gold);margin-bottom:12px;font-size:14px;";
+    money.textContent = "当前灵石：" + st.spiritStones;
+    panel.appendChild(money);
+
+    (CONFIG.shopItems || []).forEach(item => {
+      const row = document.createElement("div");
+      row.style.cssText = "display:flex;justify-content:space-between;align-items:center;padding:8px 10px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.1);border-radius:6px;";
+      const info = document.createElement("div");
+      info.innerHTML = "<b>" + item.name + "</b> <span style='color:var(--text-dim);font-size:12px;'>[" + item.type + "]</span><br><span style='color:var(--text-dim);font-size:12px;'>" + item.desc + "</span>";
+      const buy = document.createElement("button");
+      buy.className = "choice-btn";
+      buy.style.cssText = "width:auto;padding:6px 12px;margin:0;flex-shrink:0;";
+      buy.textContent = item.cost + "灵石";
+      buy.addEventListener("click", () => {
+        if (st.spiritStones < item.cost) { toast("灵石不足"); return; }
+        st.spiritStones -= item.cost;
+        applyShopItem(item);
+        money.textContent = "当前灵石：" + st.spiritStones;
+        updateStatus();
+        toast("已购入" + item.name);
+      });
+      row.appendChild(info);
+      row.appendChild(buy);
+      panel.appendChild(row);
+    });
+
+    const close = document.createElement("button");
+    close.className = "close-btn";
+    close.textContent = "离开商店";
+    close.addEventListener("click", () => { ov.classList.remove("show"); ov.innerHTML = ""; });
     panel.appendChild(close);
 
     ov.appendChild(panel);
@@ -357,33 +465,130 @@
   /* ============================================================
      比赛演出
      ============================================================ */
-  function renderMatchIntro(opp) {
+  function renderMatchIntro(opp, situation, ourRating, oppStrength) {
     return enqueue(() => new Promise(resolve => {
       const sb = document.createElement("div");
       sb.className = "scoreboard fade-in";
-      sb.textContent = "对阵 · " + (opp.name || "对手") + (opp.element ? "（" + opp.element + "灵根）" : "");
+      const sitMap = { strong: "以强打弱", even: "势均力敌", weak: "以弱打强" };
+      let txt = "对阵 · " + (opp.name || "对手") + (opp.element ? "（" + opp.element + "灵根）" : "");
+      if (situation) txt += " · " + (sitMap[situation] || "");
+      sb.textContent = txt;
       $story.appendChild(sb);
+      if (situation) {
+        const sub = document.createElement("div");
+        sub.className = "system-msg fade-in";
+        sub.style.cssText = "text-align:center;font-size:12px;";
+        sub.textContent = "我方综合评级 " + Math.round(ourRating) + " vs 对手 " + oppStrength +
+          (situation === "strong" ? "（检定难度-5）" : situation === "weak" ? "（检定难度+5）" : "");
+        $story.appendChild(sub);
+      }
       setTimeout(resolve, 250);
     }));
   }
-  function renderMatchHeader(idx, total) {
+  function renderMatchHeader(idx, total, label) {
     return enqueue(() => new Promise(resolve => {
       const d = document.createElement("div");
       d.className = "divider fade-in";
-      d.textContent = "第 " + idx + " / " + total + " 关键时刻";
+      d.textContent = (label ? label + " · " : "") + idx + " / " + total;
       $story.appendChild(d);
       setTimeout(resolve, 200);
     }));
   }
-  function renderMatchResult(branch, success, total) {
+  function renderMatchResult(branch, ms, goalsFor, goalsAgainst, rating, reward) {
     return enqueue(() => new Promise(resolve => {
       const sb = document.createElement("div");
       sb.className = "scoreboard fade-in";
       const map = { bigwin: "大胜", win: "小胜", draw: "平局", lose: "失利" };
-      sb.textContent = map[branch] + " · 关键成功 " + success + "/" + total;
+      sb.textContent = map[branch] + " · " + goalsFor + " : " + goalsAgainst;
       $story.appendChild(sb);
+      const rt = document.createElement("div");
+      rt.className = "system-msg fade-in";
+      rt.style.cssText = "text-align:center;";
+      rt.textContent = "本场评级 " + rating + " · 自由属性点+" + reward.points +
+        " · 声望" + (reward.reputation >= 0 ? "+" : "") + reward.reputation;
+      $story.appendChild(rt);
+      // 表现明细（设计稿第五章：你的表现：X进球 / Y助攻 / 关键选择成功Z/W）
+      const detail = document.createElement("div");
+      detail.className = "system-msg fade-in";
+      detail.style.cssText = "text-align:center;font-size:12px;color:var(--text-dim);";
+      detail.textContent = "你的表现：" + ms.goals + "进球 / " + ms.assists + "助攻 / 关键选择成功" +
+        ms.keySuccess + "/" + ms.keyAttempts + (rating === "D" ? " · 心魔值+10" : "");
+      $story.appendChild(detail);
       setTimeout(resolve, 300);
     }));
+  }
+
+  /* ============================================================
+     自由属性点分配面板（比赛评级奖励，1点=1属性无倍率）
+     ============================================================ */
+  function showFreePointsPanel() {
+    return new Promise(resolve => {
+      const st = global.State.current;
+      const ov = document.getElementById("overlay");
+      ov.innerHTML = "";
+      const panel = document.createElement("div");
+      panel.className = "overlay-panel train-panel";
+
+      const title = document.createElement("div");
+      title.className = "overlay-title";
+      title.textContent = "自由属性点分配";
+      panel.appendChild(title);
+
+      const pts = document.createElement("div");
+      pts.className = "train-pts";
+      pts.textContent = "剩余自由点：" + st.freePoints;
+      panel.appendChild(pts);
+
+      const tip = document.createElement("div");
+      tip.style.cssText = "font-size:13px;color:var(--text-dim);text-align:center;margin-bottom:10px;";
+      tip.textContent = "比赛评级奖励。1点=1属性（无倍率），可留到以后再分配。";
+      panel.appendChild(tip);
+
+      const grid = document.createElement("div");
+      grid.className = "attrs-grid";
+      CONFIG.elementOrder.forEach(el => {
+        const g = document.createElement("div");
+        g.className = "element-group " + el;
+        const h = document.createElement("h4");
+        h.textContent = el + "行";
+        g.appendChild(h);
+        CONFIG.attrs[el].forEach(a => {
+          const row = document.createElement("div");
+          row.className = "attr-row";
+          const nm = document.createElement("span");
+          nm.className = "attr-name";
+          nm.textContent = CONFIG.attrNames[a];
+          const val = document.createElement("span");
+          val.className = "attr-val";
+          val.textContent = Math.floor(st.attrs[a]);
+          row.appendChild(nm); row.appendChild(val);
+          row.addEventListener("click", () => {
+            if (st.freePoints <= 0) { toast("自由点已用完"); return; }
+            st.attrs[a] = Math.min(999, st.attrs[a] + 1);
+            st.freePoints -= 1;
+            val.textContent = Math.floor(st.attrs[a]);
+            pts.textContent = "剩余自由点：" + st.freePoints;
+            updateStatus();
+          });
+          g.appendChild(row);
+        });
+        grid.appendChild(g);
+      });
+      panel.appendChild(grid);
+
+      const done = document.createElement("button");
+      done.className = "train-done";
+      done.textContent = "分配完成";
+      done.addEventListener("click", () => {
+        ov.classList.remove("show");
+        ov.innerHTML = "";
+        resolve();
+      });
+      panel.appendChild(done);
+
+      ov.appendChild(panel);
+      ov.classList.add("show");
+    });
   }
 
   /* ============================================================
@@ -487,7 +692,7 @@
     bindConfig, init, updateStatus,
     renderTextBlock, renderDivider, renderChoices, waitContinue, showCheckResult,
     showStatusPanel, showTrainPanel,
-    renderMatchIntro, renderMatchHeader, renderMatchResult,
+    renderMatchIntro, renderMatchHeader, renderMatchResult, showFreePointsPanel,
     showEnding, toast
   };
 })(window);

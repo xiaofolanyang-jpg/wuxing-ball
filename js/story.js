@@ -26,6 +26,7 @@
   function init() {
     if (global.CHAPTER1) registerEvents(global.CHAPTER1.events);
     if (global.CHAPTER2) registerEvents(global.CHAPTER2.events);
+    if (global.CHAPTER3) registerEvents(global.CHAPTER3.events);
     if (global.ENDINGS)  registerEvents(global.ENDINGS.events);
     if (global.MATCH_POOLS) registerMatchPools(global.MATCH_POOLS);
   }
@@ -51,6 +52,7 @@
         case "goals": return st ? st.goals : 0;
         case "assists": return st ? st.assists : 0;
         case "matches": return st ? st.matches : 0;
+        case "rerollLeft": return st ? Math.max(0, (CONFIG.maxRerolls - 1) - (st.rerollCount || 0)) : 0;
         default:
           if (st && st.attrs && st.attrs[key] !== undefined) return Math.floor(st.attrs[key]);
           return m;
