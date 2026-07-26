@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>五行球圣</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <!-- 顶部标题栏 -->
+  <div class="title-bar">五 行 球 圣<span id="titleSub">蹴鞠通五行</span></div>
+
+  <!-- 顶部状态栏（可点击展开属性面板） -->
+  <div class="status-bar" id="statusBar">
+    <div class="status-group">
+      <div class="status-item"><span class="status-label">灵根</span><span class="status-value" id="statLinggen">未觉醒</span></div>
+      <div class="status-item"><span class="status-label">境界</span><span class="status-value" id="statJingjie">—</span></div>
+    </div>
+    <div class="status-group">
+      <div class="status-item"><span class="status-label">第</span><span class="status-value" id="statChapter">1章</span></div>
+      <div class="status-item"><span class="status-label">修炼点</span><span class="status-value" id="statPts">3</span></div>
+      <div class="status-item"><span class="status-label">回合</span><span class="status-value" id="statRound">第1月</span></div>
+      <span class="toggle-hint" id="attrBtn">五行▾</span>
+    </div>
+  </div>
+
+  <!-- 中间文字输出区 -->
+  <div class="story-area" id="storyArea"></div>
+
+  <!-- 底部选项按钮区 -->
+  <div class="choice-area" id="choiceArea"></div>
+</div>
+
+<!-- 全屏覆盖层（属性面板/修炼面板/结局） -->
+<div class="overlay" id="overlay"></div>
+
+<!-- 配置 -->
+<script src="data/config.js"></script>
+<!-- 引擎 -->
+<script src="js/state.js"></script>
+<script src="js/story.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/ui.js"></script>
+<!-- 剧情数据 -->
+<script src="data/chapter1.js"></script>
+<script src="data/chapter2.js"></script>
+<script src="data/endings.js"></script>
+<script src="data/match_pools.js"></script>
+<!-- 启动 -->
+<script src="js/main.js"></script>
+</body>
+</html>
