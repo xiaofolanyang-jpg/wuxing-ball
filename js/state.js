@@ -109,11 +109,11 @@
     return CONFIG.realm[0].name;
   }
 
-  // 倍率：某五行是否亲和
+  // 倍率：某五行是否亲和（问题1：亲和按品质倍率，非亲和统一 0.8）
   function getMultiplier(element) {
     if (!global.State.current) return 1;
     const st = global.State.current;
-    if (!st.affinityElements.includes(element)) return 1;
+    if (!st.affinityElements.includes(element)) return CONFIG.nonAffinityMult;
     return CONFIG.quality[st.rootQuality].mult;
   }
 

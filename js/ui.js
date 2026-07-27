@@ -12,9 +12,10 @@
   let $statLinggen, $statJingjie, $statRound, $statChapter, $statPts;
 
   // 打字机控制
-  let typeCtrl = null;       // { el, text, i, timer, resolve, done }
+  let typeCtrl = null;       // { el, text, i, timer, resolve, done, cursor }
   let pending = Promise.resolve(); // 渲染串行队列
   let skipRequested = false;
+  let $matchHUD = null;      // 比赛实时计分牌（比分+双方威胁值）
 
   function bindConfig(cfg) { CONFIG = cfg; }
 
@@ -34,7 +35,15 @@
       if (typeCtrl && !typeCtrl.done) {
         skipRequested = true;
         clearTimeout(typeCtrl.timer);
-        typeCtrl.el.insertAdjacentText("beforeend", typeCtrl.text.slice(typeCtrl.i));
+        // 把剩余文字补到光标之前并移除光标，避免跳过后光标遗留
+        // （修复：多次点击跳过导致多个光标残留不消失）
+        if (typeCtrl.cursor) {
+          typeCtrl.cursor.insertAdjacentText("beforebegin", typeCtrl.text.slice(typeCtrl.i));
+          typeCtrl.cursor.remove();
+          typeCtrl.cursor = null;
+        } else {
+          typeCtrl.el.insertAdjacentText("beforeend", typeCtrl.text.slice(typeCtrl.i));
+        }
         typeCtrl.i = typeCtrl.text.length;
         typeCtrl.done = true;
         scrollBottom();
@@ -125,7 +134,7 @@
       cursor.className = "cursor";
       p.appendChild(cursor);
 
-      typeCtrl = { el: p, text, i: 0, timer: null, resolve, done: false };
+      typeCtrl = { el: p, text, i: 0, timer: null, resolve, done: false, cursor };
       skipRequested = false;
 
       function tick() {
@@ -154,13 +163,13 @@
     }));
   }
 
-  function showCheckResult(kind, tag) {
+  function showCheckResult(kind, tag, growth) {
     // 在文字区底部插一条检定标签
     enqueue(() => new Promise(resolve => {
       const span = document.createElement("div");
       span.className = "check-result " + kind;
       const label = kind === "critical" ? "灵光一闪！" : (kind === "success" ? "检定成功" : "检定失败");
-      span.textContent = label + (tag ? "  " + tag : "");
+      span.textContent = label + (tag ? "  " + tag : "") + (growth ? "  【" + growth + "】" : "");
       $story.appendChild(span);
       setTimeout(resolve, 200);
     }));
@@ -169,6 +178,34 @@
   /* ============================================================
      选项按钮
      ============================================================ */
+  // 结果提示（问题3）：把 effects 汇总成一句简短的可能结果提示
+  function effectsToHint(effects) {
+    if (!effects) return "";
+    const signed = n => (n >= 0 ? "+" : "") + n;
+    const parts = [];
+    if (effects.reputation) parts.push("声望" + signed(effects.reputation));
+    if (effects.stamina) parts.push("体力" + signed(effects.stamina));
+    if (effects.demonValue) parts.push("心魔" + signed(effects.demonValue));
+    if (effects.spiritStones) parts.push("灵石" + signed(effects.spiritStones));
+    if (effects.goals) parts.push("进球" + signed(effects.goals));
+    if (effects.assists) parts.push("助攻" + signed(effects.assists));
+    if (effects.attrs) {
+      Object.keys(effects.attrs).forEach(a => {
+        if (CONFIG.attrNames[a]) parts.push(CONFIG.attrNames[a] + signed(effects.attrs[a]));
+      });
+    }
+    if (effects.bonds) parts.push("羁绊↑");
+    return parts.join(" · ");
+  }
+  // 自动推导提示：检定选项取“成功分支”的效果（可能收益），普通选项取自身 effects；choice.hint 可手动覆盖
+  function deriveHint(choice) {
+    if (choice.hint) return choice.hint;
+    const effects = choice.check
+      ? ((choice.success && choice.success.effects) || choice.effects)
+      : choice.effects;
+    return effectsToHint(effects);
+  }
+
   function renderChoices(choices, opts) {
     opts = opts || {};
     return new Promise(resolve => {
@@ -188,6 +225,14 @@
           const names = choice.check.attrs.map(a => CONFIG.attrNames[a]).join("+");
           tag.textContent = "检定:" + names + " 难度" + choice.check.difficulty;
           btn.appendChild(tag);
+        }
+        // 结果提示（问题3）：简要提示可能会发生的结果
+        const hintText = deriveHint(choice);
+        if (hintText) {
+          const hint = document.createElement("span");
+          hint.className = "choice-hint";
+          hint.textContent = "↳ " + hintText;
+          btn.appendChild(hint);
         }
         btn.addEventListener("click", () => {
           if (typeCtrl && !typeCtrl.done) return; // 打字中禁用
@@ -519,18 +564,48 @@
       setTimeout(resolve, 200);
     }));
   }
-  function renderMatchResult(branch, ms, goalsFor, goalsAgainst, rating, reward) {
+
+  /* ============================================================
+     比赛实时计分牌（比分 + 双方威胁值，置顶跟随滚动）
+     ============================================================ */
+  function showMatchHUD(ms, goalsFor, goalsAgainst) {
+    hideMatchHUD();
+    $matchHUD = document.createElement("div");
+    $matchHUD.className = "match-hud fade-in";
+    $story.insertBefore($matchHUD, $story.firstChild);
+    updateMatchHUD(ms, goalsFor, goalsAgainst);
+  }
+
+  function updateMatchHUD(ms, goalsFor, goalsAgainst) {
+    if (!$matchHUD) return;
+    const MAX = 6; // 威胁条显示上限
+    const bar = (v, opp) => '<span class="hud-bar"><span class="hud-fill' + (opp ? ' opp' : '') +
+      '" style="width:' + Math.min(100, Math.round(v / MAX * 100)) + '%"></span></span>';
+    $matchHUD.innerHTML =
+      '<div class="hud-score">我方 ' + goalsFor + ' : ' + goalsAgainst + ' ' + (ms.opponentName || "对手") + '</div>' +
+      '<div class="hud-row"><span class="hud-label">我威胁 ' + ms.threat + '</span>' + bar(ms.threat, false) + '</div>' +
+      '<div class="hud-row"><span class="hud-label">敌威胁 ' + ms.oppThreat + '</span>' + bar(ms.oppThreat, true) + '</div>';
+  }
+
+  function hideMatchHUD() {
+    if ($matchHUD) { $matchHUD.remove(); $matchHUD = null; }
+  }
+  function renderMatchResult(branch, ms, goalsFor, goalsAgainst, rating, reward, resultRep) {
     return enqueue(() => new Promise(resolve => {
       const sb = document.createElement("div");
       sb.className = "scoreboard fade-in";
       const map = { bigwin: "大胜", win: "小胜", draw: "平局", lose: "失利" };
       sb.textContent = map[branch] + " · " + goalsFor + " : " + goalsAgainst;
       $story.appendChild(sb);
+      // 声望拆解：胜负结果 + 评级奖励 = 净变化（避免玩家误读“赢了却扣分”）
+      const signed = n => (n >= 0 ? "+" : "") + n;
+      const rRep = resultRep || 0;
+      const netRep = rRep + (reward.reputation || 0);
       const rt = document.createElement("div");
       rt.className = "system-msg fade-in";
       rt.style.cssText = "text-align:center;";
       rt.textContent = "本场评级 " + rating + " · 自由属性点+" + reward.points +
-        " · 声望" + (reward.reputation >= 0 ? "+" : "") + reward.reputation;
+        " · 声望 " + signed(rRep) + "(胜负)" + signed(reward.reputation) + "(评级)=合计" + signed(netRep);
       $story.appendChild(rt);
       // 表现明细（设计稿第五章：你的表现：X进球 / Y助攻 / 关键选择成功Z/W）
       const detail = document.createElement("div");
@@ -759,6 +834,7 @@
     renderTextBlock, renderDivider, renderChoices, waitContinue, showCheckResult,
     showStatusPanel, showTrainPanel,
     renderMatchIntro, renderMatchHeader, renderMatchResult, showFreePointsPanel,
+    showMatchHUD, updateMatchHUD, hideMatchHUD,
     showEnding, toast
   };
 })(window);

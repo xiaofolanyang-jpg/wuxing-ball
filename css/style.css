@@ -150,6 +150,43 @@ html, body {
   border-bottom: 1px solid var(--border-gold);
 }
 
+/* 比赛实时计分牌（置顶跟随滚动，比分+双方威胁值） */
+.match-hud {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: linear-gradient(180deg, #211810, #1a130d);
+  border: 1px solid var(--border-gold);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin: 0 0 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+.match-hud .hud-score {
+  text-align: center;
+  color: var(--gold);
+  font-size: 16px;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+.match-hud .hud-row { display: flex; align-items: center; gap: 8px; margin-top: 3px; }
+.match-hud .hud-label { color: var(--text-dim); font-size: 12px; min-width: 62px; flex-shrink: 0; }
+.match-hud .hud-bar {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.match-hud .hud-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+.match-hud .hud-fill.opp { background: linear-gradient(90deg, var(--vermilion-deep), var(--vermilion)); }
+
 /* ========== 底部选项按钮区 ========== */
 .choice-area {
   flex-shrink: 0;
@@ -198,6 +235,7 @@ html, body {
 .choice-btn:disabled { cursor: default; opacity: 0.5; }
 .choice-btn.picked { opacity: 0.9; border-color: var(--gold); color: var(--gold-light); }
 .choice-btn .check-tag { display: block; float: none; font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+.choice-btn .choice-hint { display: block; float: none; font-size: 12px; color: #7fa886; margin-top: 3px; opacity: 0.85; }
 
 /* 打字机光标 */
 .cursor {

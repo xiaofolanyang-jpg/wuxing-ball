@@ -22,11 +22,13 @@ window.CONFIG = {
     "土": { name: "土", skill: "不动如山", desc: "抢点嗅觉、定位球轰炸" }
   },
   quality: {
-    heaven: { name: "天品", mult: 2,   prob: 0.05 },
-    dual:   { name: "双灵根", mult: 1.5, prob: 0.30 },
-    triple: { name: "三灵根", mult: 1.2, prob: 0.40 },
-    mixed:  { name: "杂灵根", mult: 1,   prob: 0.25 }
+    heaven: { name: "天品", mult: 2,     prob: 0.05 },
+    dual:   { name: "双灵根", mult: 1.5,   prob: 0.30 },
+    triple: { name: "三灵根", mult: 1.333, prob: 0.40 },
+    mixed:  { name: "杂灵根", mult: 1.2,   prob: 0.25 }
   },
+  // 非亲和属性加点倍率（问题1：逆灵根修炼变慢，灵根是“顺风”而非“锁死”）
+  nonAffinityMult: 0.8,
   elementOrder: ["金", "木", "水", "火", "土"],
   elementEn: { "金": "metal", "木": "wood", "水": "water", "火": "fire", "土": "earth" },
   realm: [

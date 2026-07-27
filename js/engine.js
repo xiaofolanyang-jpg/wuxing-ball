@@ -53,6 +53,21 @@
     return true;
   }
 
+  // 检定成长（问题2）：检定成功后，检定所用属性按灵根倍率成长（练什么涨什么）
+  // amount: 基础成长值（success=1 / critical=2），实际成长 = amount × 灵根倍率
+  function growCheckAttrs(attrs, amount) {
+    const st = global.State.current;
+    const parts = [];
+    attrs.forEach(a => {
+      const el = global.State.attrToElement(a);
+      const mult = global.State.getMultiplier(el);
+      const gain = amount * mult;
+      st.attrs[a] = Math.min(999, (st.attrs[a] || 0) + gain);
+      parts.push(CONFIG.attrNames[a] + "+" + (Math.round(gain * 10) / 10));
+    });
+    return parts.join(" ");
+  }
+
   /* ---------- 羁绊系统（设计稿第五章） ---------- */
   // 羁绊进度累积 + 解锁检查
   function addBondProgress(bondId, amount) {
@@ -267,7 +282,12 @@
         effects = branch.effects || effects;
         nextId = branch.next || nextId;
       }
-      global.UI.showCheckResult(r, global.Story.interpolate(choice.check.tag || ""));
+      // 检定成长（问题2）：成功后检定属性成长，涨的是“检定需要的属性”
+      let growth = "";
+      if (r === "success" || r === "critical") {
+        growth = growCheckAttrs(choice.check.attrs, r === "critical" ? 2 : 1);
+      }
+      global.UI.showCheckResult(r, global.Story.interpolate(choice.check.tag || ""), growth);
     }
 
     applyEffects(effects);
@@ -294,6 +314,7 @@
       }
       if (effects.goals) matchState.goals += effects.goals;
       if (effects.assists) matchState.assists += effects.assists;
+      syncMatchHUD(); // 实时刷新比分/威胁值
       // 比赛子事件结束后由 runMatch 接管流程，不在此跳转
       return;
     }
@@ -335,6 +356,11 @@
     if (t >= 3) return 2;
     if (t >= 1) return 1;
     return 0;
+  }
+
+  // 实时刷新比赛计分牌（威胁值→比分换算，同步到 UI）
+  function syncMatchHUD() {
+    if (matchState) global.UI.updateMatchHUD(matchState, threatToGoals(matchState.threat), threatToGoals(matchState.oppThreat));
   }
 
   // 评级奖励表
@@ -449,6 +475,8 @@
 
     // 赛前信息（含局面）
     await global.UI.renderMatchIntro(opp, situation, ourRating, strength);
+    // 开启实时计分牌（比分 + 双方威胁值）
+    global.UI.showMatchHUD(matchState, threatToGoals(matchState.threat), threatToGoals(matchState.oppThreat));
 
     // 羁绊进度累积（设计稿第五章）：遇水灵根对手→水火不容；遇赵凛→既生瑜何生亮
     if (opp.element === "水") addBondProgress("canglan", 10);
@@ -463,7 +491,17 @@
     }
 
     // 队友事件（通用池，抽 2 个，纯演出）
-    const teammatePool = (global.MATCH_EXTRA && global.MATCH_EXTRA.teammate) || [];
+    // 按实际阵容过滤（问题4）：agui=发小默认在场；laozhou/linxiao/suwan 依赖选人旗标；无 who=通用事件
+    const allTeammates = (global.MATCH_EXTRA && global.MATCH_EXTRA.teammate) || [];
+    const teamFlags = st.flags || {};
+    const teammatePool = allTeammates.filter(t => {
+      if (!t.who) return true;
+      if (t.who === "agui") return true;
+      if (t.who === "laozhou") return !!teamFlags.laozhouInTeam;
+      if (t.who === "linxiao") return !!teamFlags.linxiaoJoined;
+      if (t.who === "suwan") return !!teamFlags.suwanJoined;
+      return true;
+    });
     const teammateSubs = pickRandom(teammatePool, 2);
 
     st.matches += 1;
@@ -506,7 +544,7 @@
 
     const result = (ev.result && ev.result[branchKey]) || { text: "比赛结束。", effects: {} };
 
-    await global.UI.renderMatchResult(branchKey, matchState, goalsFor, goalsAgainst, rating, reward);
+    await global.UI.renderMatchResult(branchKey, matchState, goalsFor, goalsAgainst, rating, reward, (result.effects && result.effects.reputation) || 0);
     await global.UI.renderTextBlock(global.Story.interpolate(result.text));
     applyEffects(result.effects);
     applyEffects({ reputation: reward.reputation });
@@ -518,6 +556,7 @@
     }
 
     matchState = null;
+    global.UI.hideMatchHUD();
     await global.UI.waitContinue();
     autoSave(true);
 
@@ -552,6 +591,7 @@
     if (auto.threat) matchState.threat = Math.max(0, matchState.threat + auto.threat);
     if (auto.oppThreat) matchState.oppThreat = Math.max(0, matchState.oppThreat + auto.oppThreat);
     if (auto.difficultyMod) matchState.difficultyMod += auto.difficultyMod;
+    syncMatchHUD(); // 实时刷新比分/威胁值
     if (auto.stamina) {
       applyEffects({ stamina: auto.stamina });
       global.UI.updateStatus();

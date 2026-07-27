@@ -54,6 +54,8 @@
         case "stamina": return st ? st.stamina : 100;
         case "spiritStones": return st ? st.spiritStones : 0;
         case "elementAdj": return st ? (CONFIG.elementAdj[st.rootType] || "") : "";
+        case "affinityMult": return st && st.rootQuality ? CONFIG.quality[st.rootQuality].mult : 1;
+        case "nonAffinityMult": return CONFIG.nonAffinityMult;
         case "position": return st && st.position ? st.position : "未定";
         case "playstyle": return st && st.playstyle ? st.playstyle : "未定";
         case "goals": return st ? st.goals : 0;
