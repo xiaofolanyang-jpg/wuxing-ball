@@ -140,6 +140,7 @@
     }
     if (c.when.flag && !(st.flags && st.flags[c.when.flag])) return false;
     if (c.when.notFlag && st.flags && st.flags[c.when.notFlag]) return false;
+    if (c.when.mixedRoot && st.rootQuality !== "mixed") return false;
     return true;
   }
 
@@ -218,12 +219,19 @@
 
     // 普通选项（按 when 条件过滤后渲染）
     if (ev.choices && ev.choices.length) {
-      const visible = ev.choices.filter(choiceVisible);
+      let visible = ev.choices.filter(choiceVisible);
+      if (!visible.length) visible = ev.choices; // 兜底：when 条件全过滤时显示全部选项，防止卡死
       const choice = await global.UI.renderChoices(visible);
       await handleChoice(choice, ev);
     } else {
       // 无选项事件，停留等继续
       await global.UI.waitContinue();
+      // 事件级 effects（章末结算：chapter/age 递增、声望等）
+      if (ev.effects) {
+        applyEffects(ev.effects);
+        global.UI.updateStatus();
+        autoSave(true);
+      }
       if (ev.next) goto(ev.next);
     }
   }
@@ -372,23 +380,34 @@
     return { leading: "领先", level: "平局", trailing: "落后" }[s] || s;
   }
 
+  // 当前攻防姿态（用于选项过滤与事件抽取）：strong→attack / even→balanced / weak→defense
+  function computePosture() {
+    if (!matchState) return "balanced";
+    if (matchState.situation === "strong") return "attack";
+    if (matchState.situation === "weak") return "defense";
+    return "balanced";
+  }
+
   // 局面动态选项（设计稿第五章）：
-  //   以强打弱→4个（进攻选项多、防守少）；势均力敌→5个（攻守均衡）；以弱打强→4个（防反多、保留1个高风险进攻）
-  function filterChoicesBySituation(choices, situation) {
-    if (!choices || choices.length <= 1 || !situation) return choices;
+  //   进攻姿态(attack)→只呈现进攻/平衡类选项，不出现防守选项
+  //   平衡姿态(balanced)→呈现全部选项，攻守兼备
+  //   防守姿态(defense)→优先防守/平衡类，保留1个高风险高回报进攻
+  function filterChoicesBySituation(choices, posture) {
+    if (!choices || choices.length <= 1 || !posture) return choices;
     const atk = choices.filter(c => c.sit === "attack");
     const bal = choices.filter(c => c.sit === "balanced" || !c.sit);
     const def = choices.filter(c => c.sit === "defense");
     let picked;
-    if (situation === "strong") {
-      picked = atk.concat(bal).concat(def).slice(0, 4);
-    } else if (situation === "weak") {
+    if (posture === "attack") {
+      picked = atk.concat(bal).slice(0, 4);
+    } else if (posture === "defense") {
       picked = def.concat(bal);
-      if (atk.length) picked = picked.concat(atk.slice(-1)); // 保留1个高风险高回报进攻
-      picked = picked.slice(0, 4);
+      if (atk.length) picked = picked.concat(atk.slice(0, 1)); // 保留1个高风险高回报进攻
+      picked = picked.slice(0, 5);
     } else {
       picked = choices.slice(0, 5);
     }
+    if (!picked.length) picked = choices.slice(0, 3); // 兜底：保证有选项可选
     // 按原选项顺序输出
     return choices.filter(c => picked.indexOf(c) >= 0);
   }
@@ -438,7 +457,7 @@
     // 玩家事件（位置池，抽 2 个）
     const poolId = buildPoolId(ev);
     let playerSubs = [];
-    if (poolId) playerSubs = global.Story.pickMatchEvents(poolId, 2);
+    if (poolId) playerSubs = global.Story.pickMatchEvents(poolId, 2, computePosture());
     if (!playerSubs.length && ev.fallback_choices) {
       playerSubs = [{ text: "", choices: ev.fallback_choices }];
     }
@@ -511,10 +530,10 @@
     matchState.isKeyMoment = false;
     await global.UI.renderMatchHeader(idx, total, "你的回合");
     if (sub.text) await global.UI.renderTextBlock(global.Story.interpolate(sub.text));
-    // 局面动态选项（4/5/4）
+    // 局面动态选项（按攻防姿态过滤）
     let choices = sub.choices;
     if (choices && choices.length && matchState) {
-      choices = filterChoicesBySituation(choices, matchState.situation);
+      choices = filterChoicesBySituation(choices, computePosture());
     }
     if (!choices || !choices.length) {
       await global.UI.waitContinue();
@@ -570,14 +589,55 @@
      ============================================================ */
   function dispatchEnding() {
     const st = global.State.current;
-    let target = "end_dusk"; // 默认黯然
+    const f = st.flags || {};
+    // 境界判定（设计稿第三章3.3）：任一属性达通脉(45+)/天人合一(90+)
+    const attrVals = Object.keys(st.attrs).map(k => st.attrs[k]);
+    const tianren = attrVals.some(v => v >= 90);
+    const tongmai = attrVals.some(v => v >= 45);
+    let target;
     // 心魔值满→强制黯然退场（设计稿第十章结局表：天劫失败/心魔满）
     if ((st.demonValue || 0) >= 100) {
       target = "end_dusk";
-    } else if (st.reputation >= 80 && st.flags.keySuccess) {
+    }
+    // 杂灵根+五行归一→浪子回头（设计稿第十章：废根不废人）
+    else if (st.rootQuality === "mixed" && f.wuxingGuiyi) {
+      target = "end_return";
+    }
+    // 选择当教练→教练之路（隐藏路线）
+    else if (f.choiceCoach) {
+      target = "end_coach";
+    }
+    // 退役后复出→传奇复出
+    else if (f.choiceRetire && f.comeback) {
+      target = "end_comeback";
+    }
+    // 因伤退役不复出→黯然离场
+    else if (f.choiceRetire) {
+      target = "end_dusk";
+    }
+    // 天人合一+全国冠军+远赴五洲→球圣封神（最高结局）
+    else if (f.nationalChamp && f.choiceTianguang && tianren) {
+      target = "end_saint";
+    }
+    // 通脉+远赴天罡→天罡之星
+    else if (f.choiceTianguang && tongmai) {
+      target = "end_star";
+    }
+    // 通脉+留守+声望极高→功勋队长
+    else if (f.choiceStay && tongmai && st.reputation >= 120) {
+      target = "end_captain";
+    }
+    // 声望高+关键成功→新星升起（兼容既有）
+    else if (st.reputation >= 80 && f.keySuccess) {
       target = "end_rising";
-    } else if (st.reputation >= 40) {
+    }
+    // 声望中等→蛰伏待时（兼容既有）
+    else if (st.reputation >= 40) {
       target = "end_dormant";
+    }
+    // 开放式→江湖再见
+    else {
+      target = "end_jianghu";
     }
     goto(target);
   }
@@ -585,10 +645,11 @@
   /* ============================================================
      启动
      ============================================================ */
-  function startNew() {
+  function startNew(difficulty) {
     global.State.clearSave();
-    global.State.current = global.State.createInitial();
+    global.State.current = global.State.createInitial(difficulty);
     global.UI.updateStatus();
+    global.State.save(); // 难度选择后立即存档，保证存档含 difficulty
     goto("ch1_opening");
   }
 

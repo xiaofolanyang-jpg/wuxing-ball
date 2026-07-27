@@ -37,6 +37,7 @@
         typeCtrl.el.insertAdjacentText("beforeend", typeCtrl.text.slice(typeCtrl.i));
         typeCtrl.i = typeCtrl.text.length;
         typeCtrl.done = true;
+        scrollBottom();
         typeCtrl.resolve();
       }
     });
@@ -52,7 +53,20 @@
   /* ---------- 工具 ---------- */
   function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   function clearChoices() { $choice.innerHTML = ""; }
-  function scrollBottom() { $story.scrollTop = $story.scrollHeight; }
+
+  // 滚动节流（防闪烁关键）：
+  //  - rAF 合并：打字机每字符都会调 scrollBottom，这里合并为每帧最多一次，避免高频强制重排；
+  //  - 仅当用户处于底部附近才自动滚动，避免用户回看历史时被强制拉回。
+  let scrollRAF = null;
+  function scrollBottom(force) {
+    if (scrollRAF) return;
+    scrollRAF = requestAnimationFrame(() => {
+      scrollRAF = null;
+      if (!$story) return;
+      const gap = $story.scrollHeight - $story.scrollTop - $story.clientHeight;
+      if (force || gap < 140) $story.scrollTop = $story.scrollHeight;
+    });
+  }
 
   /* ---------- 状态栏更新 ---------- */
   function updateStatus() {
@@ -159,6 +173,8 @@
     opts = opts || {};
     return new Promise(resolve => {
       clearChoices();
+      const frag = document.createDocumentFragment();
+      const btns = [];
       choices.forEach(choice => {
         const btn = document.createElement("button");
         btn.className = "choice-btn fade-in";
@@ -175,10 +191,15 @@
         }
         btn.addEventListener("click", () => {
           if (typeCtrl && !typeCtrl.done) return; // 打字中禁用
+          if (btn.disabled) return;               // 防双击重复触发
+          btns.forEach(b => { b.disabled = true; }); // 点击后立即禁用全部按钮，消除残留闪烁
+          btn.classList.add("picked");
           resolve(choice);
         });
-        $choice.appendChild(btn);
+        btns.push(btn);
+        frag.appendChild(btn);
       });
+      $choice.appendChild(frag); // 一次性挂载，避免逐个 append 造成多次重排闪烁
     });
   }
 
@@ -189,7 +210,11 @@
       const btn = document.createElement("button");
       btn.className = "choice-btn fade-in";
       btn.textContent = label || "继续";
-      btn.addEventListener("click", () => resolve());
+      btn.addEventListener("click", () => {
+        if (btn.disabled) return;
+        btn.disabled = true; // 立即禁用，防止双击重复 resolve
+        resolve();
+      });
       $choice.appendChild(btn);
     });
   }
@@ -677,15 +702,56 @@
       $choice.appendChild(tip);
       const c = document.createElement("button");
       c.className = "choice-btn fade-in"; c.textContent = "继续上局";
-      c.addEventListener("click", () => global.Engine.continueGame());
+      c.addEventListener("click", () => { if (c.disabled) return; c.disabled = true; n.disabled = true; global.Engine.continueGame(); });
       $choice.appendChild(c);
       const n = document.createElement("button");
       n.className = "choice-btn fade-in"; n.textContent = "开新的一局";
-      n.addEventListener("click", () => global.Engine.startNew());
+      n.addEventListener("click", () => { if (n.disabled) return; n.disabled = true; c.disabled = true; showDifficultyPanel(); });
       $choice.appendChild(n);
     } else {
-      global.Engine.startNew();
+      showDifficultyPanel();
     }
+  }
+
+  /* ============================================================
+     开局难度选择（问题5：灵根觉醒之前选择难度）
+     困难=全属性5 / 普通=全属性8 / 简单=全属性12
+     ============================================================ */
+  function showDifficultyPanel() {
+    clearChoices();
+    const tip = document.createElement("div");
+    tip.className = "fade-in";
+    tip.style.cssText = "color:var(--gold);font-size:13px;text-align:center;margin-bottom:8px;";
+    tip.textContent = "── 选择开局难度 ──";
+    $choice.appendChild(tip);
+
+    const defs = [
+      { key: "hard",   label: "困难（全属性初始 5）",  desc: "天将降大任，苦其心志。成长慢、检定难，适合老手。" },
+      { key: "normal", label: "普通（全属性初始 8）",  desc: "不偏不倚，稳步前行。标准体验。" },
+      { key: "easy",   label: "简单（全属性初始 12）", desc: "天赋异禀，一路坦途。适合专注看剧情。" }
+    ];
+    const frag = document.createDocumentFragment();
+    const btns = [];
+    defs.forEach(d => {
+      const btn = document.createElement("button");
+      btn.className = "choice-btn fade-in";
+      const label = document.createElement("span");
+      label.textContent = d.label;
+      btn.appendChild(label);
+      const sub = document.createElement("span");
+      sub.className = "check-tag";
+      sub.textContent = d.desc;
+      btn.appendChild(sub);
+      btn.addEventListener("click", () => {
+        if (btn.disabled) return;
+        btns.forEach(b => { b.disabled = true; });
+        btn.classList.add("picked");
+        global.Engine.startNew(d.key);
+      });
+      btns.push(btn);
+      frag.appendChild(btn);
+    });
+    $choice.appendChild(frag);
   }
 
   global.UI = {

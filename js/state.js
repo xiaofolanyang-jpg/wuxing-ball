@@ -40,17 +40,24 @@
     };
   }
 
-  // 创建初始状态
-  function createInitial() {
+  // 开局难度（问题5）：困难=全属性5 / 普通=全属性8 / 简单=全属性12
+  const DIFFICULTY_BASE = { hard: 5, normal: 8, easy: 12 };
+
+  // 创建初始状态（difficulty 可选：hard/normal/easy，默认 normal）
+  function createInitial(difficulty) {
+    const diff = DIFFICULTY_BASE[difficulty] !== undefined ? difficulty : "normal";
+    const baseVal = DIFFICULTY_BASE[diff];
     const attrs = {};
     CONFIG.elementOrder.forEach(el => {
-      CONFIG.attrs[el].forEach(a => { attrs[a] = 5; });
+      CONFIG.attrs[el].forEach(a => { attrs[a] = baseVal; });
     });
     return {
       name: "",
       age: 14,
       chapter: 1,
       round: 1,
+      // 开局难度（随存档保存/恢复）
+      difficulty: diff,
       rootType: null,
       rootQuality: null,
       affinityElements: [],
@@ -77,7 +84,7 @@
       // 心魔值（设计稿第五章评级表：D评级+10；心魔劫本体后续版本实现）
       demonValue: 0,
       // 羁绊系统（设计稿第五章·羁绊与技能）：进度值 + 已解锁羁绊id列表
-      bondProgress: { agui: 0, zhaolin: 0, canglan: 0 },
+      bondProgress: { agui: 0, zhaolin: 0, canglan: 0, linxiao: 0, suwan: 0 },
       bondsUnlocked: [],
       // 流程控制
       currentEventId: null,

@@ -27,6 +27,13 @@
     if (global.CHAPTER1) registerEvents(global.CHAPTER1.events);
     if (global.CHAPTER2) registerEvents(global.CHAPTER2.events);
     if (global.CHAPTER3) registerEvents(global.CHAPTER3.events);
+    if (global.CHAPTER4) registerEvents(global.CHAPTER4.events);
+    if (global.CHAPTER5) registerEvents(global.CHAPTER5.events);
+    if (global.CHAPTER6) registerEvents(global.CHAPTER6.events);
+    if (global.CHAPTER7) registerEvents(global.CHAPTER7.events);
+    if (global.CHAPTER8) registerEvents(global.CHAPTER8.events);
+    if (global.CHAPTER9) registerEvents(global.CHAPTER9.events);
+    if (global.CHAPTER10) registerEvents(global.CHAPTER10.events);
     if (global.ENDINGS)  registerEvents(global.ENDINGS.events);
     if (global.MATCH_POOLS) registerMatchPools(global.MATCH_POOLS);
   }
@@ -61,15 +68,32 @@
   }
 
   // 从踢法池中随机抽取 n 个事件（不重复）
-  function pickMatchEvents(poolId, n) {
+  // posture（可选）：attack/balanced/defense 攻防姿态。
+  //   1) 优先抽事件级 sit 标签与 posture 匹配的事件；
+  //   2) 不足时从 balanced/无标签事件补齐，再不行才用其他局面事件兜底。
+  function pickMatchEvents(poolId, n, posture) {
     const pool = matchPools[poolId];
     if (!pool || !pool.events) return [];
-    const copy = pool.events.slice();
+    const all = pool.events.slice();
     const out = [];
-    for (let i = 0; i < n && copy.length; i++) {
-      const idx = Math.floor(Math.random() * copy.length);
-      out.push(copy.splice(idx, 1)[0]);
+    function drawFrom(list) {
+      while (out.length < n && list.length) {
+        const idx = Math.floor(Math.random() * list.length);
+        out.push(list.splice(idx, 1)[0]);
+      }
     }
+    // 1) 优先匹配当前攻防姿态的事件（防守局面也能抽到防守场景）
+    if (posture) {
+      const matching = all.filter(e => e.sit === posture);
+      drawFrom(matching);
+    }
+    // 2) 补齐：balanced/无标签优先，再用其余事件兜底，保证任何局面都抽得出事件
+    const used = out.slice();
+    const rest = all.filter(e => used.indexOf(e) < 0);
+    const balanced = rest.filter(e => !e.sit || e.sit === "balanced");
+    const others = rest.filter(e => e.sit && e.sit !== "balanced");
+    drawFrom(balanced);
+    drawFrom(others);
     return out;
   }
 

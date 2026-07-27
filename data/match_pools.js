@@ -10,6 +10,7 @@ window.MATCH_POOLS = {
     events: [
       {
         text: "中场一记过顶长传，你启动的瞬间，体内灵力炸裂——双腿像被点燃。",
+        sit: "attack",
         choices: [
           { id: "A", sit: "attack", text: "全速反越位，单刀赴会！", check: { attrs: ["speed", "burst"], difficulty: 40, tag: "速度+爆发" },
             success: { text: "你{elementAdj}地甩开防线，单刀面对门将，冷静推射得手！", effects: { reputation: 10, goals: 1, attrs: { speed: 1 } } },
@@ -37,6 +38,7 @@ window.MATCH_POOLS = {
       },
       {
         text: "角球开出，前点一片混战。你和对方中卫同时启动争顶。",
+        sit: "balanced",
         choices: [
           { id: "A", sit: "attack", text: "前点抢点，脚尖一捅", check: { attrs: ["positioning", "resolve"], difficulty: 38, tag: "站位+决断" },
             success: { text: "你鬼魅般出现在前点，脚尖一捅，皮球滚入远角！", effects: { reputation: 10, goals: 1, attrs: { positioning: 1 } } },
@@ -64,6 +66,7 @@ window.MATCH_POOLS = {
       },
       {
         text: "比赛进入尾声，你方落后一球。最后一次进攻机会，你在禁区前沿得球。",
+        sit: "attack",
         choices: [
           { id: "A", sit: "attack", text: "拔脚怒射，搏一个", check: { attrs: ["shooting", "burst"], difficulty: 42, tag: "射门+爆发" },
             success: { text: "皮球带着{elementAdj}的劲道轰入球网！绝平！", effects: { reputation: 12, goals: 1, attrs: { shooting: 1 } } },
@@ -88,6 +91,33 @@ window.MATCH_POOLS = {
             fail: { text: "回防稍慢，对方一脚远射偏出。", effects: { stamina: -4 } }
           }
         ]
+      },
+      {
+        text: "对方反击！皮球打穿了整条防线，对方前锋单刀直入。你是距离最近的回追者。",
+        sit: "defense",
+        choices: [
+          { id: "A", sit: "defense", text: "全速回追，背后滑铲", check: { attrs: ["speed", "tackle"], difficulty: 38, tag: "速度+铲断" },
+            success: { text: "你{elementAdj}地拍马赶到，一记干净的滑铲将球捅出底线！看台爆发出比进球更响的欢呼！", effects: { reputation: 8, attrs: { tackle: 1 } } },
+            fail: { text: "回追慢了一步，滑铲落空，对方晃过门将得分。", effects: { stamina: -6 } },
+            critical: { text: "【灵光一闪】铁壁回追！解说：「这次回追铲抢，诠释了什么叫不放弃！」", effects: { reputation: 14, attrs: { tackle: 2, speed: 1 }, flags: { keySuccess: true } } }
+          },
+          { id: "B", sit: "defense", text: "且战且退，延缓等他失误", check: { attrs: ["positioning", "iq"], difficulty: 34, tag: "站位+球商" },
+            success: { text: "你边退边封堵角度，延缓了对方射门，回追的后卫赶到将球解围！", effects: { reputation: 6, attrs: { positioning: 1 } } },
+            fail: { text: "对方前锋太过老练，一个变向晃开你推射得手。", effects: { stamina: -5 } }
+          },
+          { id: "C", sit: "defense", text: "封堵射门角度，逼他走外线", check: { attrs: ["intercept", "balance"], difficulty: 32, tag: "拦截+平衡" },
+            success: { text: "你死死卡住近角，对方被迫走外线，射门偏出远门柱！", effects: { reputation: 6, attrs: { intercept: 1 } } },
+            fail: { text: "对方一个挑球过顶，你望球兴叹。", effects: { stamina: -5 } }
+          },
+          { id: "D", sit: "balanced", text: "断球后直接长传发动反击", check: { attrs: ["passing", "vision"], difficulty: 33, tag: "传球+视野" },
+            success: { text: "你断球后不停球直接长传找前场，队友险些形成单刀！", effects: { reputation: 7, attrs: { passing: 1 } } },
+            fail: { text: "断球后长传力量大了，直接出了边线。", effects: { stamina: -4 } }
+          },
+          { id: "E", sit: "attack", text: "赌一把，强行抢断自己推进", check: { attrs: ["strength", "resolve"], difficulty: 40, tag: "对抗+决断" },
+            success: { text: "你{elementAdj}地一个肩撞把球硬生生抢下，顺势带球推进，全场惊呼！", effects: { reputation: 8, attrs: { strength: 1 } } },
+            fail: { text: "抢断扑空，对方顺势抹过你。", effects: { stamina: -6 } }
+          }
+        ]
       }
     ]
   },
@@ -98,6 +128,7 @@ window.MATCH_POOLS = {
     events: [
       {
         text: "边路一打一，你拿球面对对方边后卫。他压低重心，等着你出招。",
+        sit: "balanced",
         choices: [
           { id: "A", sit: "attack", text: "人球分过，硬吃他", check: { attrs: ["dribble", "speed"], difficulty: 40, tag: "盘带+速度" },
             success: { text: "你{elementAdj}地一趟一加速，把对手甩在身后，杀入禁区！", effects: { reputation: 10, attrs: { dribble: 1 } } },
@@ -125,6 +156,7 @@ window.MATCH_POOLS = {
       },
       {
         text: "反击机会，你沿边路长途奔袭。对方两名后卫回追包夹。",
+        sit: "attack",
         choices: [
           { id: "A", sit: "attack", text: "一鼓作气杀入禁区", check: { attrs: ["speed", "stamina"], difficulty: 42, tag: "速度+耐力" },
             success: { text: "你长途奔袭，{elementAdj}地摆脱包夹，小角度推射得手！", effects: { reputation: 12, goals: 1, attrs: { speed: 1 } } },
@@ -152,6 +184,7 @@ window.MATCH_POOLS = {
       },
       {
         text: "禁区前沿，你内切后获得起脚空间。",
+        sit: "attack",
         choices: [
           { id: "A", sit: "attack", text: "内切后起脚兜远角", check: { attrs: ["shooting", "resolve"], difficulty: 40, tag: "射门+决断" },
             success: { text: "皮球带着{elementAdj}的弧线挂入远角！", effects: { reputation: 11, goals: 1, attrs: { shooting: 1 } } },
@@ -176,6 +209,33 @@ window.MATCH_POOLS = {
             fail: { text: "回撤稍慢，防守到位时球已转移。", effects: { stamina: -4 } }
           }
         ]
+      },
+      {
+        text: "对方边锋在你这一侧肆虐，本队边后卫助攻未归——你必须回防补位。",
+        sit: "defense",
+        choices: [
+          { id: "A", sit: "defense", text: "回追贴防，不让他起脚传中", check: { attrs: ["speed", "stamina"], difficulty: 36, tag: "速度+耐力" },
+            success: { text: "你{elementAdj}地回追到位，用身体卡住传中线路，对方只能无奈回传！", effects: { reputation: 7, attrs: { speed: 1 } } },
+            fail: { text: "体力不支，被对方强行起脚传中。", effects: { stamina: -6 } },
+            critical: { text: "【灵光一闪】追防到底！解说：「边锋回防，也能筑起一道墙！」", effects: { reputation: 12, attrs: { speed: 1, tackle: 1 }, flags: { keySuccess: true } } }
+          },
+          { id: "B", sit: "defense", text: "预判内切线路，提前出脚", check: { attrs: ["intercept", "iq"], difficulty: 35, tag: "拦截+球商" },
+            success: { text: "你精准预判到他的内切意图，提前出脚将球捅掉！", effects: { reputation: 6, attrs: { intercept: 1 } } },
+            fail: { text: "判断失误，对方走外线突破成功。", effects: { stamina: -5 } }
+          },
+          { id: "C", sit: "defense", text: "退守禁区，协助盯防后点", check: { attrs: ["positioning", "balance"], difficulty: 30, tag: "站位+平衡" },
+            success: { text: "你及时退入禁区，抢在对方包抄球员之前将球顶出！", effects: { reputation: 5, attrs: { positioning: 1 } } },
+            fail: { text: "头球解围慢了一拍，对方获得射门机会。", effects: { stamina: -4 } }
+          },
+          { id: "D", sit: "balanced", text: "战术犯规，掐断这波攻势", check: { attrs: ["strength", "resolve"], difficulty: 30, tag: "对抗+决断" },
+            success: { text: "一次合理的战术犯规，扼杀了对方势在必得的攻势。", effects: { reputation: 4, attrs: { strength: 1 } } },
+            fail: { text: "犯规动作大了，吃到黄牌。", effects: { stamina: -3, reputation: -2 } }
+          },
+          { id: "E", sit: "attack", text: "断球后直接边路反击", check: { attrs: ["tackle", "burst"], difficulty: 40, tag: "铲断+爆发" },
+            success: { text: "你{elementAdj}地断球后直接转身狂奔，打对方一个立足未稳！", effects: { reputation: 8, attrs: { tackle: 1 } } },
+            fail: { text: "抢断失误，反被对方打了个反击。", effects: { stamina: -6 } }
+          }
+        ]
       }
     ]
   },
@@ -186,6 +246,7 @@ window.MATCH_POOLS = {
     events: [
       {
         text: "你在禁区前沿拿球，背身有后腰贴防。余光里，你看见了空当。",
+        sit: "balanced",
         choices: [
           { id: "A", sit: "attack", text: "一脚直塞撕开防线", check: { attrs: ["passing", "vision"], difficulty: 42, tag: "传球+视野" },
             success: { text: "皮球像一尾游鱼{elementAdj}地穿过三名后卫缝隙，前锋单刀破门！", effects: { reputation: 10, assists: 1, attrs: { passing: 1 } } },
@@ -213,6 +274,7 @@ window.MATCH_POOLS = {
       },
       {
         text: "反击三打三，你中路持球推进，两翼齐飞。",
+        sit: "attack",
         choices: [
           { id: "A", sit: "balanced", text: "分边给高速插上的边锋", check: { attrs: ["passing", "iq"], difficulty: 38, tag: "传球+球商" },
             success: { text: "你一脚{elementAdj}的分边，边锋推射破门！", effects: { reputation: 9, assists: 1, attrs: { passing: 1 } } },
@@ -240,6 +302,7 @@ window.MATCH_POOLS = {
       },
       {
         text: "比赛胶着，球权在你脚下。是该稳一稳，还是冒险一击？",
+        sit: "balanced",
         choices: [
           { id: "A", sit: "attack", text: "致命一传，赌这把", check: { attrs: ["vision", "resolve"], difficulty: 45, tag: "视野+决断" },
             success: { text: "你看见了一道常人看不见的线，一脚{elementAdj}的过顶，前锋凌空垫射入网！", effects: { reputation: 14, assists: 1, attrs: { vision: 1 }, flags: { keySuccess: true } } },
@@ -260,6 +323,33 @@ window.MATCH_POOLS = {
             fail: { text: "护球时被对方抢下，险些被打反击。", effects: { stamina: -4 } }
           }
         ]
+      },
+      {
+        text: "对方大举压上，本队中场组织屡次被断。作为前腰，你需要在防守端站出来。",
+        sit: "defense",
+        choices: [
+          { id: "A", sit: "defense", text: "高位逼抢对方核心", check: { attrs: ["intercept", "speed"], difficulty: 36, tag: "拦截+速度" },
+            success: { text: "你的高位逼抢迫使对方核心传球失误，就地夺回球权！", effects: { reputation: 7, attrs: { intercept: 1 } } },
+            fail: { text: "逼抢扑空，对方从容转移。", effects: { stamina: -5 } },
+            critical: { text: "【灵光一闪】抢断就发生在对方最危险的地带，反击险些直接得分！", effects: { reputation: 12, attrs: { intercept: 2 }, flags: { keySuccess: true } } }
+          },
+          { id: "B", sit: "defense", text: "切断对方前锋的接球线路", check: { attrs: ["positioning", "iq"], difficulty: 34, tag: "站位+球商" },
+            success: { text: "你预判到传球线路，中途将球截下，对方攻势胎死腹中。", effects: { reputation: 6, attrs: { positioning: 1 } } },
+            fail: { text: "判断失误，被对方轻松打穿。", effects: { stamina: -4 } }
+          },
+          { id: "C", sit: "defense", text: "回撤保护后卫线", check: { attrs: ["tackle", "balance"], difficulty: 31, tag: "铲断+平衡" },
+            success: { text: "你回撤及时，在禁区前沿完成关键拦截！", effects: { reputation: 5, attrs: { tackle: 1 } } },
+            fail: { text: "回防中被对方变向晃开，起脚射门。", effects: { stamina: -5 } }
+          },
+          { id: "D", sit: "balanced", text: "断球后快速分边转移", check: { attrs: ["passing", "vision"], difficulty: 32, tag: "传球+视野" },
+            success: { text: "你断球后一脚长传转移弱侧，球队进攻重新盘活！", effects: { reputation: 6, attrs: { passing: 1 } } },
+            fail: { text: "断球后传球仓促，被对方拦截。", effects: { stamina: -4 } }
+          },
+          { id: "E", sit: "attack", text: "自己带球推进，吸引防守", check: { attrs: ["dribble", "resolve"], difficulty: 39, tag: "盘带+决断" },
+            success: { text: "你{elementAdj}地过掉逼抢者，带球推进，把对方防守阵型搅得天翻地覆！", effects: { reputation: 7, attrs: { dribble: 1 } } },
+            fail: { text: "带球被两人包夹，丢掉了球权。", effects: { stamina: -5 } }
+          }
+        ]
       }
     ]
   },
@@ -270,6 +360,7 @@ window.MATCH_POOLS = {
     events: [
       {
         text: "前场混战，球弹到你脚下。你抬头一看，禁区间隙是一道缝。",
+        sit: "attack",
         choices: [
           { id: "A", sit: "attack", text: "把握机会，起脚射门", check: { attrs: ["shooting", "burst"], difficulty: 30, tag: "射门+爆发" },
             success: { text: "皮球带着{elementAdj}的劲道钻入死角！看台沸腾。", effects: { reputation: 8, goals: 1, attrs: { shooting: 1 } } },
@@ -297,6 +388,7 @@ window.MATCH_POOLS = {
       },
       {
         text: "对方反击，你方后场吃紧。教头在场边吼：“都给我回防！”",
+        sit: "defense",
         choices: [
           { id: "A", sit: "defense", text: "回追铲断，化解危机", check: { attrs: ["tackle", "speed"], difficulty: 28, tag: "铲断+速度" },
             success: { text: "你一记干净铲断，赢得满堂喝彩。", effects: { reputation: 5, attrs: { tackle: 1 } } },
@@ -323,6 +415,7 @@ window.MATCH_POOLS = {
       },
       {
         text: "比赛进入尾声，比分胶着。最后一次进攻，球权在你脚下。",
+        sit: "balanced",
         choices: [
           { id: "A", sit: "attack", text: "禁区外起脚，搏一个世界波", check: { attrs: ["shooting", "power"], difficulty: 36, tag: "射门+力量" },
             success: { text: "皮球带着{elementAdj}的弧线轰入球网！绝杀！", effects: { reputation: 12, goals: 1, attrs: { shooting: 1 } } },

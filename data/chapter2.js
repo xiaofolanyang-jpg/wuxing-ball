@@ -53,7 +53,7 @@ window.CHAPTER2 = { events: [
       "赵凛在一线队混得风生水起，每场必发。你咬牙加练，把不甘咽进肚里。"
     ],
     choices: [
-      { id: "A", text: "加练，用汗水换机会", effects: { stamina: -10, attrs: { resolve: 2, stamina: 0 }, reputation: 3 }, next: "ch2_league" },
+      { id: "A", text: "加练，用汗水换机会", effects: { stamina: -10, attrs: { resolve: 2 }, reputation: 3 }, next: "ch2_league" },
       { id: "B", text: "找教练理论，要出场时间", check: { attrs: ["resolve", "iq"], difficulty: 30, tag: "决断+球商" },
         success: { text: "教练被你说动，许你下一场首发。", effects: { reputation: 4, flags: { startingSpot: true } } },
         fail: { text: "教练冷脸：「上场靠表现，不靠嘴。」你碰了一鼻子灰。", effects: { reputation: -2 } },
@@ -134,7 +134,7 @@ window.CHAPTER2 = { events: [
         critical: { text: "【灵光一闪】你以痛为引，竟摸到「不动如山」的门槛！心志大进。", effects: { reputation: 12, attrs: { resolve: 3, pressure: 2 }, flags: { keySuccess: true } } },
         next: "ch2_trib_2"
       },
-      { id: "B", text: "闭目静养，避其锋芒", effects: { reputation: -3, attrs: { resolve: 1 } }, next: "ch2_trib_2" }
+      { id: "B", text: "闭目静养，避其锋芒", effects: { reputation: -3, attrs: { resolve: 1 }, demonValue: -5, stamina: 5 }, next: "ch2_trib_2" }
     ]
   },
 
@@ -150,7 +150,7 @@ window.CHAPTER2 = { events: [
         critical: { text: "【灵光一闪】你的回应成为赛季金句，转危为机。", effects: { reputation: 15, flags: { keySuccess: true } } },
         next: "ch2_demon"
       },
-      { id: "B", text: "沉默以对，用脚说话", effects: { reputation: -2, attrs: { resolve: 1 } }, next: "ch2_demon" }
+      { id: "B", text: "沉默以对，用脚说话", effects: { reputation: -2, attrs: { resolve: 1 }, demonValue: -3, flags: { silentAnswer: true } }, next: "ch2_demon" }
     ]
   },
 
@@ -196,7 +196,7 @@ window.CHAPTER2 = { events: [
         critical: { text: "【灵光一闪】复出即绝杀！你伤愈首战读秒破门，天劫彻底渡过，境界大进！", effects: { reputation: 22, goals: 1, attrs: { resolve: 2, burst: 2 }, flags: { keySuccess: true } } },
         next: "ch2_end"
       },
-      { id: "B", text: "稳着踢，保命要紧", effects: { reputation: -3, attrs: { positioning: 1 } }, next: "ch2_end" }
+      { id: "B", text: "稳着踢，保命要紧", effects: { reputation: -3, attrs: { positioning: 1, pressure: 1 }, demonValue: -4 }, next: "ch2_end" }
     ]
   },
 
@@ -206,6 +206,7 @@ window.CHAPTER2 = { events: [
     chapter: 2,
     text: "赛季落幕。你站在更衣室，窗外是另一片天空。但你知道，这不是终点——更大的舞台，正在等着你。",
     system: "【第二章·崭露 完。接下来：第三章·省赛。】",
+    effects: { chapter: 1, age: 2 },
     next: "ch3_opening"
   }
 

@@ -77,6 +77,18 @@ window.CONFIG = {
       threshold: 20, bonus: 0.10,
       effect: "面对水灵根对手时，全属性+10%（愤怒加成）",
       story: "又是他。上次那脚扑救，你记了整整三个月。"
+    },
+    linxiao: {
+      name: "风火连城", type: "队友羁绊", target: "林啸·边锋",
+      threshold: 30, bonus: 0.08,
+      effect: "与林啸同场反击时，速度检定+8%",
+      story: "他孤傲，但他的脚不会说谎。两道残影掠过中场，对方后卫只看到背影。"
+    },
+    suwan: {
+      name: "心有灵犀", type: "队友羁绊", target: "苏晚·前腰",
+      threshold: 30, bonus: 0.08,
+      effect: "苏晚传球给你时，射门检定+8%",
+      story: "她不用看就知道你在哪。球到人到。"
     }
   },
   // 灵石商店（设计稿第七章·资源系统：灵石购买丹药/功法）

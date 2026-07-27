@@ -142,16 +142,21 @@ window.CHAPTER3 = { events: [
     choices: [
       { id: "A", text: "留在俱乐部加练，笨鸟先飞", effects: { stamina: -15, attrs: { resolve: 2, shooting: 1 } }, next: "ch3_end" },
       { id: "B", text: "回青云城，去蹴鞠庙看看庙祝", effects: { stamina: 20, attrs: { pressure: 2 }, demonValue: -10 }, next: "ch3_end" },
-      { id: "C", text: "打工赚灵石，补贴家用", effects: { spiritStones: 30, stamina: -10 }, next: "ch3_end" }
+      { id: "C", text: "打工赚灵石，补贴家用", effects: { spiritStones: 30, stamina: -10, attrs: { pressure: 1 } }, next: "ch3_end" }
     ]
   },
 
-  // 章末结算 → 结局分发
+  // 章末结算 → 跳转第四章《学院大比·组队》
   {
     id: "ch3_end",
     chapter: 3,
-    type: "ending_dispatch",
-    text: "省赛的硝烟散尽，这个赛季也画上了句号。你站在新的起点，望向远方——球圣之路，还在脚下延伸。"
+    text: [
+      "省赛的硝烟散尽。你站在领奖台上，汗水与荣光一并落定。",
+      "更衣室里，教练递来一份烫金请柬：「全国八大学院精英齐聚的『学院大比』，向你敞开大门。那里，才是真正天才的战场。」"
+    ],
+    system: "【第三章·省赛 完。接下来：第四章·学院大比·组队。】",
+    effects: { chapter: 1, age: 1 },
+    next: "ch4_opening"
   }
 
 ] };

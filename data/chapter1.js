@@ -36,8 +36,8 @@ window.CHAPTER1 = { events: [
       "身后有人开始窃笑。庙祝摇了摇头。你松开手，转身——"
     ],
     choices: [
-      { id: "A", text: "不管了，转身就走", next: "ch1_root_result" },
-      { id: "B", text: "回头再看一眼石头", next: "ch1_root_result" }
+      { id: "A", text: "不管了，转身就走", effects: { attrs: { resolve: 1 } }, next: "ch1_root_result" },
+      { id: "B", text: "回头再看一眼石头", effects: { attrs: { iq: 1 } }, next: "ch1_root_result" }
     ]
   },
 
@@ -87,8 +87,8 @@ window.CHAPTER1 = { events: [
       "「灵根定了，往后的路是你自己的。说吧——去哪儿？」"
     ],
     choices: [
-      { id: "A", text: "留在青云足校，从家门口开始证明自己", effects: { flags: { school: "local" }, reputation: 5 }, next: "ch1_enter_school_local" },
-      { id: "B", text: "远赴帝都赤焰书院，天才就该去天才堆里", effects: { flags: { school: "capital" }, stamina: -10, reputation: 8 }, next: "ch1_enter_school_capital" },
+      { id: "A", text: "留在青云足校，从家门口开始证明自己", effects: { flags: { school: "local", school_local: true }, reputation: 5 }, next: "ch1_enter_school_local" },
+      { id: "B", text: "远赴帝都赤焰书院，天才就该去天才堆里", effects: { flags: { school: "capital", school_capital: true }, stamina: -10, reputation: 8 }, next: "ch1_enter_school_capital" },
       { id: "C", text: "先回家问问娘的意见", effects: { attrs: { resolve: 2 }, spiritStones: 10, flags: { familyLine: true } }, next: "ch1_ask_mother" }
     ]
   },
@@ -113,8 +113,8 @@ window.CHAPTER1 = { events: [
     chapter: 1,
     text: "觉醒日已过，该上路了——是留在青云，还是远赴帝都？",
     choices: [
-      { id: "A", text: "留在青云足校，从家门口开始证明自己", effects: { flags: { school: "local" }, reputation: 5 }, next: "ch1_enter_school_local" },
-      { id: "B", text: "远赴帝都赤焰书院，天才就该去天才堆里", effects: { flags: { school: "capital" }, stamina: -10, reputation: 8 }, next: "ch1_enter_school_capital" }
+      { id: "A", text: "留在青云足校，从家门口开始证明自己", effects: { flags: { school: "local", school_local: true }, reputation: 5 }, next: "ch1_enter_school_local" },
+      { id: "B", text: "远赴帝都赤焰书院，天才就该去天才堆里", effects: { flags: { school: "capital", school_capital: true }, stamina: -10, reputation: 8 }, next: "ch1_enter_school_capital" }
     ]
   },
 
@@ -127,7 +127,23 @@ window.CHAPTER1 = { events: [
       "老人叹气，却也露出赞许：「好。脚跟扎得稳，球才踢得远。三日后，足校有人来接你。」",
       "回程的秋风卷起落叶，你攥紧拳头，掌心微微发烫——那是灵根在血脉里第一次苏醒的征兆。"
     ],
-    next: "ch1_roommate"
+    next: "ch1_local_arrival"
+  },
+
+  // 4a-2. 本地线专属际遇（问题4：双路线差异化——父亲的荒球场、庙祝的人脉）
+  {
+    id: "ch1_local_arrival",
+    chapter: 1,
+    text: [
+      "三日后，你没走远——从青云城东头到西头，从蹴鞠庙到足校，不过一炷香的脚程。",
+      "青云足校的教头是庙祝的远房侄子，听说你是庙祝亲自作保的孩子，咧嘴一笑：「庙祝老人家的眼光，错不了。你爹老陈当年在矿队，一脚抽射能踢裂门板，人称『铁腿陈』。他留下的荒球场，如今还在城外呢。」",
+      "当晚，你独自去了城外的荒球场。土墙还在，墙皮剥落处，父亲当年踢出的球痕依稀可辨。你对着墙一脚一脚地踢，仿佛隔着十几年光阴，与什么人对话。"
+    ],
+    system: "【本地线·青云足校】熟悉的土地，父亲的遗泽，庙祝的人脉——你的根在这里。",
+    choices: [
+      { id: "A", text: "每日清晨去荒球场，对墙苦练基本功", effects: { attrs: { shooting: 1, dribble: 1 }, flags: { localPitch: true } }, next: "ch1_roommate" },
+      { id: "B", text: "常去庙里帮庙祝打理香火，听他讲《球经》旧事", effects: { attrs: { iq: 1, vision: 1 }, spiritStones: 5, flags: { templeHelp: true } }, next: "ch1_roommate" }
+    ]
   },
 
   // 4b. 入学（帝都）
@@ -139,7 +155,24 @@ window.CHAPTER1 = { events: [
       "老人铺纸研墨，朱砂在烛火里像一簇小火苗：「赤焰书院卧虎藏龙，天才在那儿不会被埋没。路远，且苦——你可要想清楚。」",
       "三日后，你背上行囊，踏上北上帝都的官道。身后是生养你的青云城，前方是未知的修途。"
     ],
-    next: "ch1_roommate"
+    next: "ch1_capital_arrival"
+  },
+
+  // 4b-2. 帝都线专属际遇（问题4：双路线差异化——天才云集的下马威、异乡磨砺）
+  {
+    id: "ch1_capital_arrival",
+    chapter: 1,
+    text: [
+      "一个月的舟车劳顿后，帝都赤焰书院的朱红大门终于出现在眼前——比你想象的还要气派十倍。",
+      "训练场铺的是聚灵沙，练习用的是会发光的灵皮球。来往学子随手一脚，都是青云城足以惊掉下巴的技巧。你报出青云城的名号时，有人嗤笑：「小地方来的，也配进赤焰？」",
+      "入学第一天，教头瞥了眼你的荐书，淡淡道：「青云城……呵。这里每年收三百个新人，最后能留下的不到十个。别给家乡丢人。」",
+      "当夜，你躺在异乡的床板上，听着帝都遥远的更鼓。想家的念头和不服输的劲头，一起在胸口翻涌。"
+    ],
+    system: "【帝都线·赤焰书院】天才云集，强者为尊。在这里，你只能用脚说话。",
+    choices: [
+      { id: "A", text: "埋头苦练，先忍下这口气", effects: { attrs: { resolve: 1, pressure: 1 }, flags: { capitalGrind: true } }, next: "ch1_roommate" },
+      { id: "B", text: "主动结交各地学子，取长补短", effects: { attrs: { passing: 1 }, reputation: 3, flags: { capitalFriends: true } }, next: "ch1_roommate" }
+    ]
   },
 
   // 4c. 入学·认识室友阿贵（设计稿第二章事件4：阿贵同校自动同宿舍）
@@ -203,16 +236,22 @@ window.CHAPTER1 = { events: [
     id: "ch1_mentor_event",
     chapter: 1,
     text: [
-      "一个落雨的黄昏，你独自加练。场边不知何时多了个拄杖老人，看了一会儿，忽然开口：「你这脚法，是野路子。可 foundations 不稳，再练十年也是花架子。」",
-      "他扔来一本发黄的小册子：「老夫姓沈，年轻时也踢过几年。这本《球经残卷》你拿去——里头记着前人如何借五行之力。能不能悟，看造化。」"
+      "一个落雨的黄昏，你独自加练。场边不知何时多了个拄杖老人，看了一会儿，忽然开口：「你这脚法，是野路子。可根基不稳，再练十年也是花架子。」",
+      "他扔来一本发黄的小册子：「老夫姓沈，年轻时也踢过几年，与青云城蹴鞠庙有些旧交。这本小册子你拿去——里头记着前人如何借五行之力。能不能悟，看造化。」"
     ],
     choices: [
-      { id: "A", text: "恭敬接过，拜谢前辈指点", check: { attrs: ["iq", "vision"], difficulty: 25, tag: "球商+视野" }, next: "ch1_train_02",
-        success: { text: "老人抚须而笑：「孺子可教。」那夜你挑灯翻阅残卷，隐隐摸到灵力流转的门径——几项属性竟有所精进。", effects: { flags: { metMentor: true }, attrs: { vision: 2, iq: 2 }, reputation: 3 } },
-        fail: { text: "残卷字迹漫漶，你看了半宿也没悟出什么。老人叹气，拂袖而去。", effects: { flags: { metMentor: true } } },
-        critical: { text: "【灵光一闪】残卷末页忽现金光，一行字钻进你脑海：「五行相生，球道通焉。」你顿悟般通了周身灵脉！", effects: { flags: { metMentor: true, insight: true }, attrs: { vision: 3, iq: 3, rhythm: 2 }, reputation: 6 } }
+      { id: "A", when: { flag: "school_local" }, text: "恭敬接过，拜谢前辈指点", check: { attrs: ["iq", "vision"], difficulty: 25, tag: "球商+视野" }, next: "ch1_train_02",
+        success: { text: "原来老人是庙祝的旧识、退役名宿老沈，听闻你是庙祝作保的孩子，抚须而笑：「好苗子。」那夜你挑灯翻阅《球经残卷》，隐隐摸到灵力流转的门径——几项属性竟有所精进。", effects: { flags: { metMentor: true }, attrs: { vision: 2, iq: 2 }, reputation: 3 } },
+        fail: { text: "残卷字迹漫漶，你看了半宿也没悟出什么。老沈叹气，拂袖而去。", effects: { flags: { metMentor: true } } },
+        critical: { text: "【灵光一闪】残卷末页忽现金光，一行字钻进你脑海：「五行相生，球道通焉。」你顿悟般通了周身灵脉！老沈惊呼：「此子根骨，百年一遇！」", effects: { flags: { metMentor: true, insight: true }, attrs: { vision: 3, iq: 3, rhythm: 2 }, reputation: 6 } }
       },
-      { id: "B", text: "婉拒——我自己摸索出来的路才走得踏实", effects: { flags: { refusedMentor: true }, stamina: -5, attrs: { resolve: 1 } }, next: "ch1_train_02" }
+      { id: "B", when: { flag: "school_local" }, text: "婉拒——我自己摸索出来的路才走得踏实", effects: { flags: { refusedMentor: true }, stamina: -5, attrs: { resolve: 1 } }, next: "ch1_train_02" },
+      { id: "C", when: { flag: "school_capital" }, text: "恭敬接过，拜谢前辈指点", check: { attrs: ["iq", "vision"], difficulty: 28, tag: "球商+视野" }, next: "ch1_train_02",
+        success: { text: "原来老人竟是书院退役的老教头，早就看出你是野路子出身。他递来的《赤焰训录》里，记着帝都最正统的灵力运用之法。你日夜研读，几项属性竟有所精进。", effects: { flags: { metMentor: true }, attrs: { vision: 2, iq: 2 }, reputation: 4 } },
+        fail: { text: "《赤焰训录》满篇帝都官话与灵诀术语，你看了半宿也没悟出什么。老教头摇头而去：「野路子，终究是野路子。」", effects: { flags: { metMentor: true }, demonValue: 2 } },
+        critical: { text: "【灵光一闪】训录末页一幅灵力流转图在你脑中活了过来：「五行相生，球道通焉。」你顿悟般通了周身灵脉！老教头失声道：「此子……竟无师自通！」", effects: { flags: { metMentor: true, insight: true }, attrs: { vision: 3, iq: 3, rhythm: 2 }, reputation: 8 } }
+      },
+      { id: "D", when: { flag: "school_capital" }, text: "婉拒——在帝都，我只信自己的踢法", effects: { flags: { refusedMentor: true }, stamina: -5, attrs: { resolve: 1 } }, next: "ch1_train_02" }
     ]
   },
 
@@ -345,7 +384,7 @@ window.CHAPTER1 = { events: [
       "窗外，青云城的雪落了下来。你想起蹴鞠庙那块亮起的测灵石——一切，都从那一道光开始。"
     ],
     system: "【第一章·觉醒 完。你的灵根已成形，接下来，是职业联赛的淬炼。】",
-    effects: { chapter: 2, age: 17 },
+    effects: { chapter: 1, age: 3 },
     next: "ch2_opening"
   }
 
