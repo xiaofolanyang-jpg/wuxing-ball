@@ -39,16 +39,16 @@ window.CHAPTER6 = { events: [
     text: "摸底测试。你第一次踏上悬空球场的草皮，脚底能感觉到平台在风里微微发颤。海拔太高，跑两步嗓子就发紧。抽签分到的对手是个火灵根少年，黑瘦，话少，热身时一直拿额头撞门柱，咚、咚、咚，像在给什么上发条。",
     opponent: { name: "淬炼营·火灵根少年", element: "火", strength: 48 },
     fallback_choices: [
-      { id: "A", sit: "attack", text: "先声夺人，抢攻破门", check: { attrs: ["shooting", "burst"], difficulty: 42, tag: "射门+爆发" },
+      { id: "A", sit: "attack", text: "先声夺人，抢攻破门", check: { attrs: ["shooting", "burst"], difficulty: 39, tag: "射门+爆发" },
         success: { text: "你{elementAdj}地一脚冷射，率先破门！摸底测试，先拔头筹。", effects: { reputation: 8, goals: 1, attrs: { shooting: 1 } } },
         fail: { text: "射门被对方门将扑出。", effects: { stamina: -5 } },
         critical: { text: "【灵光一闪】开场闪击！姜太虚微微颔首：「有点意思。」", effects: { reputation: 14, goals: 1, attrs: { shooting: 2 }, flags: { keySuccess: true } } }
       },
-      { id: "B", sit: "balanced", text: "稳扎稳打，控制中场", check: { attrs: ["passing", "iq"], difficulty: 38, tag: "传球+球商" },
+      { id: "B", sit: "balanced", text: "稳扎稳打，控制中场", check: { attrs: ["passing", "iq"], difficulty: 35, tag: "传球+球商" },
         success: { text: "你牢牢掌控中场节奏，对手有力使不出。", effects: { reputation: 6, attrs: { iq: 1 } } },
         fail: { text: "中场被对方绞杀。", effects: { stamina: -4 } }
       },
-      { id: "C", sit: "defense", text: "稳固防守，伺机反击", check: { attrs: ["tackle", "positioning"], difficulty: 34, tag: "铲断+站位" },
+      { id: "C", sit: "defense", text: "稳固防守，伺机反击", check: { attrs: ["tackle", "positioning"], difficulty: 31, tag: "铲断+站位" },
         success: { text: "你防守滴水不漏，反击中制造杀机。", effects: { reputation: 5, attrs: { positioning: 1 } } },
         fail: { text: "防守中被对方偷了一个。", effects: { stamina: -5 } }
       }
@@ -71,12 +71,12 @@ window.CHAPTER6 = { events: [
       "你的对手是个木灵根少年，比你矮半个头，站在对面一直在搓手指，指节搓得发红。「那、那个，」他清了清嗓子，「请多指教。」你活动了一下脚踝，听见自己的关节咔嗒响了一声。这一场，先找节奏。"
     ],
     choices: [
-      { id: "A", text: "正面突破，一力降十会", check: { attrs: ["dribble", "speed"], difficulty: 36, tag: "盘带+速度" }, next: "ch6_duel2",
+      { id: "A", text: "正面突破，一力降十会", check: { attrs: ["dribble", "speed"], difficulty: 33, tag: "盘带+速度" }, next: "ch6_duel2",
         success: { text: "你一个变向晃开对手，推射入网。干净利落。", effects: { reputation: 6, goals: 1, attrs: { dribble: 1 } } },
         fail: { text: "对手预判了你的突破，将球断下。", effects: { stamina: -4 } },
         critical: { text: "【灵光一闪】三连变向，对手脚踝都被晃开了！全场侧目。", effects: { reputation: 12, goals: 1, attrs: { dribble: 2 } } }
       },
-      { id: "B", text: "假动作晃开空间，从容起脚", check: { attrs: ["shooting", "iq"], difficulty: 38, tag: "射门+球商" }, next: "ch6_duel2",
+      { id: "B", text: "假动作晃开空间，从容起脚", check: { attrs: ["shooting", "iq"], difficulty: 35, tag: "射门+球商" }, next: "ch6_duel2",
         success: { text: "你假射真扣，晃开角度后冷静推射。", effects: { reputation: 6, goals: 1, attrs: { shooting: 1 } } },
         fail: { text: "假动作被识破。", effects: { stamina: -4 } }
       }
@@ -92,38 +92,38 @@ window.CHAPTER6 = { events: [
       "他歪着头打量你，脖颈左右一拧，骨节咔咔地响了一串。「听说你过人挺花。」他吐了口气，白雾散在冷空气里，「待会儿你变向的时候，留意一下自己脚踝。别崴了，我可不扶。」你胃里紧了一下。这个人的水平，跟你差不多。"
     ],
     choices: [
-      { id: "A", text: "以快打慢，抢在他出脚前突破", check: { attrs: ["speed", "burst"], difficulty: 44, tag: "速度+爆发" }, next: "ch6_duel3",
+      { id: "A", text: "以快打慢，抢在他出脚前突破", check: { attrs: ["speed", "burst"], difficulty: 41, tag: "速度+爆发" }, next: "ch6_duel3",
         success: { text: "你抢在他出脚的刹那趟球过人，单刀破门！", effects: { reputation: 8, goals: 1, attrs: { speed: 1 } } },
         fail: { text: "他出脚更快，一记凶狠铲断将球破坏。", effects: { stamina: -6 } },
         critical: { text: "【灵光一闪】你快如闪电，他连你的衣角都没碰到！", effects: { reputation: 14, goals: 1, attrs: { speed: 2 } } }
       },
-      { id: "B", text: "节奏变化，诱他出脚再过人", check: { attrs: ["dribble", "iq"], difficulty: 42, tag: "盘带+球商" }, next: "ch6_duel3",
+      { id: "B", text: "节奏变化，诱他出脚再过人", check: { attrs: ["dribble", "iq"], difficulty: 39, tag: "盘带+球商" }, next: "ch6_duel3",
         success: { text: "你忽快忽慢，诱他出脚后一个变向抹过，推射入网。", effects: { reputation: 8, goals: 1, attrs: { dribble: 1 } } },
         fail: { text: "他不上当，稳稳卡住位置。", effects: { stamina: -5 } }
       },
-      { id: "C", text: "拉开距离，直接起脚远射", check: { attrs: ["shooting", "power"], difficulty: 45, tag: "射门+力量" }, next: "ch6_duel3",
+      { id: "C", text: "拉开距离，直接起脚远射", check: { attrs: ["shooting", "power"], difficulty: 42, tag: "射门+力量" }, next: "ch6_duel3",
         success: { text: "你拉开空间拔脚怒射，皮球轰入死角！", effects: { reputation: 9, goals: 1, attrs: { shooting: 1 } } },
         fail: { text: "远射被他飞身封堵。", effects: { stamina: -5 } }
       }
     ]
   },
 
-  // 1v1第3场·复仇赛（可指定对手·赵凛）
+  // 1v1第3场·复仇赛（可指定对手·武石）
   {
     id: "ch6_duel3",
     chapter: 6,
     text: [
       "第3周最后一轮。复仇赛，可以点名。你还没开口，目光已经先你一步越过了人群。",
-      "赵凛正在场边拿鞋钉刮鞋底的血渍，感觉到你的视线，抬起头。两个人隔着二十米对视了三秒。他把鞋往地上一摔，朝你走过来，嘴角带着那种你熟悉的、欠揍的笑：「等你这句话等了一礼拜了。」",
+      "武石正在场边拿鞋钉刮鞋底的血渍，感觉到你的视线，抬起头。两个人隔着二十米对视了三秒。他把鞋往地上一摔，朝你走过来，嘴角带着那种你熟悉的、欠揍的笑：「等你这句话等了一礼拜了。」",
       "周围安静下来。连风都好像歇了一口气。没人起哄，没人议论。该看的都写在脸上了。"
     ],
     choices: [
-      { id: "A", text: "指定赵凛：新仇旧恨，一次算清", check: { attrs: ["shooting", "resolve"], difficulty: 48, tag: "射门+决断" }, next: "ch6_2v2_1",
-        success: { text: "决胜回合，你{elementAdj}地一脚爆射洞穿十指关！赵凛，这次是你赢了。", effects: { reputation: 12, goals: 1, bonds: { zhaolin: 15 }, attrs: { shooting: 1 } } },
-        fail: { text: "赵凛预判了你的射门，将球扑出。他冷笑：「你还是太嫩。」", effects: { stamina: -6, demonValue: 5 } },
-        critical: { text: "【灵光一闪】你在赵凛面前轰出惊天世界波！他怔立当场，久久无言。", effects: { reputation: 20, goals: 1, bonds: { zhaolin: 20 }, attrs: { shooting: 2 }, flags: { keySuccess: true } } }
+      { id: "A", text: "指定武石：新仇旧恨，一次算清", check: { attrs: ["shooting", "resolve"], difficulty: 45, tag: "射门+决断" }, next: "ch6_2v2_1",
+        success: { text: "决胜回合，你{elementAdj}地一脚爆射洞穿十指关！武石，这次是你赢了。", effects: { reputation: 12, goals: 1, bonds: { zhaolin: 15 }, attrs: { shooting: 1 } } },
+        fail: { text: "武石预判了你的射门，将球扑出。他冷笑：「你还是太嫩。」", effects: { stamina: -6, demonValue: 5 } },
+        critical: { text: "【灵光一闪】你在武石面前轰出惊天世界波！他怔立当场，久久无言。", effects: { reputation: 20, goals: 1, bonds: { zhaolin: 20 }, attrs: { shooting: 2 }, flags: { keySuccess: true } } }
       },
-      { id: "B", text: "指定另一名强者，避开赵凛锋芒", check: { attrs: ["dribble", "speed"], difficulty: 42, tag: "盘带+速度" }, next: "ch6_2v2_1",
+      { id: "B", text: "指定另一名强者，避开武石锋芒", check: { attrs: ["dribble", "speed"], difficulty: 39, tag: "盘带+速度" }, next: "ch6_2v2_1",
         success: { text: "你击败指定对手，稳稳拿下一分。", effects: { reputation: 7, goals: 1, attrs: { dribble: 1 } } },
         fail: { text: "对手实力不俗，你惜败。", effects: { stamina: -5 } }
       }
@@ -139,11 +139,11 @@ window.CHAPTER6 = { events: [
       "姜太虚在场边嗑瓜子：「嫌搭档不好？换？没得换。」他把瓜子壳吐在地上，「跟谁搭都能赢的，才叫本事。去吧。」"
     ],
     choices: [
-      { id: "A", text: "主动沟通，快速建立默契", check: { attrs: ["iq", "passing"], difficulty: 40, tag: "球商+传球" }, next: "ch6_2v2_2",
+      { id: "A", text: "主动沟通，快速建立默契", check: { attrs: ["iq", "passing"], difficulty: 37, tag: "球商+传球" }, next: "ch6_2v2_2",
         success: { text: "你与搭档迅速找到配合节奏，一记撞墙配合后破门！", effects: { reputation: 7, goals: 1, attrs: { passing: 1 } } },
         fail: { text: "沟通不畅，配合生疏，被对手抓住破绽。", effects: { stamina: -5 } }
       },
-      { id: "B", text: "各自为战，靠个人能力解决", check: { attrs: ["dribble", "shooting"], difficulty: 44, tag: "盘带+射门" }, next: "ch6_2v2_2",
+      { id: "B", text: "各自为战，靠个人能力解决", check: { attrs: ["dribble", "shooting"], difficulty: 41, tag: "盘带+射门" }, next: "ch6_2v2_2",
         success: { text: "你单骑闯关，硬生生撕开对手防线破门！", effects: { reputation: 8, goals: 1, attrs: { dribble: 1 } } },
         fail: { text: "独木难支，你被双人包夹断球。", effects: { stamina: -6 } }
       }
@@ -156,16 +156,16 @@ window.CHAPTER6 = { events: [
     chapter: 6,
     text: [
       "第5周，2v2自由组队。姜太虚说完「自己找搭档」三个字就不管了，背着手走了。",
-      "阿贵小跑过来，还没站定就开始说：「咱俩搭吧？我跑得快，你传给我就行，不用传太准，我接得住，接不住我再跑一趟——」他搓着手，语速越来越快。远处，林啸抱着胳膊靠在崖壁上，没过来，但目光一直跟着你。他冲你点了一下下巴，很轻，像是怕被人看见。",
+      "范志贵小跑过来，还没站定就开始说：「咱俩搭吧？我跑得快，你传给我就行，不用传太准，我接得住，接不住我再跑一趟——」他搓着手，语速越来越快。远处，内牛尔抱着胳膊靠在崖壁上，没过来，但目光一直跟着你。他冲你点了一下下巴，很轻，像是怕被人看见。",
       "你朝谁走过去，就是把后背交给谁。"
     ],
     choices: [
-      { id: "A", text: "选阿贵：兄弟齐心，其利断金", check: { attrs: ["speed", "passing"], difficulty: 38, tag: "速度+传球" }, next: "ch6_wuxing",
-        success: { text: "阿贵不知疲倦的跑动扯开空当，你心领神会破门！", effects: { reputation: 7, goals: 1, bonds: { agui: 12 }, attrs: { speed: 1 } } },
+      { id: "A", text: "选阿贵：兄弟齐心，其利断金", check: { attrs: ["speed", "passing"], difficulty: 35, tag: "速度+传球" }, next: "ch6_wuxing",
+        success: { text: "范志贵不知疲倦的跑动扯开空当，你心领神会破门！", effects: { reputation: 7, goals: 1, bonds: { agui: 12 }, attrs: { speed: 1 } } },
         fail: { text: "配合稍显急躁，错失良机。", effects: { stamina: -4 } }
       },
-      { id: "B", text: "选林啸：风火连城，快如闪电", check: { attrs: ["speed", "burst"], difficulty: 42, tag: "速度+爆发" }, next: "ch6_wuxing",
-        success: { text: "你与林啸双翼齐飞，对手只看到两道残影！", effects: { reputation: 8, goals: 1, bonds: { linxiao: 12 }, attrs: { speed: 1 } } },
+      { id: "B", text: "选内牛尔：风火连城，快如闪电", check: { attrs: ["speed", "burst"], difficulty: 39, tag: "速度+爆发" }, next: "ch6_wuxing",
+        success: { text: "你与内牛尔双翼齐飞，对手只看到两道残影！", effects: { reputation: 8, goals: 1, bonds: { linxiao: 12 }, attrs: { speed: 1 } } },
         fail: { text: "两人都想当主角，配合脱节。", effects: { stamina: -5 } }
       }
     ]
@@ -181,7 +181,7 @@ window.CHAPTER6 = { events: [
       "你踏进阵的那一刻，耳膜嗡了一下。灵力不是涌过来的，是压过来的，像有人拿手掌按住你的胸骨。五行生克的力道在脚底下转，你踩错一步就会被弹出去。"
     ],
     choices: [
-      { id: "A", text: "以本命灵根为引，稳扎稳打闯阵", check: { attrs: ["resolve", "iq"], difficulty: 46, tag: "决断+球商" }, next: "ch6_night",
+      { id: "A", text: "以本命灵根为引，稳扎稳打闯阵", check: { attrs: ["resolve", "iq"], difficulty: 43, tag: "决断+球商" }, next: "ch6_night",
         success: { text: "你以本命灵根为锚，逐一破解五行生克，闯过三阵！姜太虚微微颔首。", effects: { reputation: 10, attrs: { resolve: 1, iq: 1 } } },
         fail: { text: "你在第二阵被相克之力困住，险些出局，勉强撑过。", effects: { stamina: -10, demonValue: 4 } },
         critical: { text: "【灵光一闪】你竟在阵中悟出五行相生之理，五阵全过！姜太虚眼中精光一闪：「孺子可教。」", effects: { reputation: 18, attrs: { resolve: 2, iq: 2 }, flags: { wuxingInsight: true, keySuccess: true } } }
@@ -198,7 +198,7 @@ window.CHAPTER6 = { events: [
     id: "ch6_night",
     chapter: 6,
     text: [
-      "夜里十一点半，你睡不着，套上鞋去了球场。月光把草皮照得发白，呼出的气一团一团散在面前。你拿球往墙上踢，砰——echo 从对面的崖壁弹回来，隔了半秒，砰。像有人在跟你对练。",
+      "夜里十一点半，你睡不着，套上鞋去了球场。月光把草皮照得发白，呼出的气一团一团散在面前。你拿球往墙上踢，砰——回声从对面的崖壁弹回来，隔了半秒，砰。像有人在跟你对练。",
       "脚背抽得生疼，但停不下来。你想起矿坑边上那个下午，也是这么踢的，对着一面土墙，球是破布缠的，踢飞了得下坑去捡。十年了。动作没变过。",
       "大腿在发抖。肺里全是冷风。你跟自己说：再来一组。声音很轻，像是怕被谁听见。"
     ],

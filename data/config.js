@@ -22,13 +22,15 @@ window.CONFIG = {
     "土": { name: "土", skill: "不动如山", desc: "抢点嗅觉、定位球轰炸" }
   },
   quality: {
-    heaven: { name: "天品", mult: 2,     prob: 0.05 },
-    dual:   { name: "双灵根", mult: 1.5,   prob: 0.30 },
-    triple: { name: "三灵根", mult: 1.333, prob: 0.40 },
-    mixed:  { name: "杂灵根", mult: 1.2,   prob: 0.25 }
+    heaven: { name: "天品", mult: 2,     prob: 0.05, nonAffinityCap: 55 },
+    dual:   { name: "双灵根", mult: 1.5,   prob: 0.30, nonAffinityCap: 65 },
+    triple: { name: "三灵根", mult: 1.333, prob: 0.40, nonAffinityCap: 75 },
+    mixed:  { name: "杂灵根", mult: 1.2,   prob: 0.25, nonAffinityCap: 100 }
   },
-  // 非亲和属性加点倍率（问题1：逆灵根修炼变慢，灵根是“顺风”而非“锁死”）
+  // 非亲和属性加点倍率（灵根是“顺风”而非“锁死”）
   nonAffinityMult: 0.8,
+  // 属性全局上限（灵根锁：非亲和属性受 quality.nonAffinityCap 约束）
+  attrMax: 100,
   elementOrder: ["金", "木", "水", "火", "土"],
   elementEn: { "金": "metal", "木": "wood", "水": "water", "火": "fire", "土": "earth" },
   realm: [
@@ -36,14 +38,44 @@ window.CONFIG = {
     { name: "凝形", min: 20, max: 44 },
     { name: "通脉", min: 45, max: 69 },
     { name: "化域", min: 70, max: 89 },
-    { name: "天人合一", min: 90, max: 999 }
+    { name: "天人合一", min: 90, max: 100 }
   ],
-  baseTrainPoints: 3,
-  baseCheckChance: 0.5,
-  checkSlope: 0.01,
-  critChance: 0.05,
-  clampMin: 0.05,
+  // 五行共鸣（杂灵根后期核心机制：多属性达到高境界时触发检定加成）
+  resonance: [
+    { realmMin: 45, countMin: 8,  bonus: 0.04, label: "五行初通" },
+    { realmMin: 45, countMin: 16, bonus: 0.08, label: "五行流转" },
+    { realmMin: 70, countMin: 12, bonus: 0.12, label: "五行归一" },
+    { realmMin: 90, countMin: 8,  bonus: 0.15, label: "天人合道" }
+  ],
+  baseTrainPoints: 4,
+  baseCheckChance: 0.55,
+  checkSlope: 0.015,
+  // 暴击概率 = critBase + 成功率 × critScale（成长越高暴击越多）
+  critBase: 0.02,
+  critScale: 0.06,
+  clampMin: 0.08,
   clampMax: 0.95,
+  // 心魔值系统（梯度惩罚 + 坏结局触发）
+  demonBadEndThreshold: 60,   // 心魔值≥此值触发坏结局
+  demonDecayPerRound: 1,      // 每回合自然衰减
+  demonOnD: 12,               // D评级增量
+  demonOnLose: 4,             // 输球增量
+  demonOnDraw: 2,             // 平局增量
+  demonOnKeyFail: 2,          // 关键时刻失败增量
+  demonThresholds: [
+    { min: 45, penalty: 0.10, label: "心魔噬心" },
+    { min: 30, penalty: 0.06, label: "心魔侵蚀" },
+    { min: 15, penalty: 0.03, label: "心魔低语" }
+  ],
+  // 体力约束系统（梯度惩罚 + 强制休息）
+  staminaRegenPerRound: 10,   // 每回合自动恢复
+  staminaCollapseThreshold: 10, // 低于此值强制休息
+  staminaCollapseRecover: 40,   // 强制休息后恢复到此值
+  staminaThresholds: [
+    { max: 10, penalty: 0.12, label: "强弩之末" },
+    { max: 30, penalty: 0.07, label: "体力告急" },
+    { max: 50, penalty: 0.03, label: "略显疲态" }
+  ],
   sheng: { "水": "木", "木": "火", "火": "土", "土": "金", "金": "水" },
   ke:   { "水": "火", "火": "金", "金": "木", "木": "土", "土": "水" },
   typeSpeed: 32,
@@ -61,35 +93,37 @@ window.CONFIG = {
   },
   // 羁绊系统（设计稿第五章·羁绊与技能系统）
   // threshold: 解锁所需进度值；bonus: 解锁后比赛检定成功率加成
+  // bondBonusCap: 羁绊总加成上限，防止后期叠加后检定失去悬念
+  bondBonusCap: 0.20,
   bonds: {
     agui: {
-      name: "金兰之交", type: "队友羁绊", target: "阿贵",
+      name: "金兰之交", type: "队友羁绊", target: "范志贵",
       threshold: 30, bonus: 0.05,
-      effect: "阿贵在场时，比赛检定+5%",
+      effect: "范志贵在场时，比赛检定+5%（发小默认在场）",
       story: "当年荒球场上一起踢破布球的发小，如今铺盖就摆在你对床。有他在身后，你什么都不怕。"
     },
     zhaolin: {
-      name: "既生瑜何生亮", type: "宿敌羁绊", target: "赵凛",
+      name: "既生瑜何生亮", type: "宿敌羁绊", target: "武石",
       threshold: 30, bonus: 0.10,
-      effect: "与赵凛交锋时，关键检定+10%",
+      effect: "与武石交锋时，关键检定+10%",
       story: "你们是天生的对手。有他没你，有你没他。每次碰面，都逼出更强的自己。"
     },
     canglan: {
-      name: "水火不容", type: "宿敌羁绊", target: "沧澜门将",
+      name: "水火不容", type: "宿敌羁绊", target: "布澜门将",
       threshold: 20, bonus: 0.10,
-      effect: "面对水灵根对手时，全属性+10%（愤怒加成）",
+      effect: "面对水灵根对手时，检定+10%（愤怒加成）",
       story: "又是他。上次那脚扑救，你记了整整三个月。"
     },
     linxiao: {
-      name: "风火连城", type: "队友羁绊", target: "林啸·边锋",
+      name: "风火连城", type: "队友羁绊", target: "内牛尔·边锋",
       threshold: 30, bonus: 0.08,
-      effect: "与林啸同场反击时，速度检定+8%",
+      effect: "与内牛尔同场时，比赛检定+8%",
       story: "他孤傲，但他的脚不会说谎。两道残影掠过中场，对方后卫只看到背影。"
     },
     suwan: {
-      name: "心有灵犀", type: "队友羁绊", target: "苏晚·前腰",
+      name: "心有灵犀", type: "队友羁绊", target: "苏雯·前腰",
       threshold: 30, bonus: 0.08,
-      effect: "苏晚传球给你时，射门检定+8%",
+      effect: "苏雯在场时，比赛检定+8%",
       story: "她不用看就知道你在哪。球到人到。"
     }
   },

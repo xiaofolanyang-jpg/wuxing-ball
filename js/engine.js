@@ -25,21 +25,63 @@
     if (opponentEl && st.rootType && CONFIG.ke[st.rootType] === opponentEl) {
       chance -= 0.10;
     }
-    // 羁绊加成（设计稿第五章·羁绊技能）：已解锁羁绊在对应条件下提升检定成功率
+    // 心魔梯度惩罚：心魔值越高，检定成功率越低
+    if (CONFIG.demonThresholds && (st.demonValue || 0) > 0) {
+      for (const t of CONFIG.demonThresholds) {
+        if (st.demonValue >= t.min) { chance -= t.penalty; break; }
+      }
+    }
+    // 体力梯度惩罚：体力越低，检定成功率越低
+    if (CONFIG.staminaThresholds) {
+      for (const t of CONFIG.staminaThresholds) {
+        if (st.stamina < t.max) { chance -= t.penalty; break; }
+      }
+    }
+    // 羁绊加成（设计稿第五章·羁绊技能）：已解锁羁绊在对应条件下提升检定成功率，总加成受 bondBonusCap 上限约束
     if (st.bondsUnlocked && st.bondsUnlocked.length && CONFIG.bonds) {
       const oppName = matchState ? matchState.opponentName : "";
+      let bondSum = 0;
       st.bondsUnlocked.forEach(bid => {
         const b = CONFIG.bonds[bid];
         if (!b || !b.bonus) return;
-        if (bid === "zhaolin" && oppName.indexOf("赵凛") < 0) return;
+        if (bid === "zhaolin" && oppName.indexOf("武石") < 0) return;
         if (bid === "canglan" && opponentEl !== "水") return;
-        chance += b.bonus;
+        bondSum += b.bonus;
       });
+      chance += Math.min(bondSum, CONFIG.bondBonusCap || 1);
     }
+    // 五行共鸣加成：多属性达到高境界时触发（杂灵根后期核心机制）
+    chance += getResonanceBonus();
     chance = Math.max(CONFIG.clampMin, Math.min(CONFIG.clampMax, chance));
 
-    if (Math.random() < CONFIG.critChance) return "critical";
+    // 暴击概率随成功率成长：高属性角色暴击率更高
+    const critChance = CONFIG.critBase + chance * CONFIG.critScale;
+    if (Math.random() < critChance) return "critical";
     return Math.random() < chance ? "success" : "fail";
+  }
+
+  /* ---------- 灵根锁：属性上限 ---------- */
+  // 亲和属性上限 = attrMax(100)；非亲和属性上限 = quality.nonAffinityCap
+  function getAttrCap(attrName) {
+    const st = global.State.current;
+    if (!st || !st.rootQuality) return CONFIG.attrMax || 100;
+    const el = global.State.attrToElement(attrName);
+    if (st.affinityElements && st.affinityElements.includes(el)) return CONFIG.attrMax || 100;
+    const q = CONFIG.quality[st.rootQuality];
+    return (q && q.nonAffinityCap !== undefined) ? q.nonAffinityCap : (CONFIG.attrMax || 100);
+  }
+
+  /* ---------- 五行共鸣：多属性达到高境界时触发检定加成 ---------- */
+  function getResonanceBonus() {
+    const st = global.State.current;
+    if (!CONFIG.resonance || !st || !st.attrs) return 0;
+    const vals = Object.values(st.attrs);
+    let best = 0;
+    for (const tier of CONFIG.resonance) {
+      const count = vals.filter(v => v >= tier.realmMin).length;
+      if (count >= tier.countMin && tier.bonus > best) best = tier.bonus;
+    }
+    return best;
   }
 
   /* ---------- 加点 ---------- */
@@ -48,7 +90,8 @@
     if (st.trainPoints <= 0) return false;
     const el = global.State.attrToElement(attrName);
     const mult = global.State.getMultiplier(el);
-    st.attrs[attrName] = Math.min(999, st.attrs[attrName] + mult);
+    const cap = getAttrCap(attrName);
+    st.attrs[attrName] = Math.min(cap, st.attrs[attrName] + mult);
     st.trainPoints -= 1;
     return true;
   }
@@ -62,7 +105,8 @@
       const el = global.State.attrToElement(a);
       const mult = global.State.getMultiplier(el);
       const gain = amount * mult;
-      st.attrs[a] = Math.min(999, (st.attrs[a] || 0) + gain);
+      const cap = getAttrCap(a);
+      st.attrs[a] = Math.min(cap, (st.attrs[a] || 0) + gain);
       parts.push(CONFIG.attrNames[a] + "+" + (Math.round(gain * 10) / 10));
     });
     return parts.join(" ");
@@ -96,13 +140,13 @@
     });
     if (effects.attrs) {
       Object.keys(effects.attrs).forEach(a => {
-        st.attrs[a] = Math.max(0, Math.min(999, (st.attrs[a] || 0) + effects.attrs[a]));
+        st.attrs[a] = Math.max(0, Math.min(getAttrCap(a), (st.attrs[a] || 0) + effects.attrs[a]));
       });
     }
     // 全属性百分比加成（设计稿第八章·心魔劫选项C：全属性+3%）
     if (effects.allAttrsPercent) {
       Object.keys(st.attrs).forEach(a => {
-        st.attrs[a] = Math.min(999, st.attrs[a] * (1 + effects.allAttrsPercent / 100));
+        st.attrs[a] = Math.min(getAttrCap(a), st.attrs[a] * (1 + effects.allAttrsPercent / 100));
       });
     }
     if (effects.flags) Object.assign(st.flags, effects.flags);
@@ -129,6 +173,14 @@
   function endRound() {
     const st = global.State.current;
     st.round += 1;
+    // 心魔自然衰减（不行动时心魔缓慢消退）
+    if (CONFIG.demonDecayPerRound && (st.demonValue || 0) > 0) {
+      st.demonValue = Math.max(0, st.demonValue - CONFIG.demonDecayPerRound);
+    }
+    // 体力每回合自动恢复
+    if (CONFIG.staminaRegenPerRound) {
+      st.stamina = Math.min(100, st.stamina + CONFIG.staminaRegenPerRound);
+    }
     global.State.refillTrainPoints();
     global.UI.updateStatus();
     autoSave(true);
@@ -309,6 +361,8 @@
           if (matchState.isKeyMoment) matchState.keySuccess++;
         } else {
           matchState.oppThreat += 1;
+          // 心魔值：关键时刻失败+2
+          if (matchState.isKeyMoment) global.State.current.demonValue = (global.State.current.demonValue || 0) + (CONFIG.demonOnKeyFail || 2);
         }
         if (matchState.isKeyMoment) matchState.keyAttempts++;
       }
@@ -332,6 +386,15 @@
      修炼面板
      ============================================================ */
   async function runTrain(ev) {
+    const st = global.State.current;
+    // 体力崩溃：强制休息，跳过训练，恢复体力
+    if (CONFIG.staminaCollapseThreshold && st.stamina < CONFIG.staminaCollapseThreshold) {
+      st.stamina = CONFIG.staminaCollapseRecover || 40;
+      global.UI.toast("体力透支，强制休息一回合（体力恢复至" + st.stamina + "）");
+      endRound();
+      if (ev.next) goto(ev.next);
+      return;
+    }
     await global.UI.showTrainPanel(ev);
     endRound();
     if (ev.next) goto(ev.next);
@@ -350,8 +413,10 @@
   }
 
   /* ---------- 比赛辅助（设计稿第五章） ---------- */
-  // 威胁值 → 弹性进球数
+  // 威胁值 → 弹性进球数（扩展上限，碾压局可打出4-5球）
   function threatToGoals(t) {
+    if (t >= 9) return 5;
+    if (t >= 7) return 4;
     if (t >= 5) return 3;
     if (t >= 3) return 2;
     if (t >= 1) return 1;
@@ -363,23 +428,23 @@
     if (matchState) global.UI.updateMatchHUD(matchState, threatToGoals(matchState.threat), threatToGoals(matchState.oppThreat));
   }
 
-  // 评级奖励表
+  // 评级奖励表（C级也给1自由点，减少挫败感）
   const RATING_REWARDS = {
     S: { points: 3, reputation: 15 },
     A: { points: 2, reputation: 10 },
     B: { points: 1, reputation: 5 },
-    C: { points: 0, reputation: 1 },
+    C: { points: 1, reputation: 1 },
     D: { points: 0, reputation: -3 }
   };
 
-  // 比赛评级：S(进球+助攻≥2且关键全成) / A(有进球或助攻且成功率>70%) / B(50-70%) / C(30-50%) / D(<30%)
+  // 比赛评级（纯表现导向）：S(100%成功且至少1关键成功) / A(rate>70%且有亮点) / B(≥45%) / C(≥25%) / D(<25%)
   function computeRating(ms) {
     const rate = ms.totalCount > 0 ? ms.successCount / ms.totalCount : 0;
     const ga = ms.goals + ms.assists;
-    if (ga >= 2 && ms.keyAttempts > 0 && ms.keySuccess >= ms.keyAttempts) return "S";
-    if (ga >= 1 && rate > 0.7) return "A";
-    if (rate >= 0.5) return "B";
-    if (rate >= 0.3) return "C";
+    if (rate >= 1 && ms.keyAttempts > 0 && ms.keySuccess >= 1) return "S";
+    if (rate > 0.7 && (ga >= 1 || ms.keySuccess >= 1)) return "A";
+    if (rate >= 0.45) return "B";
+    if (rate >= 0.25) return "C";
     return "D";
   }
 
@@ -449,8 +514,8 @@
     const ourRating = (ev.teamBase || 30) + attrAvg;
     const diff = ourRating - strength;
     let situation, difficultyMod, initOppThreat;
-    if (diff > 15) { situation = "strong"; difficultyMod = -5; initOppThreat = 0; }
-    else if (diff < -15) { situation = "weak"; difficultyMod = 5; initOppThreat = 2; }
+    if (diff > 15) { situation = "strong"; difficultyMod = -8; initOppThreat = 0; }
+    else if (diff < -15) { situation = "weak"; difficultyMod = 8; initOppThreat = 2; }
     else { situation = "even"; difficultyMod = 0; initOppThreat = 1; }
 
     matchState = {
@@ -478,9 +543,9 @@
     // 开启实时计分牌（比分 + 双方威胁值）
     global.UI.showMatchHUD(matchState, threatToGoals(matchState.threat), threatToGoals(matchState.oppThreat));
 
-    // 羁绊进度累积（设计稿第五章）：遇水灵根对手→水火不容；遇赵凛→既生瑜何生亮
+    // 羁绊进度累积（设计稿第五章）：遇水灵根对手→水火不容；遇武石→既生瑜何生亮
     if (opp.element === "水") addBondProgress("canglan", 10);
-    if ((opp.name || "").indexOf("赵凛") >= 0) addBondProgress("zhaolin", 15);
+    if ((opp.name || "").indexOf("武石") >= 0) addBondProgress("zhaolin", 15);
 
     // 玩家事件（位置池，抽 2 个）
     const poolId = buildPoolId(ev);
@@ -538,8 +603,11 @@
     const reward = RATING_REWARDS[rating];
     st.freePoints = (st.freePoints || 0) + reward.points;
     st.ratingDist[rating] = (st.ratingDist[rating] || 0) + 1;
-    // 设计稿第五章评级表：D 评级心魔值+10
-    if (rating === "D") st.demonValue = (st.demonValue || 0) + 10;
+    // 设计稿第五章评级表：D 评级心魔值+12
+    if (rating === "D") st.demonValue = (st.demonValue || 0) + (CONFIG.demonOnD || 12);
+    // 心魔值：输球+4，平局+2
+    if (branchKey === "lose") st.demonValue = (st.demonValue || 0) + (CONFIG.demonOnLose || 4);
+    else if (branchKey === "draw") st.demonValue = (st.demonValue || 0) + (CONFIG.demonOnDraw || 2);
     if (branchKey === "bigwin" || branchKey === "win") st.wins += 1;
 
     const result = (ev.result && ev.result[branchKey]) || { text: "比赛结束。", effects: {} };
@@ -597,8 +665,8 @@
       global.UI.updateStatus();
     }
     if (te.result) await global.UI.renderTextBlock(te.result, { system: true });
-    // 阿贵队友事件→金兰之交羁绊进度（设计稿第五章）
-    if (te.text && te.text.indexOf("阿贵") >= 0) addBondProgress("agui", 10);
+    // 范志贵队友事件→金兰之交羁绊进度（设计稿第五章）
+    if (te.who === "agui") addBondProgress("agui", 10);
     await global.UI.waitContinue();
   }
 
@@ -636,7 +704,7 @@
     const tongmai = attrVals.some(v => v >= 45);
     let target;
     // 心魔值满→强制黯然退场（设计稿第十章结局表：天劫失败/心魔满）
-    if ((st.demonValue || 0) >= 100) {
+    if ((st.demonValue || 0) >= (CONFIG.demonBadEndThreshold || 60)) {
       target = "end_dusk";
     }
     // 杂灵根+五行归一→浪子回头（设计稿第十章：废根不废人）

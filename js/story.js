@@ -34,6 +34,14 @@
     if (global.CHAPTER8) registerEvents(global.CHAPTER8.events);
     if (global.CHAPTER9) registerEvents(global.CHAPTER9.events);
     if (global.CHAPTER10) registerEvents(global.CHAPTER10.events);
+    if (global.CHAPTER11) registerEvents(global.CHAPTER11.events);
+    if (global.CHAPTER12) registerEvents(global.CHAPTER12.events);
+    if (global.CHAPTER13) registerEvents(global.CHAPTER13.events);
+    if (global.CHAPTER14) registerEvents(global.CHAPTER14.events);
+    if (global.CHAPTER15) registerEvents(global.CHAPTER15.events);
+    if (global.CHAPTER16) registerEvents(global.CHAPTER16.events);
+    if (global.CHAPTER17) registerEvents(global.CHAPTER17.events);
+    if (global.CHAPTER18) registerEvents(global.CHAPTER18.events);
     if (global.ENDINGS)  registerEvents(global.ENDINGS.events);
     if (global.MATCH_POOLS) registerMatchPools(global.MATCH_POOLS);
   }

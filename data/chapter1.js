@@ -176,13 +176,13 @@ window.CHAPTER1 = { events: [
     ]
   },
 
-  // 4c. 入学·认识室友阿贵（设计稿第二章事件4：阿贵同校自动同宿舍）
+  // 4c. 入学·认识室友范志贵（设计稿第二章事件4：范志贵同校自动同宿舍）
   {
     id: "ch1_roommate",
     chapter: 1,
     text: [
       "报到那天，你拎着行囊找宿舍。走廊里一股子新被褥的浆洗味，混着谁的臭袜子。还没推门呢，里头就炸开一嗓子——",
-      "门从里头猛地拉开，差点怼你脸上。黑壮少年，一脸横肉挤成笑：「我操！你也来了！」阿贵。当年荒球场上一起踢破布球的发小，如今铺盖就摆你对床。",
+      "门从里头猛地拉开，差点怼你脸上。黑壮少年，一脸横肉挤成笑：「我操！你也来了！」范志贵。当年荒球场上一起踢破布球的发小，如今铺盖就摆你对床。",
       "他照你肩膀就是一拳，劲儿大得你踉跄半步。「太好了太好了！」他搓着手，笑得眼睛眯成一条缝，「往后咱哥俩有个照应。你负责进球，我负责给你跑位、拉扯——我这体力，全宿舍你找不出第二个！」他拍着胸脯，砰砰响。"
     ],
     system: "【室友·阿贵 加入你的青训岁月。往后的比赛里，他会不知疲倦地为你奔跑拉扯。】",
@@ -224,9 +224,9 @@ window.CHAPTER1 = { events: [
     text: [
       "第二个月，队内对抗。你撞上了一个硬茬。",
       "那人比同龄人高半头，肩膀宽，眼神带着刺。你一个变向还没做完，他一脚铲过来——连人带球。你后脑勺磕在草皮上，嘴里全是土腥味。他俯下身，影子罩住你，嘴角一挑：「天品？灵根克你，就是废物。」语气不重，像在说个事实。",
-      "铁叔把你拽起来，拍了拍你后背的草屑。他声音压得很低：「赵凛。{elementAdj}的性子，专挑你灵根克。记住今天。」他顿了顿，「往后你俩还要碰。不止一次。」"
+      "铁叔把你拽起来，拍了拍你后背的草屑。他声音压得很低：「武石。{elementAdj}的性子，专挑你灵根克。记住今天。」他顿了顿，「往后你俩还要碰。不止一次。」"
     ],
-    system: "【宿敌·赵凛 已记入名册。灵根相克：他被你克，或你被他克，赛场相见见真章。】",
+    system: "【宿敌·武石 已记入名册。灵根相克：他被你克，或你被他克，赛场相见见真章。】",
     choices: [
       { id: "A", text: "咬牙咽下，记仇——来日方长", effects: { relationships: { rival: -20 }, flags: { rivalGrudge: true } }, next: "ch1_mentor_event" },
       { id: "B", text: "当场约战，三个月后再分高下", effects: { relationships: { rival: -10 }, flags: { rivalChallenge: true }, reputation: 5 }, next: "ch1_mentor_event" }
@@ -242,13 +242,13 @@ window.CHAPTER1 = { events: [
       "他忽然开口，嗓子哑得像砂纸：「野路子。」顿了顿，拐杖在地上笃了笃，「根基不稳。再练十年，也是花架子。」他随手扔来一本发黄的小册子，你差点没接住。「老夫姓沈。年轻时也踢过几年……跟青云城蹴鞠庙有些旧交。这册子你拿去，前人怎么借五行之力，里头记着。能不能悟，看你自己。」"
     ],
     choices: [
-      { id: "A", when: { flag: "school_local" }, text: "恭敬接过，拜谢前辈指点", check: { attrs: ["iq", "vision"], difficulty: 25, tag: "球商+视野" }, next: "ch1_train_02",
+      { id: "A", when: { flag: "school_local" }, text: "恭敬接过，拜谢前辈指点", check: { attrs: ["iq", "vision"], difficulty: 15, tag: "球商+视野" }, next: "ch1_train_02",
         success: { text: "老人是庙祝的旧识，退役名宿老沈。他听你是庙祝作保的孩子，拿拐杖点了点你：「行，坐下。」那夜你挑灯翻《球经残卷》，纸页脆得一碰就掉渣。看着看着，忽然摸到点灵力流转的门道——说不清，但身上几处经脉确实松快了。", effects: { flags: { metMentor: true }, attrs: { vision: 2, iq: 2 }, reputation: 3 } },
         fail: { text: "残卷字迹漫漶，墨迹洇成一团一团的。你看了半宿，眼睛酸得流泪，什么也没悟出来。老沈站在门口叹了口气，没说话，拄着杖走了。雨还在下。", effects: { flags: { metMentor: true } } },
         critical: { text: "【灵光一闪】翻到末页，纸角卷着一行小字，你拿指甲刮开灰——「五行相生，球道通焉。」脑子里嗡的一声，像有人把一扇门踹开了。周身灵脉一齐通了。老沈拐杖掉在地上，他愣了半天：「……此子根骨，百年一遇。」", effects: { flags: { metMentor: true, insight: true }, attrs: { vision: 3, iq: 3, rhythm: 2 }, reputation: 6 } }
       },
       { id: "B", when: { flag: "school_local" }, text: "婉拒——我自己摸索出来的路才走得踏实", effects: { flags: { refusedMentor: true }, stamina: -5, attrs: { resolve: 1 } }, next: "ch1_train_02" },
-      { id: "C", when: { flag: "school_capital" }, text: "恭敬接过，拜谢前辈指点", check: { attrs: ["iq", "vision"], difficulty: 28, tag: "球商+视野" }, next: "ch1_train_02",
+      { id: "C", when: { flag: "school_capital" }, text: "恭敬接过，拜谢前辈指点", check: { attrs: ["iq", "vision"], difficulty: 18, tag: "球商+视野" }, next: "ch1_train_02",
         success: { text: "老人竟是书院退役的老教头。他早看出你是野路子出身，没点破，只是把《赤焰训录》递过来时多看了你一眼。你日夜研读，那些帝都正统的灵力运用之法，起初像天书，后来慢慢有了头绪。几项属性确实精进了。", effects: { flags: { metMentor: true }, attrs: { vision: 2, iq: 2 }, reputation: 4 } },
         fail: { text: "《赤焰训录》满篇官话和灵诀术语，你看了半宿，字都认识，连一块儿就不认识了。老教头第二天来收册子，翻了翻你画的笔记，摇摇头：「野路子……终究是野路子。」语气平淡，比骂你还难受。", effects: { flags: { metMentor: true }, demonValue: 2 } },
         critical: { text: "【灵光一闪】训录末页有幅灵力流转图，你盯着盯着，那图忽然在脑子里活了——经脉里的灵力自己动了起来。「五行相生，球道通焉。」你周身灵脉一齐贯通。老教头手里的茶盏啪地搁下：「此子……竟无师自通。」", effects: { flags: { metMentor: true, insight: true }, attrs: { vision: 3, iq: 3, rhythm: 2 }, reputation: 8 } }
@@ -275,17 +275,17 @@ window.CHAPTER1 = { events: [
     opponent: { name: "青训B队", element: "水", strength: 22 },
     pool: "youth",
     fallback_choices: [
-      { id: "A", text: "前场得球，抡腿就是一脚", check: { attrs: ["shooting", "burst"], difficulty: 30, tag: "射门+爆发" },
+      { id: "A", text: "前场得球，抡腿就是一脚", check: { attrs: ["shooting", "burst"], difficulty: 20, tag: "射门+爆发" },
         success: { text: "脚背吃准了部位，皮球带着{elementAdj}的弧线往死角钻。进了。网窝一抖，看台上嗷地一嗓子。你大腿肌肉还在发颤。", effects: { reputation: 8, attrs: { shooting: 1 } } },
         fail: { text: "脚背蹭偏了。皮球擦着门柱飞出去，带起一阵风。你懊恼地捶了下草皮，掌心扎了根草茎。", effects: { stamina: -5 } },
         critical: { text: "【灵光一闪】世界波。球带着{elementAdj}的尾迹，像颗炮弹砸进网窝，门将连手都没抬。看台上有人站起来了。", effects: { reputation: 15, attrs: { shooting: 2 } } }
       },
-      { id: "B", text: "接应队友，送一脚直塞", check: { attrs: ["passing", "vision"], difficulty: 28, tag: "传球+视野" },
+      { id: "B", text: "接应队友，送一脚直塞", check: { attrs: ["passing", "vision"], difficulty: 18, tag: "传球+视野" },
         success: { text: "你余光扫到队友的跑位，脚弓一推，皮球贴着草皮从两人缝隙里穿过去。队友迎球推射，进了。他跑过来拍你后脑勺——助攻到手。", effects: { reputation: 6, assists: 1, attrs: { passing: 1 } } },
         fail: { text: "传球意图太明显，对方后腰伸脚一挡，球断了。人家直接打反击，你回追得肺都要炸了。", effects: { stamina: -4 } },
         critical: { text: "【灵光一闪】手术刀。皮球从三个人中间穿过去，线路刁钻得像量过的。队友单刀推射。看台上有人嘀咕：「这球……水银泻地。」", effects: { reputation: 12, assists: 1, attrs: { passing: 2 } } }
       },
-      { id: "C", text: "回防拼抢，先稳住后场", check: { attrs: ["tackle", "strength"], difficulty: 26, tag: "铲断+对抗" },
+      { id: "C", text: "回防拼抢，先稳住后场", check: { attrs: ["tackle", "strength"], difficulty: 16, tag: "铲断+对抗" },
         success: { text: "你卡住身位，肩膀顶上去，脚下一勾——干净。球断了，人没倒。对方前锋愣在原地。看台上有人鼓掌。", effects: { reputation: 5, attrs: { tackle: 1 } } },
         fail: { text: "你冲上去，人家一个变向，你刹不住，肩膀撞了个空。球丢了。你趴在地上，嘴里全是草腥味。", effects: { stamina: -6 } },
         critical: { text: "【灵光一闪】铁壁。对方前锋连变两次向，你纹丝不动，等他露出破绽，一脚铲断连球带人。他爬起来直摇头。", effects: { reputation: 10, attrs: { tackle: 2 } } }
@@ -295,7 +295,7 @@ window.CHAPTER1 = { events: [
       bigwin: { text: "终场哨响。大胜。你弯着腰喘气，汗滴在草皮上。铁叔走过来，拍了下你肩膀，不重：「有点意思。」就这四个字，但你听出来了——他满意。", effects: { reputation: 8 } },
       win:     { text: "终场哨响，小胜一球。你拿袖子抹了把脸上的汗，咸的。腿酸，但心里踏实了点。", effects: { reputation: 4 } },
       draw:    { text: "平局。不算出彩，也不丢人。你坐在场边喝水，水顺着下巴滴在号衣上。", effects: { reputation: 1 } },
-      lose:    { text: "输了。你低着头走下场，耳朵里嗡嗡的。听见赵凛在笑，不大声，但就是让你听见了。", effects: { reputation: -3, stamina: -5 } }
+      lose:    { text: "输了。你低着头走下场，耳朵里嗡嗡的。听见武石在笑，不大声，但就是让你听见了。", effects: { reputation: -3, stamina: -5 } }
     },
     next: "ch1_playstyle"
   },
@@ -323,14 +323,14 @@ window.CHAPTER1 = { events: [
     id: "ch1_conflict",
     chapter: 1,
     text: [
-      "选拔在即。训练场上，赵凛一个肩膀把你队友撞翻在地，人仰马翻的。他没道歉，扭头看你，嘴角带着点意思。",
+      "选拔在即。训练场上，武石一个肩膀把你队友撞翻在地，人仰马翻的。他没道歉，扭头看你，嘴角带着点意思。",
       "铁叔不在。四周围了一圈人，没人吭声，都等着看你怎么接。风把草皮上的土吹起来，迷了眼。"
     ],
     choices: [
-      { id: "A", text: "当面理论，不怵他", check: { attrs: ["resolve", "strength"], difficulty: 30, tag: "决断+对抗" }, next: "ch1_train_05",
-        success: { text: "你往前走了一步。没喊，没骂，就那么看着他。赵凛嘴角的笑收了。他又看了你两秒，哼了一声，转身走了。你队友从地上爬起来，拍了拍屁股上的土，看你的眼神不一样了。", effects: { reputation: 6, relationships: { rival: -5 }, flags: { conflictWin: true } } },
-        fail: { text: "你上前理论，他伸手一推，你踉跄两步，屁股坐在地上。周围有人笑了一声。赵凛没再看你，大步走了。你坐在地上，手心撑着草皮，指甲掐进泥里。", effects: { reputation: -4, relationships: { rival: -10 }, flags: { conflictLose: true } } },
-        critical: { text: "【灵光一闪】你没动。你弯腰把你队友拉起来，拍了拍他后背，然后才看向赵凛。就这一弯腰一拉，四周围的人全站你这边了。赵凛脸色变了变，没说话，走了。", effects: { reputation: 12, flags: { conflictWin: true } } }
+      { id: "A", text: "当面理论，不怵他", check: { attrs: ["resolve", "strength"], difficulty: 20, tag: "决断+对抗" }, next: "ch1_train_05",
+        success: { text: "你往前走了一步。没喊，没骂，就那么看着他。武石嘴角的笑收了。他又看了你两秒，哼了一声，转身走了。你队友从地上爬起来，拍了拍屁股上的土，看你的眼神不一样了。", effects: { reputation: 6, relationships: { rival: -5 }, flags: { conflictWin: true } } },
+        fail: { text: "你上前理论，他伸手一推，你踉跄两步，屁股坐在地上。周围有人笑了一声。武石没再看你，大步走了。你坐在地上，手心撑着草皮，指甲掐进泥里。", effects: { reputation: -4, relationships: { rival: -10 }, flags: { conflictLose: true } } },
+        critical: { text: "【灵光一闪】你没动。你弯腰把你队友拉起来，拍了拍他后背，然后才看向武石。就这一弯腰一拉，四周围的人全站你这边了。武石脸色变了变，没说话，走了。", effects: { reputation: 12, flags: { conflictWin: true } } }
       },
       { id: "B", text: "忍下，把劲头留到选拔赛", effects: { flags: { conflictBide: true }, attrs: { resolve: 1 } }, next: "ch1_train_05" }
     ]
@@ -350,30 +350,30 @@ window.CHAPTER1 = { events: [
     id: "ch1_selection",
     chapter: 1,
     type: "match",
-    text: "选拔赛。对手是赵凛领衔的青训A队。你看台角落里有几个人低头写着什么——球探。你认得那种姿势。你深吸一口气，草皮的青涩味灌进肺里，踏上去了。",
-    opponent: { name: "青训A队·赵凛", element: "水", strength: 38 },
+    text: "选拔赛。对手是武石领衔的青训A队。你看台角落里有几个人低头写着什么——球探。你认得那种姿势。你深吸一口气，草皮的青涩味灌进肺里，踏上去了。",
+    opponent: { name: "青训A队·武石", element: "水", strength: 38 },
     fallback_choices: [
-      { id: "A", text: "接直塞，单刀", check: { attrs: ["speed", "burst"], difficulty: 38, tag: "速度+爆发" },
+      { id: "A", text: "接直塞，单刀", check: { attrs: ["speed", "burst"], difficulty: 28, tag: "速度+爆发" },
         success: { text: "球从身后塞过来，你{elementAdj}地一趟，后卫被你甩了半个身位。风灌进耳朵，什么都听不见了。面对门将，你推了个远角。进了。大腿酸得发抖。", effects: { reputation: 10, goals: 1, attrs: { speed: 1 } } },
         fail: { text: "你趟大了。后卫回追，一脚铲过来，连球带你铲出底线。你翻了个滚，肩膀磕在边线上，疼得龇牙。", effects: { stamina: -6 } },
         critical: { text: "【灵光一闪】反越位。你启动的那一瞬，后卫线还在往前压。单刀。你甚至有时间看一眼门将的重心，然后推了个反方向。全场站起来了。", effects: { reputation: 18, goals: 1, flags: { keySuccess: true } } }
       },
-      { id: "B", text: "角球前点，抢位头槌", check: { attrs: ["positioning", "heading"], difficulty: 33, tag: "站位+头球" },
+      { id: "B", text: "角球前点，抢位头槌", check: { attrs: ["positioning", "heading"], difficulty: 23, tag: "站位+头球" },
         success: { text: "角球开出来，你卡住前点，脚下一蹬，整个人拔起来。额头撞上皮球的那一刻，脖子震得发麻。球砸进网窝。你落地时膝盖一软，差点跪了。", effects: { reputation: 9, goals: 1, attrs: { heading: 1 } } },
         fail: { text: "起跳早了。你跳在空气里，皮球从头顶擦过去，后点的人也没接到。你落地时脚崴了一下。", effects: { stamina: -4 } },
         critical: { text: "【灵光一闪】你卡住位置，脚下一蹬，旱地拔葱。额头正正撞上皮球，力道大得你自己都吓了一跳。门将目送。网窝抖了半天。", effects: { reputation: 16, goals: 1, flags: { keySuccess: true } } }
       },
-      { id: "C", text: "回撤做墙，分边助攻", check: { attrs: ["passing", "vision"], difficulty: 35, tag: "传球+视野" },
+      { id: "C", text: "回撤做墙，分边助攻", check: { attrs: ["passing", "vision"], difficulty: 25, tag: "传球+视野" },
         success: { text: "你回撤两步，背身接球，肩膀扛住后卫。余光一扫，脚弓一推——斜塞。皮球从防线缝隙里穿过去，队友迎球单刀，推射。进了。他朝你跑过来，你俩撞了个胸。", effects: { reputation: 8, assists: 1, attrs: { passing: 1 } } },
         fail: { text: "你回撤接球，转身那一下被对方后腰卡住了。球断了。你伸手想拉，拉了个空。", effects: { stamina: -5 } },
         critical: { text: "【灵光一闪】你回撤接球，没转身，脚后跟一磕——球从你两腿中间穿过去，线路刁钻得不像话。队友单刀。看台上有人站起来鼓掌。", effects: { reputation: 14, assists: 1, flags: { keySuccess: true } } }
       }
     ],
     result: {
-      bigwin: { text: "终场哨响。大胜。你弯着腰，手撑膝盖，喘得说不出话。抬头看，球探们凑在一块儿嘀咕。赵凛站在中圈，脸铁青，一句话没有。你听见了什么在靠近——一线队的门。", effects: { reputation: 12, flags: { selected: true, keySuccess: true } } },
+      bigwin: { text: "终场哨响。大胜。你弯着腰，手撑膝盖，喘得说不出话。抬头看，球探们凑在一块儿嘀咕。武石站在中圈，脸铁青，一句话没有。你听见了什么在靠近——一线队的门。", effects: { reputation: 12, flags: { selected: true, keySuccess: true } } },
       win:     { text: "小胜一球。你拿袖子擦汗，眯着眼往看台角落瞅——球探点了点头，笔在名册上圈了个什么。你心里咯噔一下。", effects: { reputation: 6, flags: { selected: true } } },
       draw:    { text: "平局。你踢得不差，但也不够好。球探收了本子，没什么表情。你站在场上，风把汗吹凉了。", effects: { reputation: 2, flags: { selected: false } } },
-      lose:    { text: "输了。赵凛终场前一脚绝杀。你站在中圈，腿软得走不动道。看台角落空了——球探走了。", effects: { reputation: -5, stamina: -8, flags: { selected: false } } }
+      lose:    { text: "输了。武石终场前一脚绝杀。你站在中圈，腿软得走不动道。看台角落空了——球探走了。", effects: { reputation: -5, stamina: -8, flags: { selected: false } } }
     },
     next: "ch1_end"
   },

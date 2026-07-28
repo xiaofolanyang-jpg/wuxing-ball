@@ -1,154 +1,238 @@
-/* data/chapter10.js — 第十章《抉择·下》（设计稿第十章下半·20-26岁·终章）
- * 事件链：巅峰岔路 → 五行归一(杂灵根隐藏) → 伤病天劫 → 终极抉择(留守/远赴/退役/教练) → 复出抉择(退役线) → 告别赛 → 结局分发
- * 说明：终章。终极抉择设 choiceStay/choiceTianguang/choiceRetire/choiceCoach 四大旗标；
- *       退役线可复出(设 comeback)；杂灵根专属"五行归一"(设 wuxingGuiyi，when.mixedRoot)。
- *       ch10_end 为 ending_dispatch，由引擎 dispatchEnding 综合判定10种结局。
+/* data/chapter10.js — 第十章《异乡·扎根》（19岁·留洋篇·下）
+ * 事件链：第二年开场 → 替补登场(比赛) → 位置竞争 → 争夺主力 → 关键战(比赛·首粒正式进球) → 异乡挚友 → 卢卡配合(比赛) → 更衣室归属 → 国青征召 → 章末
+ * 说明：留洋第二年，从替补到主力。关键战奠定队内地位；国青征召引出世青赛（第十一章）。
+ *       扩写：补替补登场、位置竞争、与卢卡配合赛（呼应"心有灵犀"）、更衣室归属仪式。
+ *       章末仅 chapter+1（年龄保持19，世青赛跨年在第十一章末推进）。
  */
 window.CHAPTER10 = { events: [
 
-  // 开场：巅峰之上，岔路之前
+  // 开场：留洋第二年
   {
     id: "ch10_opening",
     chapter: 10,
     text: [
-      "二十岁到二十六岁。你把最好的年华踢进了每一座球场。",
-      "联赛冠军。洲际大赛。世界足球先生提名。荣誉陈列室里，奖杯映着冷光。你擦过它们，金属冰凉，没有温度。",
-      "只有你知道，每个深夜，膝盖的旧伤都在隐隐作痛。巅峰之上，风很冷。前方有四条路。每一条，都通向不同的人生。"
+      "留洋第二年。你已经能用当地话点餐、能听懂大半战术会议，却还没能在这支球队里，真正占到一块属于自己的草皮。",
+      "替补席的塑料座椅是凉的。每场比赛前，教练念首发名单，念到第七个名字的时候，你都会不自觉地屏住呼吸。多数时候，那第七个名字不是你。",
+      "夜里加练，球场空了。你一个人对着球门踢，砰，砰。守门员早走了，球网自己晃。你跟自己说：再踢一组。声音很轻，像是怕被谁听见。"
     ],
-    system: "【第十章·抉择·下 开启。终章，从一次回望开始。】",
-    next: "ch10_wuxing"
+    system: "【第十章·异乡·扎根 开启。主力位置，从来不是别人给的。】",
+    next: "ch10_sub"
   },
 
-  // 五行归一（杂灵根专属隐藏事件）
+  // 替补登场（比赛·零星机会里的挣扎）
   {
-    id: "ch10_wuxing",
-    chapter: 10,
-    text: [
-      "某个雨夜。你独自回到青云城蹴鞠庙。庙祝早已仙逝，供桌上积了灰，只余那方测灵石，还是凉的。",
-      "你把手按上去。指尖触到石面的瞬间——金木水火土，五色灵光同时亮起。体内像有五条河在奔涌、碰撞。",
-      "原来，杂灵根不是废根。五行俱全，方能五行归一。这扇门，只有你能叩开。"
-    ],
-    system: "【隐藏机缘：五行归一。唯杂灵根可触发。】",
-    choices: [
-      { id: "A", text: "叩开五行之门：五行归一，废根不废人", when: { mixedRoot: true },
-        check: { attrs: ["resolve", "iq"], difficulty: 45, tag: "决断+球商" }, next: "ch10_injury",
-        success: { text: "你引五行之力归于一脉。疼。像骨头在重组。然后——通了。测灵石光芒大盛，比觉醒那天更亮。杂灵根。原来是钥匙。", effects: { reputation: 15, attrs: { resolve: 3, iq: 2, shooting: 2 }, flags: { wuxingGuiyi: true } } },
-        fail: { text: "五行之力冲突剧烈，你被震退三步，后背撞在墙上。没归一。但门后的光，你看见了。", effects: { stamina: -10, attrs: { resolve: 1 } } },
-        critical: { text: "【灵光一闪】五行归一。天地灵力为你倒卷。你周身五色流光环绕，雨滴悬在半空。庙祝若还在，大概会笑着说：老夫没骗你吧。", effects: { reputation: 25, attrs: { resolve: 4, iq: 3, shooting: 3 }, flags: { wuxingGuiyi: true, keySuccess: true } } }
-      },
-      { id: "B", text: "收起杂念：路，在脚下，不在石头上", effects: { attrs: { resolve: 1 } }, next: "ch10_injury" }
-    ]
-  },
-
-  // 伤病天劫（身体的警钟）
-  {
-    id: "ch10_injury",
-    chapter: 10,
-    text: [
-      "赛季最激烈的阶段。一次拼抢后，你倒在草皮上。膝盖传来熟悉的剧痛——像有人拿锥子从里面顶。",
-      "诊断室很白，很冷。医生把片子夹在灯箱上：半月板磨损，韧带劳损。他摘下眼镜：「再这样踢。最多三年。」",
-      "窗外，球迷的欢呼声隐隐传来。你盯着那张片子，一夜未眠。心底有个声音很轻：「够了吧。你已经拥有够多了。」"
-    ],
-    system: "【天劫·第三劫·伤病劫。身体的警钟，敲响了。】",
-    choices: [
-      { id: "A", text: "积极治疗，科学康复：我命由我不由天", check: { attrs: ["resolve", "stamina"], difficulty: 42, tag: "决断+耐力" }, next: "ch10_final_choice",
-        success: { text: "你配合治疗。每天冰敷四十分钟，康复训练两小时。三个月后，你重回赛场。膝盖不疼了。状态比伤前更好。", effects: { reputation: 5, attrs: { resolve: 2 }, demonValue: -8 } },
-        fail: { text: "康复进程反复。膝盖消了又肿，肿了又消。你错过了关键比赛。", effects: { stamina: -10, demonValue: 5 } },
-        critical: { text: "【灵光一闪】你不仅康复，还借机重塑了技术动作。因祸得福。境界更进一层。", effects: { reputation: 10, attrs: { resolve: 3, shooting: 2 }, demonValue: -12, flags: { keySuccess: true } } }
-      },
-      { id: "B", text: "带伤硬撑：只要还能跑，就绝不下场", check: { attrs: ["pressure", "hardness"], difficulty: 44, tag: "抗压+硬度" }, next: "ch10_final_choice",
-        success: { text: "你咬牙硬撑。每场比赛前吃两片止痛药，赛后冰敷到膝盖失去知觉。球迷为你落泪。你撑过了最艰难的赛季。", effects: { reputation: 8, attrs: { pressure: 2 }, stamina: -15, demonValue: 6 } },
-        fail: { text: "硬撑的代价。第七十三分钟，膝盖彻底卡死了。你被担架抬下场，盯着天花板上的灯，一盏盏后退。", effects: { stamina: -25, demonValue: 12 } }
-      },
-      { id: "C", text: "听从身体：或许，是时候停下来了", effects: { demonValue: -5, flags: { injuryDoubt: true } }, next: "ch10_final_choice" }
-    ]
-  },
-
-  // 终极抉择（四条路，四种人生）
-  {
-    id: "ch10_final_choice",
-    chapter: 10,
-    text: [
-      "二十六岁的夏天。合同到期。桌上四份文件，你一份份翻过：",
-      "留守青云——母队的续约合同，A4纸，打印的。球迷在官网留言：回来。一城一队。一生；",
-      "远赴五洲——天罡联赛豪门的天价合同，铜版纸，烫金字。世界之巅。近在咫尺；",
-      "因伤退役——体检报告夹在中间。膝盖的片子你看了太多遍。急流勇退。也是一种活法；",
-      "转身执教——青训营的聘书。把一身技艺传给下一代。薪火相传。"
-    ],
-    system: "【终极抉择。你的选择，将决定这段传奇的终章。】",
-    choices: [
-      { id: "A", text: "留守青云：一城一人，一生一队", effects: { reputation: 10, bonds: { agui: 15 }, flags: { choiceStay: true } }, next: "ch10_farewell" },
-      { id: "B", text: "远赴五洲：去世界之巅，踢最纯粹的球", effects: { reputation: 12, flags: { choiceTianguang: true } }, next: "ch10_farewell" },
-      { id: "C", text: "因伤退役：急流勇退，把最好的留在巅峰", effects: { reputation: 5, flags: { choiceRetire: true } }, next: "ch10_comeback_choice" },
-      { id: "D", text: "转身执教：薪火相传，把球交给下一代", effects: { reputation: 8, flags: { choiceCoach: true } }, next: "ch10_farewell" }
-    ]
-  },
-
-  // 复出抉择（仅退役线触发）
-  {
-    id: "ch10_comeback_choice",
-    chapter: 10,
-    text: [
-      "退役发布会后，你回到空荡荡的家。球鞋收进柜子，球衣叠好放平。手指抚过号码，布面已经起毛了。",
-      "可深夜里，隔壁小孩在拍球。砰。砰。砰。你翻了个身，睡不着。梦里全是草皮的味道。",
-      "一年后，母队的电话打来：「球队需要你。回来吧。」你握着手机，膝盖隐隐发酸。心跳很快。"
-    ],
-    system: "【退役之后，命运又递来一次机会。复出，还是就此别过？】",
-    choices: [
-      { id: "A", text: "复出：我听见皮球的声音，就睡不着", effects: { reputation: 8, attrs: { resolve: 2 }, flags: { comeback: true } }, next: "ch10_farewell" },
-      { id: "B", text: "就此别过：把最好的自己，留在回忆里", effects: { demonValue: -5, attrs: { iq: 1 }, reputation: 2, flags: { gracefulExit: true } }, next: "ch10_farewell" }
-    ]
-  },
-
-  // 告别赛（生涯代表战·match）
-  {
-    id: "ch10_farewell",
+    id: "ch10_sub",
     chapter: 10,
     type: "match",
     text: [
-      "最后一战。如期而至。",
-      "对手是「宿命之队」——赵凛、石破岳、沧澜门将。那些逼出过最强你的对手，今夜齐聚。",
-      "赵凛站在阵前，朝你勾了勾手指。没说话。不需要。",
-      "你弯腰系紧鞋带，踏上草皮。膝盖咔嗒响了一声。这一战，不为冠军，不为合同。只为这十年。为矿坑边那个踢破布球的少年。"
+      "赛季初，你的位置在替补席。某场比赛，第七十分钟，比分胶着。教练终于朝你招了招手。",
+      "你脱掉外套，腿却是凉的。热身时你就在想：二十分钟，可能就一次机会。踢好了，教练会多看你一眼；踢砸了，下一场你还是坐穿板凳。",
+      "第四官员举起换人牌。你跑进场内，草腥味扑面。看台上没人为这次换人鼓掌——一个替补而已。"
     ],
-    opponent: { name: "宿命之队·赵凛领衔", element: "水", strength: 60 },
-    teamBase: 36,
+    opponent: { name: "五洲天罡·联赛对手", element: "土", strength: 56 },
+    teamBase: 35,
     fallback_choices: [
-      { id: "A", sit: "attack", text: "最后一舞，倾尽全力", check: { attrs: ["shooting", "resolve"], difficulty: 48, tag: "射门+决断" },
-        success: { text: "终场前，你{elementAdj}地一脚爆射。沧澜门将扑了，没够到。球进了。十年。一球。够了。", effects: { reputation: 15, goals: 1, attrs: { shooting: 1 } } },
-        fail: { text: "射门被沧澜门将扑出。他站起来，朝你笑了一下：「还是老样子。」你也笑了。", effects: { stamina: -7 } },
-        critical: { text: "【灵光一闪】你在告别战轰出职业生涯最后一球。全场起立。赵凛站在门线前，鼓了掌。那是他第一次为你鼓掌。", effects: { reputation: 28, goals: 1, attrs: { shooting: 2, resolve: 1 }, flags: { keySuccess: true } } }
+      { id: "A", sit: "attack", text: "二十分钟，赌一次机会", check: { attrs: ["shooting", "burst"], difficulty: 48, tag: "射门+爆发" },
+        success: { text: "第84分钟，一次混战，球弹到你面前。你没多想，{elementAdj}地一脚抽射。球进了。替补席全跳了起来。教练在场边鼓了两下掌——你抓住了。", effects: { reputation: 13, goals: 1, attrs: { shooting: 1 } } },
+        fail: { text: "机会来得太突然，你停球大了半步，被后卫抢先解围。二十分钟，就这么过去了。你低着头走回替补席。", effects: { stamina: -6, demonValue: 3 } },
+        critical: { text: "【灵光一闪】替补登场，一球定乾坤。终场哨响，队友们冲过来把你压在身下。教练赛后只说了句：「下次，首发。」", effects: { reputation: 20, goals: 1, attrs: { shooting: 2 }, flags: { keySuccess: true } } }
       },
-      { id: "B", sit: "balanced", text: "用传球，向所有对手致敬", check: { attrs: ["passing", "vision"], difficulty: 44, tag: "传球+视野" },
-        success: { text: "你送出一脚直塞，与赵凛完成了一次撞墙配合。跨越十年。胜负之外，是惺惺相惜。", effects: { reputation: 10, assists: 1, bonds: { zhaolin: 15 }, attrs: { passing: 1 } } },
-        fail: { text: "传球被石破岳拦截。他朝你点了下头。没说话。但那个点头，比什么都重。", effects: { stamina: -6 } }
+      { id: "B", sit: "balanced", text: "用跑动和拼抢留下印象", check: { attrs: ["stamina", "pressure"], difficulty: 45, tag: "耐力+抗压" },
+        success: { text: "你没有球，就不停地跑、逼抢、回防。二十分钟，你的跑动距离全队前列。教练赛后记了点什么。数据不会说谎。", effects: { reputation: 8, attrs: { stamina: 1, pressure: 1 } } },
+        fail: { text: "拼得太急，一次铲抢犯规，吃了张黄牌。教练皱了皱眉。", effects: { stamina: -7, demonValue: 2 } }
       },
-      { id: "C", sit: "defense", text: "享受比赛：输赢之外，还有热爱", check: { attrs: ["rhythm", "pressure"], difficulty: 38, tag: "节奏+抗压" },
-        success: { text: "你踢得从容。仿佛回到了矿坑边那个下午，破布球，土场地，没有观众。原来这才是足球最初的样子。", effects: { reputation: 6, demonValue: -10, attrs: { rhythm: 1 } } },
-        fail: { text: "你太放松了，被对手打了一个反击。但你没恼。笑着跑回去了。", effects: { stamina: -5 } }
+      { id: "C", sit: "defense", text: "先稳住，别出错", check: { attrs: ["positioning", "balance"], difficulty: 41, tag: "站位+平衡" },
+        success: { text: "你踢得稳，没给对手任何机会。二十分钟，零失误。不算出彩，但教练要的就是不出错。", effects: { reputation: 5, attrs: { positioning: 1 } } },
+        fail: { text: "太想稳住，反而缩手缩脚。一次该上抢的球你犹豫了，被对手推进。", effects: { stamina: -5 } }
       }
     ],
     result: {
-      bigwin: { text: "告别战大胜。终场哨响，所有宿敌围过来，一一拥抱。赵凛最后一个。他拍了拍你的背，没说话。十年。圆满。", effects: { reputation: 12, flags: { keySuccess: true } } },
-      win:     { text: "告别战获胜。赵凛与你交换球衣。他说了四个字：「后会有期。」然后转身走了。", effects: { reputation: 8 } },
-      draw:    { text: "告别战战平。没有输家。只有十个热爱足球的人，站在草皮上，不想走。", effects: { reputation: 4 } },
-      lose:    { text: "告别战告负。但你笑了。能和最强的对手踢最后一场。本身就是圆满。", effects: { reputation: 2, demonValue: -5 } }
+      bigwin: { text: "球队大胜，你也在最后时刻刷了个脸。回程大巴上，有队友主动跟你击掌。这是个好的开始。", effects: { reputation: 8 } },
+      win:     { text: "球队赢了。你坐在角落，膝盖发酸，但心里有了一点底。", effects: { reputation: 5 } },
+      draw:    { text: "战平。你的二十分钟，没掀起什么波澜。还得等。", effects: { reputation: 2 } },
+      lose:    { text: "球队输了，你这点出场时间更没人记得。替补席的椅子，还是凉的。", effects: { reputation: -2, stamina: -4, demonValue: 3 } }
     },
-    next: "ch10_end"
+    next: "ch10_rivalry"
   },
 
-  // 结局分发（引擎综合判定10种结局）
+  // 位置竞争（更衣室的暗流）
+  {
+    id: "ch10_rivalry",
+    chapter: 10,
+    text: [
+      "队里还有一个前锋。老将，三十岁，在这支队踢了八年，球迷喊他的名字喊了八年。他不服你这个外来户——一个亚洲小子，凭什么跟他抢位置。",
+      "训练里的对抗，他下脚很重。一次争顶，他肘部顶在你后背上，落地时你踉跄了两步。他瞥了你一眼，没说话，那眼神很清楚：这是我的地盘。",
+      "主力位置就一个。你们俩，都盯着。"
+    ],
+    choices: [
+      { id: "A", text: "用训练表现压过他：场上见真章", check: { attrs: ["shooting", "burst"], difficulty: 44, tag: "射门+爆发" }, next: "ch10_bench",
+        success: { text: "你没回嘴，只是把每一次训练都当比赛踢。分组对抗，你连进三个。结束后，老将看了你一眼，那眼神里的轻视，少了几分。", effects: { reputation: 7, attrs: { shooting: 1, burst: 1 } } },
+        fail: { text: "你太想压过他，动作变形，几次射门都偏了。他在旁边冷笑了一下。你的脸发烫。", effects: { stamina: -7, demonValue: 4 } }
+      },
+      { id: "B", text: "尊重他，向他学：老将的经验是宝", check: { attrs: ["iq", "pressure"], difficulty: 40, tag: "球商+抗压" }, next: "ch10_bench",
+        success: { text: "你主动找他，请教他跑位的诀窍。他愣了一下，慢慢讲了起来。八年的经验，不是白给的。渐渐地，他不再对你下狠脚了。", effects: { reputation: 5, attrs: { iq: 2, positioning: 1 } } },
+        fail: { text: "他爱答不理，丢给你一句：「自己悟。」你笑了笑，没往心里去。", effects: { stamina: -3 } }
+      },
+      { id: "C", text: "不理会，专注自己：位置是踢出来的，不是吵出来的", effects: { attrs: { resolve: 1, pressure: 1 }, demonValue: -3 }, next: "ch10_bench" }
+    ]
+  },
+
+  // 争夺主力（选择 + 检定）
+  {
+    id: "ch10_bench",
+    chapter: 10,
+    text: [
+      "机会来得很突然。主力前锋训练里拉伤了大腿，至少要歇三周。教练在战术室里点了你的名，发音还是有点别扭，但你听清了。",
+      "「下一场，你上。」他说完就低头看战术板，像是说了件再平常不过的事。你站起来，椅子在地上刮出一声响。整个战术室的目光都扫过来——有好奇，有怀疑，也有等着看笑话的。",
+      "你知道，这不是一场普通的联赛。踢好了，主力是你的；踢砸了，替补席的冷板凳还得坐穿。"
+    ],
+    choices: [
+      { id: "A", text: "用进球说话：前锋就该把球送进网窝", check: { attrs: ["shooting", "burst"], difficulty: 49, tag: "射门+爆发" }, next: "ch10_goal",
+        success: { text: "你把这三周加练的所有东西都带上了场。跑位、抢点、起脚。教练在场边记了点什么。赛后他没夸你，只是把你叫去看了二十分钟录像——那是他愿意教你的信号。", effects: { reputation: 8, attrs: { shooting: 1, burst: 1 } } },
+        fail: { text: "太想证明自己，反而紧了。三次单刀进了一个，另外两次脚都软了。下场时你低着头，不敢看教练。", effects: { stamina: -8, demonValue: 4 } },
+        critical: { text: "【灵光一闪】你上演了帽子戏法。第三个球进的时候，整个球场都在喊你那个曾经被写错拼音的名字。教练在场边鼓了两下掌——那是他最接近激动的表情。", effects: { reputation: 16, attrs: { shooting: 2, burst: 1 }, flags: { keySuccess: true } } }
+      },
+      { id: "B", text: "用跑动和拼抢赢得信任：脏活累活我先来", check: { attrs: ["stamina", "pressure"], difficulty: 47, tag: "耐力+抗压" }, next: "ch10_goal",
+        success: { text: "你全场不知疲倦地奔跑、逼抢、回防。数据栏里你的跑动距离全队第一。教练赛后拍了拍你的背：「球队需要你这样的。」主力位置，渐渐稳了。", effects: { reputation: 6, attrs: { stamina: 1, pressure: 1 } } },
+        fail: { text: "拼得太凶，第七十分钟体力透支，被对手一个变向就过了。你扶着膝盖喘气，腿像灌了铅。", effects: { stamina: -10, demonValue: 3 } }
+      },
+      { id: "C", text: "用传球串联全队：让队友因我而更强", check: { attrs: ["passing", "iq"], difficulty: 45, tag: "传球+球商" }, next: "ch10_goal",
+        success: { text: "你不贪功，把球一次次送到位置更好的队友脚下。两个助攻。更衣室里，开始有人主动跟你击掌了。", effects: { reputation: 7, assists: 1, attrs: { passing: 1, iq: 1 } } },
+        fail: { text: "传了一脚威胁球，可惜队友没领会，球出了底线。他摊了摊手，你笑了笑，心里却有点凉。", effects: { stamina: -5 } }
+      }
+    ]
+  },
+
+  // 关键战（比赛·奠定队内地位）
+  {
+    id: "ch10_goal",
+    chapter: 10,
+    type: "match",
+    text: [
+      "赛季最关键的一场。对手是联赛领头羊，后防线全是成名已久的老将。赛前更衣室里，队长把大家召集到一起，用你如今能听懂的话说：「赢了这场，我们就能往上走一截。」",
+      "教练走到你面前，停了一下。他没说什么豪言壮语，只是把你的球衣号码拍了拍：「今天，看你的了。」",
+      "球员通道里，你深吸一口气。一年前你刚来时，连这里的草腥味都觉得陌生。现在，它闻起来像战场。"
+    ],
+    opponent: { name: "五洲天罡·联赛领头羊", element: "金", strength: 60 },
+    teamBase: 35,
+    fallback_choices: [
+      { id: "A", sit: "attack", text: "禁区前沿，抡一脚定乾坤", check: { attrs: ["shooting", "power"], difficulty: 53, tag: "射门+力量" },
+        success: { text: "脚背抽实了，{elementAdj}的远射从人缝里钻过去，门将扑了个空。球进网的那一刻，你听见看台上有人用蹩脚的中文喊了句什么——大概是「好球」。", effects: { reputation: 14, goals: 1, attrs: { shooting: 1 } } },
+        fail: { text: "球打在防守队员身上，弹了出去。领头羊的链式防守，不是白叫的。", effects: { stamina: -5 } },
+        critical: { text: "【灵光一闪】那脚远射后来被剪进了赛季集锦。你只记得触球那一下，脚背发麻，然后全场站了起来。", effects: { reputation: 22, goals: 1, attrs: { shooting: 2 }, flags: { keySuccess: true } } }
+      },
+      { id: "B", sit: "balanced", text: "不急，跟队友打配合渗透", check: { attrs: ["passing", "vision"], difficulty: 49, tag: "传球+视野" },
+        success: { text: "三传两倒，防线被扯开一条缝。你心领神会插上去，队友的直塞刚好到位，推射入网。整个教练席都跳了起来。", effects: { reputation: 10, goals: 1, assists: 1, attrs: { passing: 1 } } },
+        fail: { text: "传了四脚，第五脚被断了。人家的站位确实密。", effects: { stamina: -4 } }
+      },
+      { id: "C", sit: "defense", text: "先守住，机会总会来的", check: { attrs: ["positioning", "balance"], difficulty: 43, tag: "站位+平衡" },
+        success: { text: "你指挥防线保持间距，没给对方任何舒服的起脚空间。零封。反击的火种，保住了。", effects: { reputation: 7, attrs: { positioning: 1 } } },
+        fail: { text: "走神了一瞬，对方前锋差点捅到球。你骂了自己一句，赶紧回位。", effects: { stamina: -5 } }
+      }
+    ],
+    result: {
+      bigwin: { text: "大胜领头羊。终场哨响，队友们把你围在中间。队长揉着你的头发，说了句你听懂的话：「现在，你是我们的人了。」", effects: { reputation: 14, flags: { keySuccess: true } } },
+      win:     { text: "赢了。更衣室里音乐放得很大声。你坐在自己的位置上——那个位置，再没人会随便坐了。", effects: { reputation: 9 } },
+      draw:    { text: "战平。不算坏。教练点点头：「方向对了。」你擦了把汗，心里清楚，主力位置还得一场场踢出来。", effects: { reputation: 4 } },
+      lose:    { text: "输了。领头羊就是领头羊。你坐在更衣室，膝盖隐隐发酸。但教练路过时说了句：「下次。」这两个字，你听懂了。", effects: { reputation: -3, stamina: -6, demonValue: 4 } }
+    },
+    next: "ch10_comrade"
+  },
+
+  // 异乡挚友（新羁绊·纯演出）
+  {
+    id: "ch10_comrade",
+    chapter: 10,
+    text: [
+      "也是在更衣室里，你渐渐跟一个人熟了起来。他叫卢卡，本地人，踢中场，话很多，笑起来露出一口白牙。他是第一个主动教你当地俚语的队友，也是第一个在你进球后冲过来抱你的人。",
+      "有天训练后，他开车带你去了海边。异国的海，跟青云城外的矿坑完全是两个样子。他指着浪说了一长串，你只听懂一半，大意是：「足球这东西，哪儿都一样。踢得开心，最重要。」",
+      "你笑了笑，没接话。海风很大，带着咸味。你忽然觉得，一万公里外这个地方，好像也没那么陌生了。"
+    ],
+    choices: [
+      { id: "A", text: "请卢卡吃顿中餐：礼尚往来，朋友是处出来的", effects: { reputation: 3, stamina: 5, demonValue: -5, attrs: { iq: 1 } }, next: "ch10_luca_combo" },
+      { id: "B", text: "把训练心得分享给卢卡：一起变强", effects: { reputation: 4, attrs: { passing: 1, iq: 1 } }, next: "ch10_luca_combo" }
+    ]
+  },
+
+  // 卢卡配合（比赛·心有灵犀雏形）
+  {
+    id: "ch10_luca_combo",
+    chapter: 10,
+    type: "match",
+    text: [
+      "你和卢卡越来越默契。训练里一个眼神，他就知道你要往哪跑；比赛中你一个手势，他就把球送到你脚下。教练干脆把你俩排进了同一套首发。",
+      "这场球，对手盯你盯得很死。但你身边多了个卢卡。他总能在你被包夹前，把球分出去，再跑回来接应。两个人，像一个人。",
+      "赛前，卢卡撞了撞你的肩：「今天，咱俩给他们表演个配合。」你笑了。"
+    ],
+    opponent: { name: "五洲天罡·联赛劲敌", element: "水", strength: 59 },
+    teamBase: 36,
+    fallback_choices: [
+      { id: "A", sit: "attack", text: "卢卡助攻，你抢点终结", check: { attrs: ["shooting", "burst"], difficulty: 50, tag: "射门+爆发" },
+        success: { text: "卢卡禁区前沿一脚直塞，球从两名后卫中间穿过。你心领神会插上，{elementAdj}地推射远角。球进了。卢卡冲过来，一把抱住你。这球，是两个人的。", effects: { reputation: 14, goals: 1, attrs: { shooting: 1 } } },
+        fail: { text: "卢卡的传球到位了，你却启动慢了半拍，球被门将没收。他摊手笑了笑，你懊恼地拍了下草皮。", effects: { stamina: -5 } },
+        critical: { text: "【灵光一闪】你和卢卡连续三脚撞墙配合，撕开整条防线，最后由你推射空门。全场起立。解说喊破了音——这配合，水银泻地。", effects: { reputation: 22, goals: 1, assists: 1, attrs: { shooting: 2, passing: 1 }, flags: { keySuccess: true } } }
+      },
+      { id: "B", sit: "balanced", text: "你做墙，卢卡终结", check: { attrs: ["passing", "vision"], difficulty: 46, tag: "传球+视野" },
+        success: { text: "这次换你回撤做墙，一脚回做，卢卡插上远射破门。他冲你指了指，意思是：传得好。助攻算你的。", effects: { reputation: 10, assists: 1, attrs: { passing: 1 } } },
+        fail: { text: "你的回做力量大了，卢卡没接舒服，射门打偏。他摇摇头，你递过去一瓶水。", effects: { stamina: -4 } }
+      },
+      { id: "C", sit: "defense", text: "稳住中场，给卢卡兜底", check: { attrs: ["positioning", "pressure"], difficulty: 42, tag: "站位+抗压" },
+        success: { text: "卢卡压上组织，你在身后替他补位、拦截。他敢往前传，因为知道身后有你。零封。这份信任，是配合的根。", effects: { reputation: 8, attrs: { positioning: 1 } } },
+        fail: { text: "一次补位慢了，对手打穿你这一侧。卢卡回追犯规，吃了张黄牌。他朝你喊了句什么，是提醒，不是责怪。", effects: { stamina: -5 } }
+      }
+    ],
+    result: {
+      bigwin: { text: "大胜。你和卢卡各进一球，还互相助攻。赛后记者围着你们问配合的秘诀。卢卡搂着你的肩，用当地话开玩笑：「秘诀就是，他听得懂我说话了。」", effects: { reputation: 13, flags: { keySuccess: true } } },
+      win:     { text: "赢了。卢卡在场边跟你击了个掌：「越来越有默契了。」你点头。这份默契，是一天天磨出来的。", effects: { reputation: 9 } },
+      draw:    { text: "战平。你俩的配合被对手研究透了。卢卡皱着眉：「下次，换个套路。」", effects: { reputation: 4 } },
+      lose:    { text: "输了。你俩都被盯死，配合打不出来。回程路上，卢卡拍拍你：「没事，下场找回来。」", effects: { reputation: -2, stamina: -5, demonValue: 3 } }
+    },
+    next: "ch10_dressingroom"
+  },
+
+  // 更衣室归属（成为"自己人"·纯演出）
+  {
+    id: "ch10_dressingroom",
+    chapter: 10,
+    text: [
+      "某个客场比赛后，回程的大巴上。卢卡起了个头，唱起一首当地的歌。慢慢的，全车人都跟着唱了起来。有人把你也拉了进去。",
+      "你五音不全，歌词也只记得一半，磕磕绊绊地跟着哼。唱到副歌，所有人都笑了，有人拍你的背，有人揉你的头发。那一刻，没有「亚洲来的」，没有外来户。",
+      "窗外的夜灯一盏盏后退。你忽然明白，你不只是在这支球队踢球——你是这支队的人了。"
+    ],
+    choices: [
+      { id: "A", text: "融进这份热闹：把这里当家", effects: { demonValue: -8, reputation: 4, stamina: 5 }, next: "ch10_callup" },
+      { id: "B", text: "改天请全队吃一顿中餐：用家乡味交朋友", effects: { reputation: 5, demonValue: -6, attrs: { iq: 1 } }, next: "ch10_callup" },
+      { id: "C", text: "安静地笑：有些归属，不必说出口", effects: { demonValue: -5, attrs: { pressure: 1 } }, next: "ch10_callup" }
+    ]
+  },
+
+  // 国青征召（世青赛集结预告）
+  {
+    id: "ch10_callup",
+    chapter: 10,
+    text: [
+      "赛季末，一封盖着红章的征召函寄到了俱乐部。国家青年队。世界青年锦标赛。信封很厚，你摸了两遍才拆开。",
+      "消息传开那天，卢卡拍着你的肩膀，用他那口你如今能全听懂的话说：「去吧。替我们踢给他们看看。」",
+      "你站在公寓窗前，望着异国的夜景。一年前你看这片灯火时，心里全是孤独。现在，你想的是另一件事——那些散落在国内各地的老朋友，范志贵、武石、内牛尔、苏雯。又要并肩了。"
+    ],
+    choices: [
+      { id: "A", text: "郑重应召：为国出征，是球员最高的荣誉", effects: { reputation: 6, attrs: { resolve: 2 }, flags: { nationalTeam: true } }, next: "ch10_end" },
+      { id: "B", text: "平静赴约：把每一场，都当最后一场踢", effects: { reputation: 4, attrs: { pressure: 2 }, flags: { nationalTeam: true } }, next: "ch10_end" }
+    ]
+  },
+
+  // 章末 → 第十一章《世青赛·集结》
   {
     id: "ch10_end",
     chapter: 10,
-    type: "ending_dispatch",
     text: [
-      "终场哨响。灯光渐暗。你站在球场中央。",
-      "十年。从蹴鞠庙那道光，到矿坑边的破布球。从省赛的青涩，到全国的巅峰。从淬炼营的悬崖，到职业赛场的灯。",
-      "金木水火土。五行流转。爱恨成败。皆成文章。",
-      "该写最后一笔了。"
+      "你收拾行李，飞回国内。舷窗外，云海翻涌。一年前你从这片云海上飞出去，是个忐忑的少年；现在飞回来，已经在世界的联赛里站稳了脚跟。",
+      "手机里，范志贵发来一条消息，还是那个大嗓门的语气：「可算把你盼回来了！世青赛，咱们再一块儿干一场！」",
+      "你回了两个字：「来了。」然后锁屏，闭上眼。世青赛。世界之巅的青年战场。下一程，从集结开始。"
     ],
-    system: "【第十章·抉择·下 完。正在为你判定结局……】"
+    system: "【第十章·异乡·扎根 完。接下来：第十一章·世青赛·集结。】",
+    effects: { chapter: 1 },
+    next: "ch11_opening"
   }
 
 ] };

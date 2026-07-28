@@ -55,6 +55,9 @@
     document.getElementById("statusBar").addEventListener("click", showStatusPanel);
     document.getElementById("attrBtn").addEventListener("click", showStatusPanel);
 
+    // 帮助按钮 → 玩法说明
+    document.getElementById("helpBtn").addEventListener("click", showHelpPanel);
+
     // 启动存档检测
     bootStart();
   }
@@ -75,6 +78,20 @@
       const gap = $story.scrollHeight - $story.scrollTop - $story.clientHeight;
       if (force || gap < 140) $story.scrollTop = $story.scrollHeight;
     });
+  }
+
+  /* ---------- 体力/心魔分级标签 ---------- */
+  function staminaLabel(val) {
+    if (val < 10) return '<span style="color:#e74c3c;font-weight:bold">' + val + " 强弩之末</span>";
+    if (val < 30) return '<span style="color:#e67e22">' + val + " 体力告急</span>";
+    if (val < 50) return '<span style="color:#f1c40f">' + val + " 略显疲态</span>";
+    return val;
+  }
+  function demonLabel(val) {
+    if (val >= 45) return '<span style="color:#e74c3c;font-weight:bold">心魔' + val + " 噬心</span>";
+    if (val >= 30) return '<span style="color:#e67e22">心魔' + val + " 侵蚀</span>";
+    if (val >= 15) return '<span style="color:#f1c40f">心魔' + val + " 低语</span>";
+    return "心魔值 " + val;
   }
 
   /* ---------- 状态栏更新 ---------- */
@@ -323,13 +340,13 @@
     // 资源
     const res = document.createElement("div");
     res.style.cssText = "margin-top:14px;font-size:13px;color:var(--text-dim);text-align:center;";
-    res.innerHTML = "声望 " + st.reputation + " · 体力 " + st.stamina + " · 灵石 " + st.spiritStones +
+    res.innerHTML = "声望 " + st.reputation + " · 体力 " + staminaLabel(st.stamina) + " · 灵石 " + st.spiritStones +
       " · 进球 " + st.goals + " · 助攻 " + st.assists + " · 比赛 " + st.matches + "胜" + st.wins;
     // 评级分布 + 自由属性点 + 心魔值（设计稿第五章·状态总览）
     const rd = st.ratingDist || {};
     res.innerHTML += "<br>评级分布 S×" + (rd.S || 0) + " A×" + (rd.A || 0) + " B×" + (rd.B || 0) +
       " C×" + (rd.C || 0) + " D×" + (rd.D || 0) +
-      " · 自由属性点 " + (st.freePoints || 0) + " · 心魔值 " + (st.demonValue || 0);
+      " · 自由属性点 " + (st.freePoints || 0) + " · " + demonLabel(st.demonValue || 0);
     panel.appendChild(res);
 
     // 羁绊图鉴（设计稿第五章·羁绊页面展示：已解锁彩色/进行中进度）
@@ -389,7 +406,7 @@
       const el = affEls[Math.floor(Math.random() * affEls.length)];
       const attrs = CONFIG.attrs[el];
       const a = attrs[Math.floor(Math.random() * attrs.length)];
-      st.attrs[a] = Math.min(999, st.attrs[a] + 2);
+      st.attrs[a] = Math.min(CONFIG.attrMax || 100, st.attrs[a] + 2);
     } else if (item.id === "manual_ball") {
       st.trainPoints = (st.trainPoints || 0) + 1;
     }
@@ -612,7 +629,7 @@
       detail.className = "system-msg fade-in";
       detail.style.cssText = "text-align:center;font-size:12px;color:var(--text-dim);";
       detail.textContent = "你的表现：" + ms.goals + "进球 / " + ms.assists + "助攻 / 关键选择成功" +
-        ms.keySuccess + "/" + ms.keyAttempts + (rating === "D" ? " · 心魔值+10" : "");
+        ms.keySuccess + "/" + ms.keyAttempts + (rating === "D" ? " · 心魔值+12" : "");
       $story.appendChild(detail);
       setTimeout(resolve, 300);
     }));
@@ -664,7 +681,7 @@
           row.appendChild(nm); row.appendChild(val);
           row.addEventListener("click", () => {
             if (st.freePoints <= 0) { toast("自由点已用完"); return; }
-            st.attrs[a] = Math.min(999, st.attrs[a] + 1);
+            st.attrs[a] = Math.min(CONFIG.attrMax || 100, st.attrs[a] + 1);
             st.freePoints -= 1;
             val.textContent = Math.floor(st.attrs[a]);
             pts.textContent = "剩余自由点：" + st.freePoints;
@@ -828,6 +845,155 @@
     });
     $choice.appendChild(frag);
   }
+
+  /* ============================================================
+     玩法说明面板（纯前端 HTML，兼容 file:// 协议）
+     ============================================================ */
+  function showHelpPanel() {
+    const ov = document.getElementById("overlay");
+    ov.innerHTML = "";
+    const panel = document.createElement("div");
+    panel.className = "overlay-panel";
+
+    const title = document.createElement("div");
+    title.className = "overlay-title";
+    title.textContent = "玩法说明";
+    panel.appendChild(title);
+
+    const content = document.createElement("div");
+    content.className = "help-content";
+    content.innerHTML = HELP_HTML;
+    panel.appendChild(content);
+
+    const close = document.createElement("button");
+    close.className = "close-btn";
+    close.textContent = "关闭";
+    close.addEventListener("click", () => ov.classList.remove("show"));
+    panel.appendChild(close);
+
+    ov.appendChild(panel);
+    ov.classList.add("show");
+  }
+
+  const HELP_HTML = `
+<h3>一、游戏基本流程</h3>
+<p>这是一款<b>修仙×足球</b>的文字养成游戏。你将扮演一个矿坑边长大的少年，从蹴鞠庙觉醒灵根开始，经历青训、职业、留洋，一步步走向世界之巅。</p>
+<ul>
+<li><b>章节推进</b>：共十八章，从14岁觉醒到22岁终章，覆盖青训、职业、留洋、世青赛、巅峰谢幕全生涯。读完剧情后面临各种选择，影响属性、声望和后续走向。</li>
+<li><b>选项分支</b>：部分选项带有“检定”——根据属性判断成功/失败。偶尔触发“灵光一闪”（暴击），获得超额回报。</li>
+<li><b>修炼加点</b>：每章有修炼环节，把修炼点分配到任意属性。灵根亲和属性成长更快。</li>
+</ul>
+
+<h3>二、灵根系统</h3>
+<p>开局按下测灵石，随机觉醒灵根。品质影响修炼速度：</p>
+<table><tr><th>品质</th><th>倍率</th><th>概率</th></tr>
+<tr><td>天品（单灵根）</td><td>×2</td><td>5%</td></tr>
+<tr><td>双灵根</td><td>×1.5</td><td>30%</td></tr>
+<tr><td>三灵根</td><td>×1.33</td><td>40%</td></tr>
+<tr><td>杂灵根</td><td>×1.2</td><td>25%</td></tr></table>
+<p>觉醒后不满意可重新觉醒，<b>共3次机会</b>（含首次）。三次后锁定。</p>
+<p><b>灵根锁</b>：非亲和属性有上限（天品55/双灵根65/三灵根75），杂灵根无锁。前期天品碾压，后期杂灵根反超。</p>
+
+<h3>三、属性与修炼</h3>
+<h4>五行属性（20项）</h4>
+<ul>
+<li><b>金</b>（防守）：铲断、拦截、对抗、硬度</li>
+<li><b>木</b>（突破）：盘带、速度、耐力、柔韧</li>
+<li><b>水</b>（组织）：传球、视野、球商、节奏</li>
+<li><b>火</b>（进攻）：射门、爆发、力量、决断</li>
+<li><b>土</b>（定位）：站位、头球、平衡、抗压</li>
+</ul>
+<h4>修炼点</h4>
+<ul>
+<li>每回合获得 <b>4点修炼点</b>，自由分配。</li>
+<li>亲和属性：完整倍率加成。非亲和：80%效率，且受灵根锁上限约束。</li>
+<li>检定成功后，所用属性额外成长（成功+1，暴击+2，再乘灵根倍率）。</li>
+</ul>
+<h4>五行共鸣（后期核心）</h4>
+<ul>
+<li>≥8属性达通脉(45+)：检定<b>+4%</b>（五行初通）</li>
+<li>≥16属性达通脉(45+)：检定<b>+8%</b>（五行流转）</li>
+<li>≥12属性达化域(70+)：检定<b>+12%</b>（五行归一）</li>
+<li>≥8属性达天人合一(90+)：检定<b>+15%</b>（天人合道，仅杂灵根）</li>
+</ul>
+<h4>境界</h4>
+<table><tr><th>境界</th><th>属性要求</th></tr>
+<tr><td>感气</td><td>0~19</td></tr>
+<tr><td>凝形</td><td>20~44</td></tr>
+<tr><td>通脉</td><td>45~69</td></tr>
+<tr><td>化域</td><td>70~89</td></tr>
+<tr><td>天人合一</td><td>90~100</td></tr></table>
+<p>通脉是多数好结局的门槛，天人合一一通往最高结局。</p>
+
+<h3>四、比赛规则</h3>
+<p>比赛采用 <b>6节点制</b>：</p>
+<ul>
+<li><b>你的回合</b>（2次）：从位置事件池抽取，选择行动。</li>
+<li><b>队友回合</b>（2次）：队友自动行动。</li>
+<li><b>关键时刻</b>（2次）：高压力、高回报。</li>
+</ul>
+<h4>行动结果</h4>
+<ul>
+<li><b>成功</b>：积累威胁值，推进比分。</li>
+<li><b>失败</b>：对手获得威胁值，消耗体力。</li>
+<li><b>灵光一闪</b>：超额成功，威胁值额外+1，属性成长翻倍。</li>
+</ul>
+<h4>局面系统</h4>
+<ul>
+<li>优势局：检定更容易，对手起始威胁为0。</li>
+<li>均势局：正常难度。</li>
+<li>劣势局：检定更难，对手起始有威胁值。</li>
+</ul>
+<h4>赛后评级</h4>
+<table><tr><th>评级</th><th>条件</th><th>奖励</th></tr>
+<tr><td>S</td><td>进球+助攻≥2 且关键全成</td><td>3自由点+15声望</td></tr>
+<tr><td>A</td><td>有进球/助攻 且成功率>70%</td><td>2自由点+10声望</td></tr>
+<tr><td>B</td><td>成功率≥45%</td><td>1自由点+5声望</td></tr>
+<tr><td>C</td><td>成功率≥25%</td><td>1自由点+1声望</td></tr>
+<tr><td>D</td><td>成功率<25%</td><td>-3声望，心魔+8</td></tr></table>
+
+<h3>五、羁绊系统</h3>
+<p>与特定角色建立羁绊，通过比赛和剧情积累进度，达到阈值后自动解锁：</p>
+<ul>
+<li><b>金兰之交</b>（范志贵）：检定+5%</li>
+<li><b>既生瑜何生亮</b>（武石）：与武石交锋时+10%</li>
+<li><b>水火不容</b>（布澜门将）：对水灵根+10%</li>
+<li><b>风火连城</b>（内牛尔）：比赛检定+8%</li>
+<li><b>心有灵犀</b>（苏雯）：比赛检定+8%</li>
+</ul>
+
+<h3>六、心魔值与结局</h3>
+<ul>
+<li>心魔值来源：D评级(+12)、输球(+4)、平局(+2)、关键时刻失败(+2)、负面拉择。</li>
+<li>梯度惩罚：心魔≥15检定−3%，≥30检定−6%，≥45检定−10%。</li>
+<li>消解方式：每回合自然衰减−1，部分剧情选项可额外降低。</li>
+<li><b>心魔值≥60 → 强制触发“黯然离场”结局！</b></li>
+</ul>
+<h3>七、体力系统</h3>
+<ul>
+<li>检定失败消耗体力3-6点，每回合自动恢复+10。</li>
+<li>体力<50：检定−3%；<30：−7%；<10：−12%。</li>
+<li><b>体力<10时强制休息一回合</b>（跳过训练，恢复至40）。</li>
+<li>恢复手段：回合自动恢复、聚气丹(+30)、队友事件(+5)。</li>
+</ul>
+<p>游戏共<b>10种结局</b>，由心魔值、境界、声望、关键拉择综合判定。包括：球圣封神、天罡之星、功勋队长、浪子回头、教练之路、传奇复出、新星升起、蛰伏待时、江湖再见、黯然离场。</p>
+
+<h3>八、难度选择</h3>
+<table><tr><th>难度</th><th>初始属性</th><th>适合</th></tr>
+<tr><td>困难</td><td>全属性 5</td><td>老手，硬核体验</td></tr>
+<tr><td>普通</td><td>全属性 8</td><td>标准体验</td></tr>
+<tr><td>简单</td><td>全属性 12</td><td>专注看剧情</td></tr></table>
+<p>难度只影响开局起点，不影响成长速度和后期上限。</p>
+
+<h3>小贴士</h3>
+<div class="tip">
+• 修炼点优先加位置核心属性（前锋→射门/爆发，中场→传球/视野，后卫→铲断/站位）<br>
+• 保守选项难度低收益小，激进选项难度高但可能直接进球<br>
+• 灵根相克：被对手克制时检定-10%，考虑选更稳妥的行动<br>
+• 尽量保持B级以上评级，自由点是重要属性来源<br>
+• 存档自动进行，关闭页面后重新打开可继续
+</div>
+`;
 
   global.UI = {
     bindConfig, init, updateStatus,

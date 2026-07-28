@@ -26,16 +26,16 @@ window.CHAPTER7 = { events: [
     text: "第8周，天梯赛。规则：挑排名比你高的人打。你抽到的是第三名，绰号「山岳」。土灵根，中卫，化域境边缘。他比你高一个头，肩宽得像一扇门板，站在禁区里不用动，你就觉得传球线路全被堵死了。他热身的方式是原地跺脚，你隔着十米都能感觉到草皮在颤。",
     opponent: { name: "淬炼营·山岳", element: "土", strength: 58 },
     fallback_choices: [
-      { id: "A", sit: "attack", text: "正面挑战，用速度撕开山岳", check: { attrs: ["speed", "burst"], difficulty: 48, tag: "速度+爆发" },
+      { id: "A", sit: "attack", text: "正面挑战，用速度撕开山岳", check: { attrs: ["speed", "burst"], difficulty: 46, tag: "速度+爆发" },
         success: { text: "你{elementAdj}地高速变向，硬生生从山岳身边抹过，推射入网！", effects: { reputation: 12, goals: 1, attrs: { speed: 1 } } },
         fail: { text: "山岳稳如泰山，你的突破撞上了铁壁。", effects: { stamina: -6 } },
         critical: { text: "【灵光一闪】你晃倒了山岳！全场哗然——这座山，被你搬动了！", effects: { reputation: 20, goals: 1, attrs: { speed: 2 }, flags: { keySuccess: true } } }
       },
-      { id: "B", sit: "balanced", text: "调虎离山，引他出击再打身后", check: { attrs: ["iq", "passing"], difficulty: 44, tag: "球商+传球" },
+      { id: "B", sit: "balanced", text: "调虎离山，引他出击再打身后", check: { attrs: ["iq", "passing"], difficulty: 42, tag: "球商+传球" },
         success: { text: "你佯装强突，引山岳出击后突然变向，打他身后破门！", effects: { reputation: 10, goals: 1, attrs: { iq: 1 } } },
         fail: { text: "山岳不为所动，你的计谋落空。", effects: { stamina: -5 } }
       },
-      { id: "C", sit: "defense", text: "稳守反击，等他露出破绽", check: { attrs: ["positioning", "pressure"], difficulty: 38, tag: "站位+抗压" },
+      { id: "C", sit: "defense", text: "稳守反击，等他露出破绽", check: { attrs: ["positioning", "pressure"], difficulty: 36, tag: "站位+抗压" },
         success: { text: "你耐心周旋，终于等到山岳一次走神，反击破门！", effects: { reputation: 8, goals: 1, attrs: { positioning: 1 } } },
         fail: { text: "山岳的压迫感让你喘不过气。", effects: { stamina: -6 } }
       }
@@ -57,16 +57,16 @@ window.CHAPTER7 = { events: [
     text: "第9周，5v5。二十二个人分四队，抽签。你低头看自己的分组，然后抬头——对面站着上周1v1把你铲翻的那个人。他也看见你了。两个人都没说话。他冲你点了一下头，很轻，像是说「行吧」，又像是说「别拖后腿」。姜太虚在场边嗑瓜子，头都没抬：「跟仇人不会踢球？那下山去。」",
     opponent: { name: "淬炼营·玄武队", element: "水", strength: 55 },
     fallback_choices: [
-      { id: "A", sit: "attack", text: "与昔日对手配合，化敌为友", check: { attrs: ["passing", "iq"], difficulty: 44, tag: "传球+球商" },
+      { id: "A", sit: "attack", text: "与昔日对手配合，化敌为友", check: { attrs: ["passing", "iq"], difficulty: 42, tag: "传球+球商" },
         success: { text: "你与昔日对手打出精妙配合，他破门后与你击掌。恩怨，在胜利面前烟消云散。", effects: { reputation: 9, assists: 1, attrs: { passing: 1 } } },
         fail: { text: "配合生疏，传球被断。", effects: { stamina: -5 } },
         critical: { text: "【灵光一闪】你与对手心意相通，一记撞墙配合洞穿防线！化敌为友，不过一脚球。", effects: { reputation: 16, assists: 1, attrs: { passing: 2 }, flags: { keySuccess: true } } }
       },
-      { id: "B", sit: "balanced", text: "扛起进攻核心，个人爆破", check: { attrs: ["shooting", "resolve"], difficulty: 46, tag: "射门+决断" },
+      { id: "B", sit: "balanced", text: "扛起进攻核心，个人爆破", check: { attrs: ["shooting", "resolve"], difficulty: 44, tag: "射门+决断" },
         success: { text: "你{elementAdj}地连续突破，禁区内冷静施射破门！", effects: { reputation: 10, goals: 1, attrs: { shooting: 1 } } },
         fail: { text: "独木难支，你被围抢断球。", effects: { stamina: -6 } }
       },
-      { id: "C", sit: "defense", text: "指挥防线，稳住军心", check: { attrs: ["positioning", "pressure"], difficulty: 38, tag: "站位+抗压" },
+      { id: "C", sit: "defense", text: "指挥防线，稳住军心", check: { attrs: ["positioning", "pressure"], difficulty: 36, tag: "站位+抗压" },
         success: { text: "你指挥若定，防线固若金汤。", effects: { reputation: 6, attrs: { positioning: 1 } } },
         fail: { text: "防线被对手打穿。", effects: { stamina: -5 } }
       }
@@ -117,18 +117,18 @@ window.CHAPTER7 = { events: [
     chapter: 7,
     text: [
       "第11周。终极天梯。最后两个人，争第一。",
-      "你走到球场中央的时候，对面已经有人了。赵凛。他的球鞋上全是草渍和擦痕，护腿板歪着，显然一路打上来没顾上换。他看见你，没笑，但肩膀松了一下，像是等了很久终于等到了。",
+      "你走到球场中央的时候，对面已经有人了。武石。他的球鞋上全是草渍和擦痕，护腿板歪着，显然一路打上来没顾上换。他看见你，没笑，但肩膀松了一下，像是等了很久终于等到了。",
       "「又是你。」他把手腕转了两圈，骨节咔嗒响，「行。」就一个字。然后他弯下腰，双手撑在膝盖上，抬起头来看你。那个眼神你认识——不是恨，是饿。"
     ],
     choices: [
-      { id: "A", text: "全力以赴，正面击溃他", check: { attrs: ["shooting", "burst"], difficulty: 50, tag: "射门+爆发" }, next: "ch7_master",
+      { id: "A", text: "全力以赴，正面击溃他", check: { attrs: ["shooting", "burst"], difficulty: 48, tag: "射门+爆发" }, next: "ch7_master",
         success: { text: "决胜回合，你{elementAdj}地一脚爆射洞穿十指关！营中第一，是你！", effects: { reputation: 14, goals: 1, bonds: { zhaolin: 15 }, attrs: { shooting: 1 } } },
-        fail: { text: "赵凛技高一筹，你惜败。他伸出手：「下次。」", effects: { stamina: -6, demonValue: 5 } },
-        critical: { text: "【灵光一闪】你在赵凛面前轰出惊世一击！他望着滚入网窝的皮球，久久无言，最终笑了：「不愧是你。」", effects: { reputation: 24, goals: 1, bonds: { zhaolin: 20 }, attrs: { shooting: 2 }, flags: { keySuccess: true } } }
+        fail: { text: "武石技高一筹，你惜败。他伸出手：「下次。」", effects: { stamina: -6, demonValue: 5 } },
+        critical: { text: "【灵光一闪】你在武石面前轰出惊世一击！他望着滚入网窝的皮球，久久无言，最终笑了：「不愧是你。」", effects: { reputation: 24, goals: 1, bonds: { zhaolin: 20 }, attrs: { shooting: 2 }, flags: { keySuccess: true } } }
       },
-      { id: "B", text: "以守为攻，拖垮他的锐气", check: { attrs: ["tackle", "pressure"], difficulty: 46, tag: "铲断+抗压" }, next: "ch7_master",
-        success: { text: "你全场缠斗，赵凛锐气渐消，你抓住破绽一击制胜！", effects: { reputation: 12, goals: 1, bonds: { zhaolin: 12 }, attrs: { tackle: 1 } } },
-        fail: { text: "赵凛看穿你的意图，一记冷射破门。", effects: { stamina: -6 } }
+      { id: "B", text: "以守为攻，拖垮他的锐气", check: { attrs: ["tackle", "pressure"], difficulty: 44, tag: "铲断+抗压" }, next: "ch7_master",
+        success: { text: "你全场缠斗，武石锐气渐消，你抓住破绽一击制胜！", effects: { reputation: 12, goals: 1, bonds: { zhaolin: 12 }, attrs: { tackle: 1 } } },
+        fail: { text: "武石看穿你的意图，一记冷射破门。", effects: { stamina: -6 } }
       }
     ]
   },
@@ -143,12 +143,12 @@ window.CHAPTER7 = { events: [
       "「不用赢。」他说，语气像在说今天食堂吃什么，「撑住就行。三回合，及格。五回合——」他想了想，「算你有点东西。七回合……」他没往下说。你咽了口唾沫。"
     ],
     choices: [
-      { id: "A", text: "毫无保留，向最强者亮剑", check: { attrs: ["resolve", "shooting"], difficulty: 55, tag: "决断+射门" }, next: "ch7_photo",
+      { id: "A", text: "毫无保留，向最强者亮剑", check: { attrs: ["resolve", "shooting"], difficulty: 53, tag: "决断+射门" }, next: "ch7_photo",
         success: { text: "你撑过了五个回合！姜太虚收手，眼中罕见地露出一丝赞许：「天才。」", effects: { reputation: 20, attrs: { resolve: 2, shooting: 1 } } },
         fail: { text: "你撑过了三个回合，已是极限。姜太虚淡淡道：「优秀。但还不够。」", effects: { reputation: 10, stamina: -10 } },
         critical: { text: "【灵光一闪】你竟撑过了七个回合！姜太虚周身灵力一收，深深看你一眼：「球圣之资。记住今天的感觉——那叫『天人感应』。」", effects: { reputation: 30, attrs: { resolve: 3, shooting: 2 }, flags: { tianrenGanying: true, keySuccess: true } } }
       },
-      { id: "B", text: "以守为盾，尽量拖延回合", check: { attrs: ["positioning", "pressure"], difficulty: 50, tag: "站位+抗压" }, next: "ch7_photo",
+      { id: "B", text: "以守为盾，尽量拖延回合", check: { attrs: ["positioning", "pressure"], difficulty: 48, tag: "站位+抗压" }, next: "ch7_photo",
         success: { text: "你以守为盾，撑过五个回合。姜太虚点头：「韧性可嘉。」", effects: { reputation: 18, attrs: { positioning: 2 } } },
         fail: { text: "你撑过三个回合。姜太虚：「防守不错，但强者，要有獠牙。」", effects: { reputation: 9, stamina: -8 } }
       }
@@ -161,7 +161,7 @@ window.CHAPTER7 = { events: [
     chapter: 7,
     text: [
       "六周。十一个人。名单不再变了。",
-      "姜太虚不知道从哪儿翻出一台海鸥牌相机，三角架缺了一条腿，拿砖头垫着。「站好。」他说。十一个人挤在球场门口，阿贵非要站你旁边，林啸被挤到最边上，赵凛双手插兜，下巴抬得老高。风把所有人的头发吹得乱七八糟，有人喊了三次「别动」都没用。",
+      "姜太虚不知道从哪儿翻出一台海鸥牌相机，三角架缺了一条腿，拿砖头垫着。「站好。」他说。十一个人挤在球场门口，范志贵非要站你旁边，内牛尔被挤到最边上，武石双手插兜，下巴抬得老高。风把所有人的头发吹得乱七八糟，有人喊了三次「别动」都没用。",
       "快门按下去的时候，你眨了一下眼。后来洗出来的照片上，你是闭着眼的。但十一个人都在。都在就够了。"
     ],
     system: "【幸存者合影：11人。天罡联队的羁绊，就此结下。】",
@@ -174,7 +174,7 @@ window.CHAPTER7 = { events: [
     chapter: 7,
     text: [
       "索道往下走的时候，耳朵会嗡。你咽了两下口水才缓过来。悬空球场在头顶越来越小，最后被云盖住了。你没什么特别的感觉。就是觉得风小了，空气暖了，能闻到泥土味了。",
-      "赵凛站在你旁边，手扶着吊厢的铁栏杆，指节发白。他忽然偏过头，声音压得很低，低到像是说给自己听的：「全国大赛。别让我等太久。」",
+      "武石站在你旁边，手扶着吊厢的铁栏杆，指节发白。他忽然偏过头，声音压得很低，低到像是说给自己听的：「全国大赛。别让我等太久。」",
       "你没看他。但嘴角动了一下。这个人。你把手插进兜里，没接话。不用接。他也不需要你接。"
     ],
     next: "ch7_end"
@@ -185,8 +185,8 @@ window.CHAPTER7 = { events: [
     id: "ch7_end",
     chapter: 7,
     text: [
-      "山脚下有个停车场，孙先生靠在一辆面包车旁边，手里夹着烟，看见你下来就把烟掐了，在鞋底上蹭了蹭。「等着呢。」他从副驾驶座上抽出一个牛皮纸袋，拍在你胸口，「全国U20，天罡联队。姜太虚挂帅。你们十一个人，是底子。」",
-      "你翻开纸袋，里面是报名表、体检单、还有一张合影的位。孙先生又点了根烟：「别当是青年赛糊弄。看台上坐的是职业队球探、国家队教练。踢好了，一步登天。踢砸了——」他吐了口烟，「也没关系，反正姜太虚不会让你们踢砸。」",
+      "山脚下有个停车场，孙德斯靠在一辆面包车旁边，手里夹着烟，看见你下来就把烟掐了，在鞋底上蹭了蹭。「等着呢。」他从副驾驶座上抽出一个牛皮纸袋，拍在你胸口，「全国U20，天罡联队。姜太虚挂帅。你们十一个人，是底子。」",
+      "你翻开纸袋，里面是报名表、体检单、还有一张合影的位。孙德斯又点了根烟：「别当是青年赛糊弄。看台上坐的是职业队球探、国家队教练。踢好了，一步登天。踢砸了——」他吐了口烟，「也没关系，反正姜太虚不会让你们踢砸。」",
       "你站在停车场边上，风从山口灌出来，吹得纸袋哗哗响。七年了。你低头看了看自己的手，指节粗了，虎口有茧，小拇指歪过一次没正过来。你上了车。车发动的时候，你回头看了一眼山。云把什么都盖住了。你转回头，系好安全带。"
     ],
     system: "【第七章·淬炼营·存活 完。22人→11人。接下来：第八章·全国大赛。】",
