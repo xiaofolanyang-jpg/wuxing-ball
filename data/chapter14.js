@@ -1,81 +1,52 @@
-/* data/chapter14.js — 第十四章《世青赛·半决赛》（20岁·世青赛篇·四强）
- * 事件链：半决赛前夜 → 半决赛(单败) → 章末(晋级决赛) ｜ 输球 → ch14_eliminated → 第十六章
- * 说明：半决赛，单败。result.lose 设分支级 next 指向 ch14_eliminated；draw 文案"点球险胜"仍晋级。
- *       ch14_eliminated 补偿跳过的 ch14_end/ch15_end 两次 chapter 递增（effects.chapter:2），直达第十六章。
+/* data/chapter14.js — 第十四章《决赛》（20岁·五行大会·决赛）
+ * 事件链：通道 → 决赛(match·BOSS) → 结果门 → 加时点球(check) → 颁奖 → 赛后通道 → ch15
+ * 说明：决赛BOSS战(str62·天人合一对手)。胜→冠军颁奖；平/负→加时点球检定。
  */
 window.CHAPTER14 = { events: [
 
-  // 开场：半决赛前夜
-  {
-    id: "ch14_opening",
-    chapter: 14,
-    text: [
-      "半决赛前夜。酒店房间里，你睡不着，索性坐起来看窗外的夜景。异国的月亮，跟青云城的是同一个，却好像隔着一层什么。",
-      "手机震了一下。是武石发来的，就一个字：「赢。」你回了个握拳的表情。又一下，阿贵的语音，大嗓门：「明天干翻他们！」你笑了笑，把手机扣在床头。",
-      "对手是日耳曼战车——纪律严明得像一台机器，全场九十分钟不犯一个错误的那种。沈祥说：「机器也有螺丝松的时候。耐心，等那一下。」"
-    ],
-    system: "【第十四章·世青赛·半决赛 开启。再赢一场，就是决赛。】",
-    next: "ch14_semi"
-  },
+  { id: "ch14_opening", chapter: 14,
+    text: ["通道。","五万人。","你站在通道里。腿在抖。","{companion1Name}在你旁边。他也在抖。","「别抖。」你说。","「你也是。」","你笑了。他笑了。","你走出去。","五万个声音。像海。像山。像——天。"],
+    effects: { demonValue: 5, flags: { finalMatch: true } },
+    next: "ch14_match" },
 
-  // 半决赛：日耳曼战车（金灵根·纪律机器）
-  {
-    id: "ch14_semi",
-    chapter: 14,
-    type: "match",
-    text: "半决赛，日耳曼战车。开场你就明白了什么叫纪律——他们的跑位像用尺子量过，传球像钟表齿轮，咬合得严丝合缝。金灵根后腰全场不知疲倦地扫荡，你拿球的空间被压缩到极限。看台上，两片球迷的声浪此起彼伏，像两军对垒。",
-    opponent: { name: "日耳曼战车", element: "金", strength: 60 },
-    teamBase: 36,
-    fallback_choices: [
-      { id: "A", sit: "attack", text: "用个人能力撕开机器的缝隙", check: { attrs: ["dribble", "burst"], difficulty: 48, tag: "盘带+爆发" },
-        success: { text: "你{elementAdj}地连续变向，硬是从两台机器的夹缝里挤过去，禁区内一脚低射。球进了。机器，也会卡壳。", effects: { reputation: 14, goals: 1, attrs: { dribble: 1 } } },
-        fail: { text: "机器的防守密不透风。你第三下变向时被人精准地卡住，球丢了。他们的回防快得像上了发条。", effects: { stamina: -6 } },
-        critical: { text: "【灵光一闪】你连过三人，在禁区前沿轰出一脚世界波。皮球直挂死角。看台上那片红色，疯了。", effects: { reputation: 24, goals: 1, attrs: { dribble: 2, burst: 1 }, flags: { keySuccess: true } } }
-      },
-      { id: "B", sit: "balanced", text: "用更快的传递，抢在机器咬合之前", check: { attrs: ["passing", "vision"], difficulty: 44, tag: "传球+视野" },
-        success: { text: "你加快出球节奏，一脚出球，两脚出球。机器的逼抢还没合围，球已经转移到了弱侧。武石插上，推射入网。", effects: { reputation: 10, assists: 1, bonds: { zhaolin: 8 }, attrs: { passing: 1 } } },
-        fail: { text: "传递稍慢半拍，被机器的中场拦截了。他们的反抢，又快又准。", effects: { stamina: -5 } }
-      },
-      { id: "C", sit: "defense", text: "先咬住，等机器自己松动", check: { attrs: ["pressure", "positioning"], difficulty: 42, tag: "抗压+站位" },
-        success: { text: "你顶住机器的层层推进，每一次对抗都咬住。第七十分钟，对方传接第一次出现失误——机会来了。", effects: { reputation: 8, attrs: { pressure: 1, positioning: 1 } } },
-        fail: { text: "机器的攻势一浪接一浪。你的重心越来越低，防线在晃。", effects: { stamina: -6 } }
-      }
-    ],
+  { id: "ch14_match", chapter: 14, type: "match",
+    text: ["五行大会·决赛。","对手核心。天人合一。96。","上半场。你冲了。他让你过了。轻描淡写。他拿球。你被过了。你甚至没反应过来。","下半场。他展开了领域。天人合一的领域。空气变了。你喘不过气。","最后三分钟。2-2。他站在你面前。差距。很大。但你不在乎。"],
+    opponent: { name: "五行大会·决赛", element: "水", strength: 62 }, teamBase: 44,
     result: {
-      bigwin: { text: "大胜战车，挺进决赛。终场哨响，机器的零件们愣在原地，不敢相信。你和队友们抱成一团，吼得嗓子都哑了。", effects: { reputation: 14, flags: { keySuccess: true } } },
-      win:     { text: "险胜，进决赛。更衣室里沈祥的手都在抖：「孩子们，你们创造了历史。」", effects: { reputation: 10 } },
-      draw:    { text: "战平，加时，点球。你罚进最后一球时，整个球场都安静了，然后——炸了。赢了。决赛。", effects: { reputation: 6, stamina: -8 } },
-      lose:    { text: "半决赛，倒下了。机器的球员们冷静地庆祝，像完成了一道工序。你坐在草皮上，半天没起来。", effects: { reputation: -5, stamina: -7, demonValue: 7 }, next: "ch14_eliminated" }
+      bigwin: { text: "【灵光一闪】你的领域。展开了。天人合一。你突破了。他的领域。碎了。球进了。世界安静了。然后——轰。五万人。", effects: { reputation: 50, goals: 1, allAttrsFlat: 5, flags: { assemblyChampion: true, wuxingChamp: true, tianrenBreakthrough: true } } },
+      win: { text: "你冲了。他挡了。你变了向。他——吃了。你过了。射了。进了。3-2。你跪在地上。五万人在喊。", effects: { reputation: 30, goals: 1, flags: { assemblyChampion: true, wuxingChamp: true } } },
+      draw: { text: "终场。2-2。加时。没人进球。点球。", effects: { stamina: -10 } },
+      lose: { text: "终场。2-3。他的领域。你没能破。你跪在地上。五万人在喊他的名字。", effects: { demonValue: 10, reputation: 15 } }
     },
-    next: "ch14_end"
-  },
+    next: "ch14_gate" },
 
-  // 半决赛出局（输球 → 止步，不进入决赛）
-  {
-    id: "ch14_eliminated",
-    chapter: 14,
-    text: [
-      "世青赛，止步四强。距离决赛，只差一场。你坐在更衣室的长凳上，盯着鞋钉上的泥，看了很久。",
-      "阿贵坐到你旁边，没说话，只是把一瓶水递给你。你接过来，拧开，没喝，又拧上了。",
-      "沈祥走过来，拍了拍你的肩：「四强，已经很好了。但我知道，你不满足。」他顿了顿，「记住这种不甘心。它会推着你，走到决赛，走到更远的地方。」你抬起头，点了点头。"
-    ],
-    system: "【世青赛·止步半决赛（季军）。接下来：第十六章·巅峰·抉择。】",
-    effects: { chapter: 2 },
-    next: "ch16_opening"
-  },
+  { id: "ch14_gate", chapter: 14,
+    choices: [
+      { id: "A", text: "……", effects: {}, next: "ch14_ceremony", when: { flag: "assemblyChampion" } },
+      { id: "B", text: "……", effects: {}, next: "ch14_extra", when: { notFlag: "assemblyChampion" } }
+    ] },
 
-  // 章末 → 第十五章《世青赛·决赛》
-  {
-    id: "ch14_end",
-    chapter: 14,
-    text: [
-      "决赛。你们真的踢进了世青赛的决赛。消息传回国内，整个青云城都沸腾了——阿贵他妈在电话里哭得说不出话。",
-      "决赛前夜，全队聚在一起。沈祥举起水杯：「明天，不管对面是谁，把你们的球，踢给全世界看。」二十多个杯子碰在一起，水花四溅。",
-      "你站在窗前，望着异国的夜空。从矿坑边的破布球，到世青赛的决赛。这一步，你走了很多年。明天，该把冠军带回家了。"
-    ],
-    system: "【第十四章·世青赛·半决赛 完。晋级决赛。接下来：第十五章·世青赛·决赛。】",
-    effects: { chapter: 1 },
-    next: "ch15_pregame"
-  }
+  { id: "ch14_extra", chapter: 14,
+    text: ["点球。","你站在点球点前。五万人。安静了。","你看着门将。他看着你。","你深吸一口气。","助跑。三步。","你射了。"],
+    choices: [
+      { id: "A", text: "全力。右上角。",
+        check: { attrs: ["resolve"], difficulty: 44, tag: "点球" },
+        success: { text: "进了。球砸入死角。门将扑了方向。你赢了。五行大会。冠军。", effects: { reputation: 30, goals: 1, flags: { assemblyChampion: true, wuxingChamp: true } }, next: "ch14_ceremony" },
+        fail: { text: "偏了。擦着立柱。你跪在地上。结束了。亚军。", effects: { demonValue: 8, reputation: 15 }, next: "ch14_tunnel" } },
+      { id: "B", text: "推射。中路。赌他扑。",
+        check: { attrs: ["composure"], difficulty: 40, tag: "点球" },
+        success: { text: "他扑了。你推了中路。球滚进去了。你赢了。", effects: { reputation: 30, goals: 1, flags: { assemblyChampion: true, wuxingChamp: true } }, next: "ch14_ceremony" },
+        fail: { text: "他没扑。他站在中路。看着球滚过来。抱住了。你输了。", effects: { demonValue: 10, reputation: 15 }, next: "ch14_tunnel" } }
+    ] },
+
+  { id: "ch14_ceremony", chapter: 14,
+    text: ["天脉灵泉。","你捧着那座奖杯。它很重。比你想的重。","五万人在喊。五种旗帜在飘。","{companion1Name}站在你旁边。他也在哭。","「我们。」他说。声音哑的。「他妈的。我们。」","你笑了。你也在哭。","国主站在主席台上。他鼓了掌。"],
+    effects: { reputation: 50, flags: { ceremonyDone: true } },
+    next: "ch14_tunnel" },
+
+  { id: "ch14_tunnel", chapter: 14,
+    text: ["通道里。","他站在对面。那个天人合一。他看着你。","「你赢了。」他说。或者。「下次。」","他伸出手。","你握了。","「天人合一。」他说。「你快了。」","你点头。","他走了。","你站在通道里。看着他的背影。","天人合一。快了。"],
+    effects: { bonds: { chuanqi: 5 }, flags: { assemblyEnd: true }, chapter: 1 },
+    next: "ch15_opening" }
 
 ] };

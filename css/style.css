@@ -329,6 +329,7 @@ html, body {
   white-space: pre-wrap;
 }
 .ending-title { color: var(--gold); font-size: 22px; text-align: center; letter-spacing: 6px; margin-bottom: 8px; }
+.ending-condition { color: var(--text-dim); font-size: 12px; text-align: center; margin-bottom: 12px; opacity: 0.8; }
 .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; font-size: 13px; margin: 12px 0; }
 .summary-grid .k { color: var(--text-dim); }
 .summary-grid .v { color: var(--gold-light); text-align: right; }

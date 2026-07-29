@@ -70,8 +70,23 @@
         case "assists": return st ? st.assists : 0;
         case "matches": return st ? st.matches : 0;
         case "rerollLeft": return st ? Math.max(0, (CONFIG.maxRerolls - 1) - (st.rerollCount || 0)) : 0;
+        // ---- v3.0 世界生成插值（剧本用） ----
+        case "playerName": return st && st.name ? st.name : "你";
+        case "playerElement": return st && st.rootType ? st.rootType : "无";
+        case "academyName": return st && st.academyName ? st.academyName : "小学院";
+        case "continent": return st && st.continent ? st.continent : "未知大洲";
+        case "continentElement": return st && st.continentElement ? st.continentElement : "";
+        case "homeAcademy": return st && st.homeAcademy ? st.homeAcademy : "五院";
+        case "nationality": return st && st.nationality ? st.nationality : "";
+        case "rivalAcademy": return st && st.rivalAcademy ? st.rivalAcademy : "对手学院";
+        case "academyGrade": return st && st.academyGrade ? st.academyGrade : "D";
+        case "companionCount": return st ? (st.companionCount || 0) : 0;
+        case "elementColor": return st ? (CONFIG.elementColor && CONFIG.elementColor[st.rootType] || "五色") : "五色";
+        case "qualityDisplay": return st && st.rootQuality ? CONFIG.quality[st.rootQuality].name : "";
         default:
           if (st && st.attrs && st.attrs[key] !== undefined) return Math.floor(st.attrs[key]);
+          // 通用兜底：动态字段（companion1Name / companion1Element 等由生成器写入 state）
+          if (st && st[key] !== undefined && st[key] !== null && typeof st[key] !== "object") return st[key];
           return m;
       }
     });

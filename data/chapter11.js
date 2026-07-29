@@ -1,78 +1,69 @@
-/* data/chapter11.js — 第十一章《世青赛·集结》（19-20岁·世青赛篇·序幕）
- * 事件链：国青集结 → 老友重逢(羁绊大推进) → 赛前集训(修炼) → 小组抽签 → 章末
- * 说明：世界青年锦标赛序幕。重逢推进 agui/zhaolin/linxiao/suwan 羁绊；集训为修炼加点。
- *       章末 age+1（19→20，世青赛跨年）。系统提示世青赛赛制：3小组赛→2淘汰赛→半决赛→决赛。
+/* data/chapter11.js — 第十一章《传奇·交锋》v3.0 剧本版
+ * 主题：联赛冠军争夺。传奇球员全面交锋。声望巅峰。
+ * 年龄：19岁 | 事件数：8
  */
 window.CHAPTER11 = { events: [
 
-  // 开场：国青集结
-  {
-    id: "ch11_opening",
-    chapter: 11,
-    text: [
-      "国家青年队训练基地。六月的草皮被太阳晒得发烫，空气里全是新剪草叶和防晒霜混在一起的味道。二十多个来自天南海北的年轻人，胸前绣着同一面旗。",
-      "你拖着行李箱走进报到大厅，签到处的小姑娘核对完名字，抬头多看了你一眼：「你就是那个从五洲天罡联赛回来的？」你笑了笑，没接话。",
-      "主教练是个五十多岁的老教头，姓沈，嗓门不大，眼神却利。他站在大厅中央扫视一圈：「都到了。好。从明天起，你们只有一个名字——国青。」"
-    ],
-    system: "【第十一章·世青赛·集结 开启。为国出征，从穿上这身队服开始。】",
-    next: "ch11_reunion"
-  },
+  { id: "ch11_opening", chapter: 11,
+    text: ["这个赛季。你不一样了。","化域境。国家队成员。","你不再是「升班马」。你是——contender。","前五场。四胜一平。排名第一。"],
+    system: "【第十一章·传奇·交锋 开启。冠军。传奇。五行大会前的最后考验。】",
+    effects: { reputation: 10, matches: 5, wins: 4 },
+    next: "ch11_tianwang" },
 
-  // 老友重逢（羁绊大推进）
-  {
-    id: "ch11_reunion",
-    chapter: 11,
-    text: [
-      "餐厅里，你一眼就看见了那几张熟面孔。范志贵端着餐盘冲你挥手，大嗓门隔着半个食堂：「这儿！给你占的座！」他面前的桌子已经摆满了菜。",
-      "武石坐在角落，慢条斯理地喝着汤，抬眼看了你一下，没说话，但朝你点了下头。内牛尔靠在窗边，难得地冲你笑了一下。苏雯坐在最安静的位置，膝盖上摊着本战术笔记，朝你举了举手里的水杯。",
-      "你忽然有点恍惚。从青训到省赛，从大比到淬炼营，再到全国大赛。兜兜转转，最强的那批人，又站到了一起。只是这一次，你们胸前绣的是同一面旗。"
-    ],
-    system: "【羁绊大推进：与范志贵、武石、内牛尔、苏雯的羁绊进度+10。】",
+  { id: "ch11_tianwang", chapter: 11, type: "match",
+    text: ["第八场。天王山。","对手排名第二。差你一分。赢了。冠军稳了。输了。一切重来。","两万人。全在喊。你听不见。你只听到自己的心跳。"],
+    opponent: { name: "天罡·天王山", element: "金", strength: 54 }, teamBase: 40,
+    result: {
+      bigwin: { text: "大胜。冠军稳了。两万人全在喊你的名字。", effects: { reputation: 15, flags: { titleWon: true } } },
+      win: { text: "赢了。2-1。冠军稳了。{companion1Name}把你扑倒。「冠军！我们是冠军！」", effects: { reputation: 12, flags: { titleWon: true } } },
+      draw: { text: "平了。2-2。差一点。但还有机会。", effects: { reputation: 8 } },
+      lose: { text: "输了。1-2。一切重来。你坐在场边。喘。", effects: { demonValue: 4 } }
+    },
+    next: "ch11_champion_gate" },
+
+  { id: "ch11_champion_gate", chapter: 11,
+    text: "赛季结算。",
     choices: [
-      { id: "A", text: "坐到阿贵那桌：老兄弟，有说不完的话", effects: { bonds: { agui: 12, zhaolin: 8, linxiao: 8, suwan: 8 }, reputation: 3, demonValue: -3 }, next: "ch11_train" },
-      { id: "B", text: "坐到苏雯对面：聊聊战术，世青赛没那么简单", effects: { bonds: { suwan: 12, zhaolin: 8, linxiao: 8, agui: 8 }, attrs: { iq: 1 } }, next: "ch11_train" },
-      { id: "C", text: "坐到武石旁边：宿敌并肩，别有一番滋味", effects: { bonds: { zhaolin: 14, agui: 8, linxiao: 8, suwan: 8 }, attrs: { resolve: 1 } }, next: "ch11_train" }
+      { id: "A", when: { flag: "titleWon" }, text: "继续", next: "ch11_champion" },
+      { id: "B", when: { notFlag: "titleWon" }, text: "继续", next: "ch11_legends" }
     ]
   },
 
-  // 赛前集训（修炼加点）
-  {
-    id: "ch11_train",
-    chapter: 11,
-    type: "train",
-    text: "世青赛开赛前两周，国青封闭集训。沈祥的训练量很大，一天三练，草皮被踩得起了毛边。傍晚你留在球场加练，脚背抽了又抽，直到小腿发酸。世青赛的对手来自世界各地，没有一个是软柿子。多练一脚，到时候就多一分底气。夜里你把灵力一遍遍压进经脉，窗外的虫鸣此起彼伏。",
-    next: "ch11_draw"
-  },
+  { id: "ch11_champion", chapter: 11,
+    text: ["哨响。冠军。","两万人。全在喊。","{companion1Name}把你扑倒。所有人压上来。你被埋在底下。","你笑了。在人群底下。你笑了。"],
+    effects: { reputation: 30, flags: { champion: true } },
+    next: "ch11_legends" },
 
-  // 小组抽签（分组形势）
-  {
-    id: "ch11_draw",
-    chapter: 11,
-    text: [
-      "抽签结果出来了。会议室的大屏幕上，三个对手的名字依次跳出来。沈祥拿着激光笔，一个个圈过去：",
-      "「首战，北欧海盗——身体对抗欧洲顶级，金灵根后卫扎堆；次战，南美桑巴——技术流，节奏快得像跳舞；末战，非洲雄狮——速度和爆发力惊人，火灵根前锋一抓一把。」",
-      "他关掉激光笔，目光扫过每个人：「小组前两名出线。然后是单败淘汰——十六强、八强、半决赛、决赛。一场都输不起。都听明白了吗？」"
-    ],
-    system: "【世青赛赛制：小组赛3场（前两名出线）→ 淘汰赛2场（1/8决赛、1/4决赛）→ 半决赛 → 决赛。淘汰赛阶段，输球即回家。】",
-    choices: [
-      { id: "A", text: "盯着赛程表，把每个对手的特点记在心里", effects: { attrs: { iq: 2, vision: 1 } }, next: "ch11_end" },
-      { id: "B", text: "找沈祥主动请缨：关键战，让我上", effects: { reputation: 4, attrs: { resolve: 2 } }, next: "ch11_end" },
-      { id: "C", text: "和阿贵他们加练默契：团队，才是赢球的根本", effects: { bonds: { agui: 6, linxiao: 6 }, attrs: { passing: 1 } }, next: "ch11_end" }
-    ]
-  },
+  { id: "ch11_legends", chapter: 11, type: "match",
+    text: ["季后赛。决赛。对面。五个传奇。五个。化域。","「五个。」{companion1Name}说。声音很平。","「怕吗？」","「我他妈的怕。」","你笑了。「那就对了。」"],
+    opponent: { name: "五传奇·决赛", element: "火", strength: 62 }, teamBase: 40,
+    result: {
+      bigwin: { text: "你赢了。五个传奇。你赢了。全场起立。你站在场中央。这是你的人生。", effects: { reputation: 25 } },
+      win: { text: "你赢了。2-1。五个传奇。你进了一个。全场起立。", effects: { reputation: 22, goals: 1 } },
+      draw: { text: "平了。1-1。你进了一个。在五个传奇面前。全场起立。", effects: { reputation: 20, goals: 1 } },
+      lose: { text: "1-3。输了。但你进了一个。在五个传奇面前。全场起立。虽败犹荣。", effects: { reputation: 20, goals: 1 } }
+    },
+    next: "ch11_peak" },
 
-  // 章末 → 第十二章《世青赛·小组赛》
-  {
-    id: "ch11_end",
-    chapter: 11,
-    text: [
-      "集训结束那天，下了场大雨。你站在球场边，看雨水在草皮上汇成一条条小溪。明天，世青赛就开打了。",
-      "更衣室里，沈祥把首发名单贴在了墙上。你的名字在上面。他路过你身边时停了半步：「世界很大。去让他们看看，东方的球，是怎么踢的。」",
-      "你深吸一口气，凉意灌满肺。从矿坑边的破布球，到世界青年赛的草皮。这一步，你走了很多年。明天，该上场了。"
-    ],
-    system: "【第十一章·世青赛·集结 完。接下来：第十二章·世青赛·小组赛。】",
-    effects: { chapter: 1, age: 1 },
-    next: "ch12_opening"
-  }
+  { id: "ch11_peak", chapter: 11,
+    text: ["赛季结束。你的声望。","「球星」。不。比球星更高。「国手」。","五行大会。在等你。"],
+    effects: { flags: { starLevel: true } },
+    next: "ch11_rival_peace" },
+
+  { id: "ch11_rival_peace", chapter: 11,
+    text: ["赛季末。你遇到了沈惊寒。不是比赛。是偶遇。","「五行大会。」他说。","「嗯。」","「我们可能是一队。也可能不是。」","他笑了。「不管是不是。决赛见。」","「决赛见。」"],
+    effects: { bonds: { sudi: 2 }, flags: { rivalRespect: true } },
+    next: "ch11_inherit" },
+
+  { id: "ch11_inherit", chapter: 11,
+    text: ["训练基地。晚上。你在加练。","一个人走过来。很老。头发白了。但眼睛很亮。退役传奇。","「你。过来。我教你一个东西。只教一次。」","他动了。你看到了。那不是踢球。那是——道。","和营主教你的不一样。这是——另一条路。"],
+    system: "【传承羁绊解锁。主属性成长永久+20%。】",
+    effects: { coreAttrs: 4, flags: { inheritance: true } },
+    next: "ch11_depart" },
+
+  { id: "ch11_depart", chapter: 11,
+    text: ["五行大会。明天。","你站在宿舍里。收拾包。{companion1Name}坐在床上。看着你。","「紧张？」","「……有一点。」","他笑了。「我也是。」","你拉上包的拉链。「走。睡觉。明天——五行大会。」"],
+    effects: { flags: { assemblyEve: true }, chapter: 1 },
+    next: "ch12_opening" }
 
 ] };

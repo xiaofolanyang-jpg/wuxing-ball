@@ -37,25 +37,31 @@
         if (st.stamina < t.max) { chance -= t.penalty; break; }
       }
     }
-    // 羁绊加成（设计稿第五章·羁绊技能）：已解锁羁绊在对应条件下提升检定成功率，总加成受 bondBonusCap 上限约束
+    // 羁绊加成（设计稿 v3.0·动态羁绊）：已解锁羁绊 bonus 求和，受 bondBonusCap 上限约束
+    // 触发条件在解锁时（addBondProgress）控制，应用时不再做对手特判
     if (st.bondsUnlocked && st.bondsUnlocked.length && CONFIG.bonds) {
-      const oppName = matchState ? matchState.opponentName : "";
       let bondSum = 0;
       st.bondsUnlocked.forEach(bid => {
         const b = CONFIG.bonds[bid];
-        if (!b || !b.bonus) return;
-        if (bid === "zhaolin" && oppName.indexOf("武石") < 0) return;
-        if (bid === "canglan" && opponentEl !== "水") return;
-        bondSum += b.bonus;
+        if (b && b.bonus) bondSum += b.bonus;
       });
       chance += Math.min(bondSum, CONFIG.bondBonusCap || 1);
     }
-    // 五行共鸣加成：多属性达到高境界时触发（杂灵根后期核心机制）
+    // 五行共鸣加成：多属性达到高境界时触发（全灵根后期核心机制）
     chance += getResonanceBonus();
     chance = Math.max(CONFIG.clampMin, Math.min(CONFIG.clampMax, chance));
 
     // 暴击概率随成功率成长：高属性角色暴击率更高
-    const critChance = CONFIG.critBase + chance * CONFIG.critScale;
+    let critChance = CONFIG.critBase + chance * CONFIG.critScale;
+    // 淬炼营被动技能钩子：开小灶解锁的被动影响暴击/难度
+    if (st.camp && st.camp.passives && st.camp.passives.length && CONFIG.passiveSkills) {
+      st.camp.passives.forEach(function (pid) {
+        const p = CONFIG.passiveSkills[pid];
+        if (!p) return;
+        if (p.critBonus && checkMatchesType(attrs, p.checkType)) critChance += p.critBonus;
+        if (p.diffMod && (!p.condition || matchState && matchState[p.condition])) chance -= p.diffMod;
+      });
+    }
     if (Math.random() < critChance) return "critical";
     return Math.random() < chance ? "success" : "fail";
   }
@@ -165,6 +171,23 @@
     if (effects.bonds) {
       Object.keys(effects.bonds).forEach(b => addBondProgress(b, effects.bonds[b]));
     }
+    // 核心属性（灵根亲和属性）平坦加成
+    if (effects.coreAttrs) {
+      const aff = st.affinityElements || [st.rootType];
+      aff.forEach(el => {
+        (CONFIG.attrs[el] || []).forEach(a => {
+          st.attrs[a] = Math.max(0, Math.min(getAttrCap(a), (st.attrs[a] || 0) + effects.coreAttrs));
+        });
+      });
+    }
+    // 全属性平坦加成
+    if (effects.allAttrsFlat) {
+      Object.keys(st.attrs).forEach(a => {
+        st.attrs[a] = Math.max(0, Math.min(getAttrCap(a), (st.attrs[a] || 0) + effects.allAttrsFlat));
+      });
+    }
+    // 学院等级
+    if (effects.academyGrade) st.academyGrade = effects.academyGrade;
     if (st.stamina > 100) st.stamina = 100;
     if (st.stamina < 0) st.stamina = 0;
   }
@@ -207,7 +230,8 @@
     }
     if (c.when.flag && !(st.flags && st.flags[c.when.flag])) return false;
     if (c.when.notFlag && st.flags && st.flags[c.when.notFlag]) return false;
-    if (c.when.mixedRoot && st.rootQuality !== "mixed") return false;
+    if (c.when.mixedRoot && st.rootQuality !== "full") return false;
+    if (c.when.notMixedRoot && st.rootQuality === "full") return false;
     return true;
   }
 
@@ -231,11 +255,18 @@
         global.UI.updateStatus();
       }
     }
+    // v3.0：成长型队友生成（须在灵根觉醒后，按玩家灵根做互补）
+    if (ev.type === "gen_companions") {
+      if (global.GameSetup && (!global.State.current.companions || !global.State.current.companions.length)) {
+        global.GameSetup.generateCompanions(global.State.current);
+        global.UI.updateStatus();
+      }
+    }
     // 渲染正文（支持 byRoot：按玩家灵根动态切换 text/system）
     let textSrc = ev.text;
     let systemSrc = ev.system;
     if (ev.byRoot && global.State.current && global.State.current.rootType) {
-      const key = global.State.current.rootQuality === "mixed" ? "杂" : global.State.current.rootType;
+      const key = global.State.current.rootQuality === "full" ? "杂" : global.State.current.rootType;
       const br = ev.byRoot[key];
       if (br) {
         if (br.text) textSrc = br.text;
@@ -260,7 +291,7 @@
       if (rerollLeft > 0) {
         const hint = (st.rerollCount || 0) === 0
           ? CONFIG.rootRerollHint
-          : "庙祝摩挲着桌上剩下的铜钱：「只剩{rerollLeft}次机会了。想好了再按。」";
+          : "白袍人摩挲着凳上剩下的铜钱：「只剩{rerollLeft}次机会了。想好了再按。」";
         await global.UI.renderTextBlock(hint, { system: true });
       }
     }
@@ -543,9 +574,8 @@
     // 开启实时计分牌（比分 + 双方威胁值）
     global.UI.showMatchHUD(matchState, threatToGoals(matchState.threat), threatToGoals(matchState.oppThreat));
 
-    // 羁绊进度累积（设计稿第五章）：遇水灵根对手→水火不容；遇武石→既生瑜何生亮
-    if (opp.element === "水") addBondProgress("canglan", 10);
-    if ((opp.name || "").indexOf("武石") >= 0) addBondProgress("zhaolin", 15);
+    // 羁绊进度累积（设计稿 v3.0·动态羁绊）：对手被标记为宿敌时累积宿敌羁绊
+    if (opp.rival) addBondProgress("sudi", 12);
 
     // 玩家事件（位置池，抽 2 个）
     const poolId = buildPoolId(ev);
@@ -665,8 +695,8 @@
       global.UI.updateStatus();
     }
     if (te.result) await global.UI.renderTextBlock(te.result, { system: true });
-    // 范志贵队友事件→金兰之交羁绊进度（设计稿第五章）
-    if (te.who === "agui") addBondProgress("agui", 10);
+    // 队友联动节点→同袍羁绊进度（设计稿 v3.0·动态羁绊：同场配合累积）
+    addBondProgress("tongpao", 5);
     await global.UI.waitContinue();
   }
 
@@ -702,50 +732,32 @@
     const attrVals = Object.keys(st.attrs).map(k => st.attrs[k]);
     const tianren = attrVals.some(v => v >= 90);
     const tongmai = attrVals.some(v => v >= 45);
+    const champ = f.wuxingChamp || f.nationalChamp;   // 五行大会/全国冠军
+    const retired = f.choiceRetire || f.injuryRetire;  // 主动或因伤退役
     let target;
-    // 心魔值满→强制黯然退场（设计稿第十章结局表：天劫失败/心魔满）
-    if ((st.demonValue || 0) >= (CONFIG.demonBadEndThreshold || 60)) {
-      target = "end_dusk";
-    }
-    // 杂灵根+五行归一→浪子回头（设计稿第十章：废根不废人）
-    else if (st.rootQuality === "mixed" && f.wuxingGuiyi) {
-      target = "end_return";
-    }
-    // 选择当教练→教练之路（隐藏路线）
-    else if (f.choiceCoach) {
-      target = "end_coach";
-    }
-    // 退役后复出→传奇复出
-    else if (f.choiceRetire && f.comeback) {
-      target = "end_comeback";
-    }
-    // 因伤退役不复出→黯然离场
-    else if (f.choiceRetire) {
-      target = "end_dusk";
-    }
-    // 天人合一+全国冠军+远赴五洲→球圣封神（最高结局）
-    else if (f.nationalChamp && f.choiceTianguang && tianren) {
-      target = "end_saint";
-    }
-    // 通脉+远赴天罡→天罡之星
-    else if (f.choiceTianguang && tongmai) {
-      target = "end_star";
-    }
-    // 通脉+留守+声望极高→功勋队长
-    else if (f.choiceStay && tongmai && st.reputation >= 120) {
-      target = "end_captain";
-    }
-    // 声望高+关键成功→新星升起（兼容既有）
-    else if (st.reputation >= 80 && f.keySuccess) {
-      target = "end_rising";
-    }
-    // 声望中等→蛰伏待时（兼容既有）
-    else if (st.reputation >= 40) {
-      target = "end_dormant";
-    }
-    // 开放式→江湖再见
-    else {
-      target = "end_jianghu";
+    // 按剧本第十八章事件5·判定优先级 1-11
+    if (champ && f.choiceTianguang && tianren) {
+      target = "end_saint";        // 1 球圣封神
+    } else if (f.choiceTianguang && tongmai) {
+      target = "end_star";         // 2 天罡之星
+    } else if (f.choiceStay && tongmai && st.reputation >= 120) {
+      target = "end_captain";      // 3 功勋队长
+    } else if (st.rootQuality === "full" && f.wuxingGuiyi) {
+      target = "end_return";       // 4 浪子回头
+    } else if (f.choiceCoach) {
+      target = "end_coach";        // 5 教练之路
+    } else if (champ) {
+      target = "end_assembly";     // 6 五行大会（冠军但未达球圣全条件）
+    } else if (f.twinsBest) {
+      target = "end_twins";        // 7 双子星
+    } else if (retired && f.comeback) {
+      target = "end_comeback";     // 8 传奇复出
+    } else if (st.reputation >= 100 && f.choiceRetire) {
+      target = "end_retire";       // 9 功成身退
+    } else if ((st.demonValue || 0) >= (CONFIG.demonBadEndThreshold || 60) || (retired && !f.comeback)) {
+      target = "end_dusk";         // 10 黯然离场
+    } else {
+      target = "end_jianghu";      // 11 江湖再见（兜底）
     }
     goto(target);
   }
@@ -756,6 +768,8 @@
   function startNew(difficulty) {
     global.State.clearSave();
     global.State.current = global.State.createInitial(difficulty);
+    // v3.0：开局生成大洲 + 起始小学院 + 国籍 + 对手学院（与灵根无关）
+    if (global.GameSetup) global.GameSetup.generateWorld(global.State.current);
     global.UI.updateStatus();
     global.State.save(); // 难度选择后立即存档，保证存档含 difficulty
     goto("ch1_opening");
@@ -775,6 +789,318 @@
   // 开局选择：是否有存档
   function hasSave() { return !!global.State.load(); }
 
+  /* ============================================================
+     比赛增强系统（比赛内容大纲 + 球队群像设计稿）
+     ============================================================ */
+
+  // 辅助：判断检定属性是否匹配被动技能类型
+  function checkMatchesType(attrs, checkType) {
+    if (!checkType) return false;
+    var defenseAttrs = ["tackle","intercept","strength","hardness","positioning"];
+    var dribbleAttrs = ["dribble","speed","agility"];
+    var shootingAttrs = ["shooting","burst","power"];
+    var strengthAttrs = ["strength","hardness","balance"];
+    var map = { defense: defenseAttrs, dribble: dribbleAttrs, shooting: shootingAttrs, strength: strengthAttrs };
+    var pool = map[checkType];
+    if (!pool) return false;
+    return attrs.some(function (a) { return pool.indexOf(a) >= 0; });
+  }
+
+  // 1. 五行相克修正：返回玩家和对手的检定难度修正值
+  function getElementClash(playerEl, oppEl) {
+    if (!CONFIG.elementClash || !playerEl || !oppEl) return { playerMod: 0, oppMod: 0 };
+    var key = playerEl + "克" + oppEl;
+    if (CONFIG.elementClash[key]) return { playerMod: CONFIG.elementClash[key].keMod, oppMod: CONFIG.elementClash[key].beiMod };
+    var rev = oppEl + "克" + playerEl;
+    if (CONFIG.elementClash[rev]) return { playerMod: CONFIG.elementClash[rev].beiMod, oppMod: CONFIG.elementClash[rev].keMod };
+    return { playerMod: 0, oppMod: 0 };
+  }
+
+  // 2. 风格随机事件抽取：按对手五行+节点+比分状态概率触发
+  function getStyleEvent(oppElement, node, ms) {
+    if (!CONFIG.styleEvents || !global.MATCH_STYLE_EVENTS) return null;
+    var se = CONFIG.styleEvents;
+    if (se.triggerNodes.indexOf(node) < 0) return null;
+    var pool = global.MATCH_STYLE_EVENTS[oppElement];
+    if (!pool || !pool.length) return null;
+    var prob = se.triggerProb;
+    // 比分修正
+    if (ms && se.scoreModifier) {
+      var diff = (ms.myScore || 0) - (ms.oppScore || 0);
+      if (diff >= 2) prob += se.scoreModifier.lead2;
+      else if (diff <= -2) prob += se.scoreModifier.trail2;
+      else prob += se.scoreModifier.close;
+    }
+    // 时间修正
+    if (ms && ms.minute >= 85 && se.timeModifier) prob += se.timeModifier.last5;
+    if (Math.random() > prob) return null;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  // 3. 关键时刻三选一：返回风格专属分支数据
+  function getKeyMomentBranch(oppElement, ms) {
+    if (!CONFIG.keyMomentTypes) return null;
+    var branches = global.KEY_MOMENT_BRANCHES && global.KEY_MOMENT_BRANCHES[oppElement];
+    if (!branches) return null;
+    return branches; // { A:{...}, B:{...}, C:{...} }
+  }
+
+  // 4. 比分动态叙事：根据当前比分返回叙事文本
+  function getScoreNarrative(myScore, oppScore, minute) {
+    if (!CONFIG.scoreNarrative) return null;
+    var diff = myScore - oppScore;
+    var key;
+    if (minute >= 85) key = "last5";
+    else if (diff >= 2) key = "lead2";
+    else if (diff === 1) key = "lead1";
+    else if (diff === 0) key = "draw";
+    else if (diff === -1) key = "trail1";
+    else key = "trail2";
+    var txt = CONFIG.scoreNarrative[key];
+    return (txt && txt.indexOf("[TODO") < 0) ? txt : null;
+  }
+
+  // 5. 赛前传奇对视：仅首次交手触发
+  function checkLegendEncounter(teamKey) {
+    var st = global.State.current;
+    if (!CONFIG.legendEncounter || !teamKey) return null;
+    if (st.encounterFlags && st.encounterFlags[teamKey]) return null;
+    var txt = CONFIG.legendEncounter[teamKey];
+    if (!txt || txt.indexOf("[TODO") >= 0) return null;
+    if (!st.encounterFlags) st.encounterFlags = {};
+    st.encounterFlags[teamKey] = true;
+    // 更新交手次数
+    if (!st.seriesCount) st.seriesCount = {};
+    st.seriesCount[teamKey] = (st.seriesCount[teamKey] || 0) + 1;
+    return txt;
+  }
+
+  // 6. 赛后传奇认可：评级>=A时触发
+  function checkLegendRespect(teamKey, rating) {
+    if (!CONFIG.legendRespect || rating === "B" || rating === "C" || rating === "D") return null;
+    // 找到对应球队的固定传奇（非概率）
+    var legends = CONFIG.legends;
+    if (!legends) return null;
+    var keys = Object.keys(legends);
+    for (var i = 0; i < keys.length; i++) {
+      var lg = legends[keys[i]];
+      if (lg.team === teamKey && !lg.prob) {
+        var txt = CONFIG.legendRespect[keys[i]];
+        if (txt && txt.indexOf("[TODO") < 0) return { key: keys[i], text: txt };
+      }
+    }
+    return null;
+  }
+
+  // 7. 概率传奇登场检测：60分钟后每回合调用
+  function checkLegendSpawn(teamKey, ms) {
+    var st = global.State.current;
+    if (!CONFIG.legendSpawn || !teamKey) return null;
+    var ls = CONFIG.legendSpawn;
+    if (ms && ms.minute < ls.baseMinute) return null;
+    // 找到对应球队的 prob 传奇
+    var legends = CONFIG.legends;
+    if (!legends) return null;
+    var probKey = null;
+    var keys = Object.keys(legends);
+    for (var i = 0; i < keys.length; i++) {
+      if (legends[keys[i]].team === teamKey && legends[keys[i]].prob) { probKey = keys[i]; break; }
+    }
+    if (!probKey) return null;
+    var spawnId = teamKey + "_" + probKey;
+    if (st.legendSpawned && st.legendSpawned[spawnId]) return null;
+    // 计算概率
+    var prob = ls.baseProb;
+    var mod = ls.modifiers[spawnId];
+    if (mod) {
+      var condMet = true;
+      if (mod.condKey === "reputation" && st.reputation < mod.condMin) condMet = false;
+      if (mod.condKey === "consecutiveFails" && (st.consecutiveFails || 0) < mod.condMin) condMet = false;
+      if (mod.condKey === "setPieceCount" && (st.setPieceCount || 0) < mod.condMin) condMet = false;
+      if (mod.condKey === "hasFreeKick" && !(ms && ms.hasFreeKick)) condMet = false;
+      if (mod.condKey === "extraTime" && !(ms && ms.extraTime)) condMet = false;
+      if (condMet) prob += mod.bonus;
+    }
+    if (Math.random() > prob) return null;
+    // 触发成功
+    if (!st.legendSpawned) st.legendSpawned = {};
+    st.legendSpawned[spawnId] = true;
+    return { key: probKey, legend: legends[probKey] };
+  }
+
+  // 8. 传奇登场后效果应用
+  function applyLegendSpawnEffects(ms) {
+    if (!CONFIG.legendSpawn || !ms) return;
+    var eff = CONFIG.legendSpawn.effects;
+    ms.opponentStrength = (ms.opponentStrength || 0) + eff.strengthBonus;
+    ms.keyDiffBonus = (ms.keyDiffBonus || 0) + eff.keyDiffBonus;
+    ms.legendAwakened = true;
+  }
+
+  /* ============================================================
+     淬炼营系统（淬炼营比赛大纲）
+     ============================================================ */
+
+  // 1. 初始化淬炼营：生成100人排名表
+  function initCamp() {
+    var st = global.State.current;
+    var cc = CONFIG.campConfig;
+    if (!cc) return null;
+    var players = [];
+    for (var i = 0; i < cc.totalPlayers; i++) {
+      players.push({
+        id: i, name: "NPC_" + (i + 1), isPlayer: i === 0,
+        wins: 0, losses: 0, coachScore: 50, balance: 50, awakening: false, eliminated: false
+      });
+    }
+    players[0].name = st.name || "玩家";
+    players[0].isPlayer = true;
+    st.camp = {
+      rank: 50, wins: 0, losses: 0, coachScore: 50,
+      teamId: null, teammates: [], passives: [], awakening: false,
+      players: players, phase: "1v1", matchDay: 0
+    };
+    return st.camp;
+  }
+
+  // 2. 计算淬炼营排名（4维加权）
+  function calcCampRanking(player) {
+    var cc = CONFIG.campConfig;
+    if (!cc) return 0;
+    var w = cc.rankingWeights;
+    var totalMatches = player.wins + player.losses || 1;
+    var recordScore = (player.wins / totalMatches) * 100;
+    var coachScore = player.coachScore || 50;
+    var balanceScore = player.balance || 50;
+    var awakenScore = player.awakening ? 100 : 0;
+    return recordScore * w.record + coachScore * w.coach + balanceScore * w.balance + awakenScore * w.awakening;
+  }
+
+  // 3. 1v1对阵生成（三种模式）
+  function generate1v1Pairing(mode) {
+    var st = global.State.current;
+    if (!st.camp) return null;
+    var alive = st.camp.players.filter(function (p) { return !p.eliminated && !p.isPlayer; });
+    if (!alive.length) return null;
+    if (mode === "random") {
+      return alive[Math.floor(Math.random() * alive.length)];
+    } else if (mode === "ranked") {
+      // 排名接近的优先
+      alive.sort(function (a, b) { return calcCampRanking(b) - calcCampRanking(a); });
+      var mid = Math.floor(alive.length / 2);
+      return alive[Math.max(0, mid + Math.floor(Math.random() * 5) - 2)];
+    } else {
+      // deathmatch：边缘玩家互打
+      alive.sort(function (a, b) { return calcCampRanking(a) - calcCampRanking(b); });
+      return alive[Math.floor(Math.random() * Math.min(10, alive.length))];
+    }
+  }
+
+  // 4. 1v1比赛结算（3节点制）
+  function resolve1v1Match(opponent) {
+    var st = global.State.current;
+    if (!st.camp) return null;
+    var results = [];
+    var myScore = 0, oppScore = 0;
+    for (var node = 0; node < 3; node++) {
+      var diff = 28 + node * 4; // 难度递增
+      var r = skillCheck(["dribble", "shooting"], diff, null);
+      results.push(r);
+      if (r === "critical") myScore += 2;
+      else if (r === "success") myScore += 1;
+      else oppScore += 1;
+    }
+    var won = myScore > oppScore;
+    st.camp.wins += won ? 1 : 0;
+    st.camp.losses += won ? 0 : 1;
+    if (opponent) {
+      opponent.wins += won ? 0 : 1;
+      opponent.losses += won ? 1 : 0;
+    }
+    return { won: won, myScore: myScore, oppScore: oppScore, results: results };
+  }
+
+  // 5. 教练青睐判定
+  function checkCoachFavor(performance) {
+    var st = global.State.current;
+    var co = CONFIG.campObservation;
+    if (!co || !st.camp) return null;
+    if (performance < co.favorThreshold) return null;
+    if (Math.random() > co.favorProb) return null;
+    // 根据玩家最高属性对应五行确定教习
+    var bestEl = "金";
+    var bestVal = 0;
+    CONFIG.elementOrder.forEach(function (el) {
+      CONFIG.attrs[el].forEach(function (a) {
+        if ((st.attrs[a] || 0) > bestVal) { bestVal = st.attrs[a]; bestEl = el; }
+      });
+    });
+    return { element: bestEl, score: performance };
+  }
+
+  // 6. 组队约束校验（>=3灵根, >=1后+1前）
+  function validateTeam(team) {
+    if (!team || team.length !== (CONFIG.campConfig ? CONFIG.campConfig.teamSize : 5)) return { valid: false, reason: "人数不足" };
+    var roots = {};
+    var hasDef = false, hasFwd = false;
+    team.forEach(function (p) {
+      if (p.root) roots[p.root] = true;
+      if (p.pos && ["CB","SW","RB","LB","GK"].indexOf(p.pos) >= 0) hasDef = true;
+      if (p.pos && ["ST","LW","RW","CF"].indexOf(p.pos) >= 0) hasFwd = true;
+    });
+    if (Object.keys(roots).length < 3) return { valid: false, reason: "灵根不足3种" };
+    if (!hasDef) return { valid: false, reason: "缺后卫" };
+    if (!hasFwd) return { valid: false, reason: "缺前锋" };
+    return { valid: true, reason: "" };
+  }
+
+  // 7. 循环赛赛程生成（10队单循环9轮）
+  function generateLeagueSchedule(teams) {
+    if (!teams || teams.length < 2) return [];
+    var n = teams.length;
+    var rounds = [];
+    var list = teams.slice();
+    if (n % 2 !== 0) list.push(null); // 拜占位
+    var total = list.length;
+    for (var round = 0; round < total - 1; round++) {
+      var matches = [];
+      for (var i = 0; i < total / 2; i++) {
+        var a = list[i], b = list[total - 1 - i];
+        if (a !== null && b !== null) matches.push([a, b]);
+      }
+      rounds.push(matches);
+      // 轮转（固定第一个）
+      var last = list.pop();
+      list.splice(1, 0, last);
+    }
+    return rounds;
+  }
+
+  // 8. 淬炼营结局分发（6种）
+  function dispatchCampEnding() {
+    var st = global.State.current;
+    if (!st.camp) return "camp_survive";
+    var c = st.camp;
+    if (c.awakening && c.rank <= 10) return "camp_master";  // 营主弟子
+    if (c.teamId && c.rank === 1) return "camp_champion";   // 淬炼冠军
+    if (c.teamId && c.rank <= 4) return "camp_semifinal";   // 四强
+    if (c.awakening) return "camp_awakened";                // 觉醒者
+    if (c.wins >= 1) return "camp_survive";                 // 存活
+    return "camp_eliminated";                               // 淘汰
+  }
+
+  // 9. 淬炼营排名更新（每场1v1后调用）
+  function updateCampRanking() {
+    var st = global.State.current;
+    if (!st.camp || !st.camp.players) return;
+    var players = st.camp.players;
+    players.forEach(function (p) { p._score = calcCampRanking(p); });
+    players.sort(function (a, b) { return b._score - a._score; });
+    for (var i = 0; i < players.length; i++) {
+      if (players[i].isPlayer) { st.camp.rank = i + 1; break; }
+    }
+  }
+
   global.Engine = {
     bindConfig,
     skillCheck,
@@ -785,6 +1111,25 @@
     startNew,
     continueGame,
     hasSave,
-    autoSave
+    autoSave,
+    // 比赛增强系统
+    getElementClash,
+    getStyleEvent,
+    getKeyMomentBranch,
+    getScoreNarrative,
+    checkLegendEncounter,
+    checkLegendRespect,
+    checkLegendSpawn,
+    applyLegendSpawnEffects,
+    // 淬炼营系统
+    initCamp,
+    calcCampRanking,
+    generate1v1Pairing,
+    resolve1v1Match,
+    checkCoachFavor,
+    validateTeam,
+    generateLeagueSchedule,
+    dispatchCampEnding,
+    updateCampRanking
   };
 })(window);

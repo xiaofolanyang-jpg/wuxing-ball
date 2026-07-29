@@ -723,6 +723,14 @@
     t.textContent = ev.title || "结局";
     panel.appendChild(t);
 
+    // 达成条件
+    if (ev.condition) {
+      const cond = document.createElement("div");
+      cond.className = "ending-condition";
+      cond.textContent = ev.condition;
+      panel.appendChild(cond);
+    }
+
     // 结算总览
     const summary = document.createElement("div");
     summary.className = "summary-grid";
@@ -887,12 +895,11 @@
 <h3>二、灵根系统</h3>
 <p>开局按下测灵石，随机觉醒灵根。品质影响修炼速度：</p>
 <table><tr><th>品质</th><th>倍率</th><th>概率</th></tr>
-<tr><td>天品（单灵根）</td><td>×2</td><td>5%</td></tr>
-<tr><td>双灵根</td><td>×1.5</td><td>30%</td></tr>
-<tr><td>三灵根</td><td>×1.33</td><td>40%</td></tr>
-<tr><td>杂灵根</td><td>×1.2</td><td>25%</td></tr></table>
+<tr><td>天品（单灵根）</td><td>×2.5</td><td>15%</td></tr>
+<tr><td>双灵根</td><td>×2</td><td>80%</td></tr>
+<tr><td>全灵根（五行全亲和）</td><td>×1.5</td><td>5%</td></tr></table>
 <p>觉醒后不满意可重新觉醒，<b>共3次机会</b>（含首次）。三次后锁定。</p>
-<p><b>灵根锁</b>：非亲和属性有上限（天品55/双灵根65/三灵根75），杂灵根无锁。前期天品碾压，后期杂灵根反超。</p>
+<p><b>灵根锁</b>：非亲和属性有上限（天品55/双灵根65），全灵根无锁（五行全亲和）。前期天品碾压，后期全灵根反超。</p>
 
 <h3>三、属性与修炼</h3>
 <h4>五行属性（20项）</h4>
@@ -914,7 +921,7 @@
 <li>≥8属性达通脉(45+)：检定<b>+4%</b>（五行初通）</li>
 <li>≥16属性达通脉(45+)：检定<b>+8%</b>（五行流转）</li>
 <li>≥12属性达化域(70+)：检定<b>+12%</b>（五行归一）</li>
-<li>≥8属性达天人合一(90+)：检定<b>+15%</b>（天人合道，仅杂灵根）</li>
+<li>≥8属性达天人合一(90+)：检定<b>+15%</b>（天人合道，仅全灵根）</li>
 </ul>
 <h4>境界</h4>
 <table><tr><th>境界</th><th>属性要求</th></tr>
