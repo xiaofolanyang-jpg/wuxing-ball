@@ -103,7 +103,7 @@
   }
 
   // 检定成长（问题2）：检定成功后，检定所用属性按灵根倍率成长（练什么涨什么）
-  // amount: 基础成长值（success=1 / critical=2），实际成长 = amount × 灵根倍率
+  // amount: 基础成长值（success=1 / critical=1.5），实际成长 = amount × 灵根倍率
   function growCheckAttrs(attrs, amount) {
     const st = global.State.current;
     const parts = [];
@@ -310,6 +310,10 @@
     if (ev.type === "match") {
       return runMatch(ev);
     }
+    // 淬炼营循环赛（试玩反馈#5）
+    if (ev.type === "tournament") {
+      return runTournament(ev);
+    }
     // 结局
     if (ev.type === "ending") {
       return global.UI.showEnding(ev, false);
@@ -368,7 +372,7 @@
       // 检定成长（问题2）：成功后检定属性成长，涨的是“检定需要的属性”
       let growth = "";
       if (r === "success" || r === "critical") {
-        growth = growCheckAttrs(choice.check.attrs, r === "critical" ? 2 : 1);
+        growth = growCheckAttrs(choice.check.attrs, r === "critical" ? 1.5 : 1);
       }
       global.UI.showCheckResult(r, global.Story.interpolate(choice.check.tag || ""), growth);
     }
@@ -388,7 +392,7 @@
           matchState.successCount++;
           matchState.success++;
           const base = matchState.isKeyMoment ? 2 : 1;
-          matchState.threat += base + (checkKind === "critical" ? 1 : 0);
+          matchState.threat += base;
           if (matchState.isKeyMoment) matchState.keySuccess++;
         } else {
           matchState.oppThreat += 1;
@@ -446,11 +450,11 @@
   /* ---------- 比赛辅助（设计稿第五章） ---------- */
   // 威胁值 → 弹性进球数（扩展上限，碾压局可打出4-5球）
   function threatToGoals(t) {
-    if (t >= 9) return 5;
-    if (t >= 7) return 4;
-    if (t >= 5) return 3;
-    if (t >= 3) return 2;
-    if (t >= 1) return 1;
+    if (t >= 12) return 5;
+    if (t >= 9) return 4;
+    if (t >= 7) return 3;
+    if (t >= 4) return 2;
+    if (t >= 2) return 1;
     return 0;
   }
 
@@ -461,10 +465,10 @@
 
   // 评级奖励表（C级也给1自由点，减少挫败感）
   const RATING_REWARDS = {
-    S: { points: 3, reputation: 15 },
+    S: { points: 2, reputation: 15 },
     A: { points: 2, reputation: 10 },
     B: { points: 1, reputation: 5 },
-    C: { points: 1, reputation: 1 },
+    C: { points: 0, reputation: 1 },
     D: { points: 0, reputation: -3 }
   };
 
@@ -639,6 +643,11 @@
     if (branchKey === "lose") st.demonValue = (st.demonValue || 0) + (CONFIG.demonOnLose || 4);
     else if (branchKey === "draw") st.demonValue = (st.demonValue || 0) + (CONFIG.demonOnDraw || 2);
     if (branchKey === "bigwin" || branchKey === "win") st.wins += 1;
+    else if (branchKey === "draw") st.draws = (st.draws || 0) + 1;
+    else st.losses = (st.losses || 0) + 1;
+    // 动态插值存储（#7 比分 + #1/#3 战绩）
+    st.lastMatchScore = { my: goalsFor, opp: goalsAgainst };
+    st.lastMatchResult = (branchKey === "bigwin" || branchKey === "win") ? "win" : branchKey === "draw" ? "draw" : "lose";
 
     const result = (ev.result && ev.result[branchKey]) || { text: "比赛结束。", effects: {} };
 
@@ -660,6 +669,150 @@
 
     const nextId = result.next || ev.next;
     if (nextId) goto(nextId);
+  }
+
+  /* ============================================================
+     淬炼营循环赛（type:"tournament"）
+     10队单循环，玩家操作3场关键比赛（优势/均势/劣势），
+     其余NPC自动模拟，最终输出积分榜。
+     事件格式：{ type:"tournament", keyMatches:[{opponent,teamBase,result,label}], text, next }
+     ============================================================ */
+  async function runTournament(ev) {
+    const st = global.State.current;
+    const cc = CONFIG.campConfig || {};
+    const pool = (cc.teamNamePool || []).slice();
+    const playerTeam = cc.playerTeamName || "破阵队";
+    const teamCount = cc.teamCount || 10;
+
+    // 1. 生成队伍（玩家队 + 随机抽取）
+    const npcTeams = pickRandom(pool, teamCount - 1);
+    const teams = [{ name: playerTeam, isPlayer: true, str: 50 }];
+    npcTeams.forEach(n => teams.push({ name: n, isPlayer: false, str: 35 + Math.floor(Math.random() * 25) }));
+
+    // 2. 显示分组名单
+    if (ev.text) await global.UI.renderTextBlock(ev.text);
+    await global.UI.renderTextBlock("【循环赛分组】" + teams.map(t => t.name).join("、"), { system: true });
+    await global.UI.waitContinue();
+
+    // 3. 生成单循环赛程
+    const schedule = [];
+    for (let i = 0; i < teams.length; i++) {
+      for (let j = i + 1; j < teams.length; j++) {
+        schedule.push({ home: i, away: j, played: false, hs: 0, as: 0 });
+      }
+    }
+
+    // 4. 标记玩家参与的3场关键比赛
+    const keyMatches = ev.keyMatches || [];
+    const playerIdx = 0;
+    // 为每场keyMatch找一个未分配的含玩家的赛程槽位
+    const keySlots = [];
+    for (let k = 0; k < keyMatches.length && k < 3; k++) {
+      // 找一个未用的玩家比赛槽
+      const slot = schedule.find(m => !m.played && !keySlots.includes(m) && (m.home === playerIdx || m.away === playerIdx));
+      if (slot) keySlots.push(slot);
+    }
+
+    // 5. 玩家操作3场关键比赛
+    const playerResults = []; // {label, result, my, opp}
+    for (let k = 0; k < keySlots.length; k++) {
+      const km = keyMatches[k];
+      const slot = keySlots[k];
+      const oppIdx = slot.home === playerIdx ? slot.away : slot.home;
+      // 用keyMatch的opponent覆盖队名
+      const matchEv = {
+        id: ev.id + "_key" + k,
+        chapter: ev.chapter,
+        type: "match",
+        text: km.text || ["循环赛第" + (k + 1) + "场。"],
+        opponent: km.opponent || { name: teams[oppIdx].name, element: "金", strength: 45 },
+        teamBase: km.teamBase || 30,
+        result: km.result || {
+          bigwin: { text: "大胜。", effects: {} },
+          win: { text: "赢了。", effects: {} },
+          draw: { text: "平了。", effects: {} },
+          lose: { text: "输了。", effects: {} }
+        }
+      };
+      // 运行标准比赛流程（不跳转，用flag拦截next）
+      matchEv._noGoto = true;
+      const mResult = await runMatchInternal(matchEv);
+      slot.played = true;
+      slot.hs = slot.home === playerIdx ? mResult.goalsFor : mResult.goalsAgainst;
+      slot.as = slot.away === playerIdx ? mResult.goalsFor : mResult.goalsAgainst;
+      playerResults.push({ label: km.label || "第" + (k + 1) + "场", result: mResult.branchKey, my: mResult.goalsFor, opp: mResult.goalsAgainst });
+    }
+
+    // 6. 自动模拟其余NPC比赛
+    schedule.forEach(m => {
+      if (m.played) return;
+      const hStr = teams[m.home].str + 3; // 主场优势
+      const aStr = teams[m.away].str;
+      const diff = hStr - aStr;
+      const r = Math.random() * 60 - 30 + diff;
+      if (r > 8) { m.hs = 1 + Math.floor(Math.random() * 2); m.as = Math.floor(Math.random() * m.hs); }
+      else if (r < -8) { m.as = 1 + Math.floor(Math.random() * 2); m.hs = Math.floor(Math.random() * m.as); }
+      else { m.hs = m.as = Math.floor(Math.random() * 2); }
+      m.played = true;
+    });
+
+    // 7. 计算积分榜
+    const standings = teams.map((t, i) => ({ name: t.name, isPlayer: t.isPlayer, pts: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0 }));
+    schedule.forEach(m => {
+      const h = standings[m.home], a = standings[m.away];
+      h.gf += m.hs; h.ga += m.as;
+      a.gf += m.as; a.ga += m.hs;
+      if (m.hs > m.as) { h.w++; h.pts += 3; a.l++; }
+      else if (m.hs < m.as) { a.w++; a.pts += 3; h.l++; }
+      else { h.d++; a.d++; h.pts++; a.pts++; }
+    });
+    standings.sort((x, y) => y.pts - x.pts || (y.gf - y.ga) - (x.gf - x.ga));
+
+    // 8. 输出结果
+    const playerRow = standings.find(s => s.isPlayer);
+    const rank = standings.indexOf(playerRow) + 1;
+    let summary = "【循环赛终榜】\n";
+    standings.slice(0, 5).forEach((s, i) => {
+      summary += (i + 1) + ". " + s.name + " " + s.pts + "分（" + s.w + "胜" + s.d + "平" + s.l + "负）" + (s.isPlayer ? " ←你" : "") + "\n";
+    });
+    if (rank > 5) summary += "...\n" + rank + ". " + playerRow.name + " " + playerRow.pts + "分（" + playerRow.w + "胜" + playerRow.d + "平" + playerRow.l + "负）";
+    await global.UI.renderTextBlock(summary, { system: true });
+
+    // 9. 存储战绩到state
+    st.matches += playerResults.length;
+    playerResults.forEach(r => {
+      if (r.result === "bigwin" || r.result === "win") st.wins++;
+      else if (r.result === "draw") st.draws = (st.draws || 0) + 1;
+      else st.losses = (st.losses || 0) + 1;
+    });
+    if (!st.camp) st.camp = {};
+    st.camp.leagueRank = rank;
+    st.camp.leagueRecord = playerRow.w + "胜" + playerRow.d + "平" + playerRow.l + "负";
+
+    // 10. 事件效果 + 跳转
+    if (ev.effects) { applyEffects(ev.effects); global.UI.updateStatus(); }
+    autoSave(true);
+    await global.UI.waitContinue();
+    if (ev.next) goto(ev.next);
+  }
+
+  // runMatch 内部版本（不触发goto，返回结果对象）
+  async function runMatchInternal(ev) {
+    // 复用runMatch的核心逻辑，但拦截跳转
+    const origGoto = goto;
+    let captured = null;
+    // 临时覆盖goto以捕获结果
+    const savedNext = ev.next;
+    ev.next = null;
+    // 直接调用runMatch（它会在末尾尝试goto，但next为null则不跳）
+    await runMatch(ev);
+    // 从 state 读取结果
+    const st = global.State.current;
+    return {
+      goalsFor: st.lastMatchScore ? st.lastMatchScore.my : 0,
+      goalsAgainst: st.lastMatchScore ? st.lastMatchScore.opp : 0,
+      branchKey: st.lastMatchResult === "win" ? "win" : st.lastMatchResult === "draw" ? "draw" : "lose"
+    };
   }
 
   // 玩家事件节点（位置池）

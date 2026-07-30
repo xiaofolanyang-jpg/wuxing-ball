@@ -83,6 +83,22 @@
         case "companionCount": return st ? (st.companionCount || 0) : 0;
         case "elementColor": return st ? (CONFIG.elementColor && CONFIG.elementColor[st.rootType] || "五色") : "五色";
         case "qualityDisplay": return st && st.rootQuality ? CONFIG.quality[st.rootQuality].name : "";
+        // ---- v3.0 试玩反馈：动态插值（#6/#7/#1/#3） ----
+        case "realm": return st ? global.State.getRealm(Math.max.apply(null, Object.values(st.attrs))) : "感气";
+        case "lastScore": return st && st.lastMatchScore ? st.lastMatchScore.my + "-" + st.lastMatchScore.opp : "0-0";
+        case "lastResult": return st && st.lastMatchResult ? st.lastMatchResult : "";
+        case "seasonRecord": {
+          if (!st) return "";
+          const w = st.wins || 0, d = st.draws || 0, l = st.losses || 0;
+          let s = "";
+          if (w) s += w + "胜";
+          if (d) s += d + "平";
+          if (l) s += l + "负";
+          return s || "尚无战绩";
+        }
+        case "wins": return st ? (st.wins || 0) : 0;
+        case "losses": return st ? (st.losses || 0) : 0;
+        case "draws": return st ? (st.draws || 0) : 0;
         default:
           if (st && st.attrs && st.attrs[key] !== undefined) return Math.floor(st.attrs[key]);
           // 通用兜底：动态字段（companion1Name / companion1Element 等由生成器写入 state）

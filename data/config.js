@@ -22,8 +22,8 @@ window.CONFIG = {
     "土": { name: "土", skill: "不动如山", desc: "抢点嗅觉、定位球轰炸" }
   },
   quality: {
-    heaven: { name: "天品", mult: 2.5,   prob: 0.15, nonAffinityCap: 55 },
-    dual:   { name: "双灵根", mult: 2,     prob: 0.80, nonAffinityCap: 65 },
+    heaven: { name: "天品", mult: 2.2,   prob: 0.15, nonAffinityCap: 55 },
+    dual:   { name: "双灵根", mult: 1.8,   prob: 0.80, nonAffinityCap: 65 },
     full:   { name: "全灵根", mult: 1.5,   prob: 0.05, nonAffinityCap: 100 }
   },
   // 非亲和属性加点倍率（灵根是“顺风”而非“锁死”）
@@ -46,7 +46,7 @@ window.CONFIG = {
     { realmMin: 70, countMin: 12, bonus: 0.12, label: "五行归一" },
     { realmMin: 90, countMin: 8,  bonus: 0.15, label: "天人合道" }
   ],
-  baseTrainPoints: 5,
+  baseTrainPoints: 4,
   baseCheckChance: 0.55,
   checkSlope: 0.015,
   // 暴击概率 = critBase + 成功率 × critScale（成长越高暴击越多）
@@ -280,6 +280,13 @@ window.CONFIG = {
     rankTiers: [
       { max: 10, color: "金" }, { max: 30, color: "银" },
       { max: 60, color: "铜" }, { max: 100, color: "灰" }
+    ],
+    // 淬炼营循环赛队名池（引擎随机抽取10个，其中1个分配给主角队）
+    playerTeamName: "破阵队",
+    teamNamePool: [
+      "金锋队", "青木队", "寒渊队", "赤焰队", "厚土队",
+      "凌云队", "破军队", "凝霜队", "焚天队", "磐石队",
+      "疾风队", "雷吼队", "星坠队", "龙吟队", "铁壁队"
     ]
   },
 

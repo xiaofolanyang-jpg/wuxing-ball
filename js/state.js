@@ -76,6 +76,10 @@
       assists: 0,
       matches: 0,
       wins: 0,
+      draws: 0,
+      losses: 0,
+      lastMatchScore: null,   // { my: 2, opp: 1 }（供 {lastScore} 插值）
+      lastMatchResult: null,  // "win"/"draw"/"lose"（供 {lastResult} 插值）
       // 增强版比赛（设计稿第五章）：自由属性点 + 评级分布
       freePoints: 0,
       ratingDist: { S: 0, A: 0, B: 0, C: 0, D: 0 },

@@ -16,13 +16,13 @@ window.CHAPTER1 = { events: [
     id: "ch1_opening",
     chapter: 1,
     text: [
-      "天黑了。矿坑的灯还亮着。",
-      "你蹲在废石堆旁边，用脚颠一只破布球。球是拿旧衣服裹的，外面缠了三圈麻绳。颠一下。两下。三下。第四下的时候球散了。麻绳断了。碎布飞了一地。",
-      "你盯着地上的碎布。没动。",
-      "远处有人喊你名字。是铁叔。矿上的工头。他喊你回去吃饭。",
-      "你没应。你在想一件事。今天镇上来了人。穿白袍的。说是「球院」的招生。十四岁。测灵根。过了就能去踢球。不用挖矿。",
+      "天黑了，矿坑的灯还亮着。",
+      "你蹲在废石堆旁边，用脚颠一只破布球。球是拿旧衣服裹的，外面缠了三圈麻绳。颠一下。两下。三下。第四下的时候球散了，麻绳断了，碎布飞了一地。",
+      "你盯着地上的碎布，没动。",
+      "远处有人喊你名字。是铁叔，矿上的工头。他喊你回去吃饭。",
+      "你没应。你在想一件事。今天镇上来了人，穿白袍的，说是「球院」的招生。十四岁，测灵根，过了就能去踢球，不用挖矿。",
       "你十四了。",
-      "你站起来。拍了拍膝盖上的灰。朝镇上的方向看了一眼。明天。"
+      "你站起来，拍了拍膝盖上的灰，朝镇上的方向看了一眼。明天。"
     ],
     next: "ch1_test"
   },
@@ -32,10 +32,10 @@ window.CHAPTER1 = { events: [
     id: "ch1_test",
     chapter: 1,
     text: [
-      "镇上的祠堂改成了临时考场。二十多个少年排成两排。你站在最后面。衣服上还有矿灰。",
-      "前面的人一个个走上去。把手按在那块石头上。石头亮一下。有的亮金色。有的亮绿色。有的——不亮。",
+      "镇上的祠堂改成了临时考场。二十多个少年排成两排。你站在最后面，衣服上还有矿灰。",
+      "前面的人一个个走上去，把手按在那块石头上。石头亮一下。有的亮金色，有的亮绿色，有的——不亮。",
       "不亮的那个少年被带走了。他妈在外面哭。",
-      "轮到你了。白袍人看了你一眼。没说话。朝石头努了努嘴。",
+      "轮到你了。白袍人看了你一眼，没说话，朝石头努了努嘴。",
       "你把手按上去。石头是凉的。然后——"
     ],
     next: "ch1_root_result"
@@ -83,13 +83,13 @@ window.CHAPTER1 = { events: [
     id: "ch1_tieshu",
     chapter: 1,
     text: [
-      "晚上。矿坑边的棚子里。铁叔把一碗面推到你面前。",
+      "晚上，矿坑边的棚子里，铁叔把一碗面推到你面前。",
       "「真要去？」你点头。",
-      "铁叔沉默了一会儿。他是个粗人。手上全是疤。他不懂什么灵根。不懂什么球院。但他懂一件事。",
-      "「去了就别回来。」他说。声音很平。「这矿坑。吃人。你爹在里面待了二十年。出来的时候腰是弯的。我不想你也弯。」",
+      "铁叔沉默了一会儿。他是个粗人，手上全是疤。他不懂什么灵根，不懂什么球院。但他懂一件事。",
+      "「去了就别回来。」他说，声音很平。「这矿坑，吃人。你爹在里面待了二十年，出来的时候腰是弯的。我不想你也弯。」",
       "你吃面。面很咸。「踢不出来呢？」你问。",
       "「踢不出来。」铁叔想了想。「那就去干别的。反正别回来挖矿。」",
-      "他站起来。走到门口。背对着你。「明天我送你。」"
+      "他站起来，走到门口，背对着你。「明天我送你。」"
     ],
     effects: { flags: { tieshuBond: true } },
     next: "ch1_enroll"
@@ -100,12 +100,12 @@ window.CHAPTER1 = { events: [
     id: "ch1_enroll",
     chapter: 1,
     text: [
-      "三天后。你站在{academyName}的门口。",
-      "说是「门口」。其实就是一扇铁门。漆掉了大半。门柱上挂着一块木牌。字是手写的。歪的。",
-      "里面是一块土场。没有草皮。地上全是脚印和球印。球门是两根铁棍焊的。网是麻绳编的。有几个洞。",
-      "一个老头坐在场边的石头上。手里拿着旱烟。他看见你。没站起来。「新来的？」「嗯。」「去那边。找李教习。」他朝最里面的一排平房努了努嘴。「他管分房。」",
-      "你走进去。土场边上有人在颠球。三四个。技术一般。球老掉。",
-      "这就是你的起点了。{continent}。D级。土场。铁门。歪牌子。"
+      "三天后，你站在{academyName}的门口。",
+      "说是「门口」，其实就是一扇铁门。漆掉了大半。门柱上挂着一块木牌，字是手写的，歪的。",
+      "里面是一块土场，没有草皮，地上全是脚印和球印。球门是两根铁棍焊的，网是麻绳编的，有几个洞。",
+      "一个老头坐在场边的石头上，手里拿着旱烟。他看见你，没站起来。「新来的？」「嗯。」「去那边，找李教习。」他朝最里面的一排平房努了努嘴。「他管分房。」",
+      "你走进去。土场边上有人在颠球，三四个，技术一般，球老掉。",
+      "这就是你的起点了。{continent}，D级，土场，铁门，歪牌子。"
     ],
     next: "ch1_companion"
   },
@@ -117,12 +117,12 @@ window.CHAPTER1 = { events: [
     type: "gen_companions",
     text: [
       "分房的时候你遇到了他。",
-      "他站在走廊里。背着一个比他还大的包。包上全是灰。他正盯着门牌号看。歪着头。嘴里念叨着什么。",
+      "他站在走廊里，背着一个比他还大的包，包上全是灰。他正盯着门牌号看，歪着头，嘴里念叨着什么。",
       "「你也住这间？」他转头看你。你点头。",
-      "他把包往地上一扔。「我叫{companion1Name}。{companion1Element}灵根。你呢？」你说了名字。说了灵根。",
+      "他把包往地上一扔。「我叫{companion1Name}，{companion1Element}灵根。你呢？」你说了名字，说了灵根。",
       "他眼睛亮了一下。「{playerElement}？不错。咱俩正好互补。」",
-      "他说话很快。手也多。一边说一边比划。「我看了。这破地方。土场。铁门。连个像样的球都没有。」他朝窗外看了一眼。「但是。」",
-      "「但是什么？」「但是咱俩要是踢出来了。这地方。以后就是圣地。」他笑了。露出一口白牙。"
+      "他说话很快，手也多，一边说一边比划。「我看了，这破地方，土场，铁门，连个像样的球都没有。」他朝窗外看了一眼。「但是。」",
+      "「但是什么？」「但是咱俩要是踢出来了，这地方，以后就是圣地。」他笑了，露出一口白牙。"
     ],
     system: "【成长型队友·{companion1Name}（{companion1Element}灵根）加入了你的岁月。往后他会随你一同成长，灵根互补，位置互补。】",
     effects: { bonds: { tongpao: 1 } },
@@ -134,17 +134,17 @@ window.CHAPTER1 = { events: [
     id: "ch1_position",
     chapter: 1,
     text: [
-      "第二天。土场。李教习吹了声哨。二十个新生站成两排。他扔了一堆背心出来。「穿上。今天测位置。」",
-      "测试很简单。五对五。二十分钟。他站在场边看。不说话。只在本子上写。",
-      "你踢了二十分钟。球碰了不到十次。土场的地面不平。球弹得到处跑。但你感觉到了——你站在某个位置的时候。最舒服。",
-      "结束后。李教习把你叫过去。「你。」他拿笔点了点你。「你觉得自己该站哪？」"
+      "第二天，土场。李教习吹了声哨，二十个新生站成两排。他扔了一堆背心出来。「穿上，今天测位置。」",
+      "测试很简单——五对五，二十分钟。他站在场边看，不说话，只在本子上写。",
+      "你踢了二十分钟，球碰了不到十次。土场的地面不平，球弹得到处跑。但你感觉到了——你站在某个位置的时候，最舒服。",
+      "结束后，李教习把你叫过去。「你。」他拿笔点了点你。「你觉得自己该站哪？」"
     ],
     choices: [
-      { id: "A", text: "前锋（ST）——你想进球。每一个球。都想。", effects: { position: "ST", flags: { pos_ST: true } }, next: "ch1_playstyle" },
-      { id: "B", text: "中场（MF）——你想控制。球在你脚下。比赛就在你手里。", effects: { position: "MF", flags: { pos_MF: true } }, next: "ch1_playstyle" },
-      { id: "C", text: "边锋（WING）——你想跑。从这头跑到那头。风在耳朵边。", effects: { position: "WING", flags: { pos_WING: true } }, next: "ch1_playstyle" },
-      { id: "D", text: "后卫（DF）——你想守住。不让任何人过去。", effects: { position: "DF", flags: { pos_DF: true } }, next: "ch1_playstyle" },
-      { id: "E", text: "门将（GK）——你想当最后一道墙。所有人倒了。你还在。", effects: { position: "GK", flags: { pos_GK: true } }, next: "ch1_playstyle" }
+      { id: "A", text: "前锋（ST）——你想进球，每一个球都想。", effects: { position: "ST", flags: { pos_ST: true } }, next: "ch1_playstyle" },
+      { id: "B", text: "中场（MF）——你想控制。球在你脚下，比赛就在你手里。", effects: { position: "MF", flags: { pos_MF: true } }, next: "ch1_playstyle" },
+      { id: "C", text: "边锋（WING）——你想跑，从这头跑到那头，风在耳朵边。", effects: { position: "WING", flags: { pos_WING: true } }, next: "ch1_playstyle" },
+      { id: "D", text: "后卫（DF）——你想守住，不让任何人过去。", effects: { position: "DF", flags: { pos_DF: true } }, next: "ch1_playstyle" },
+      { id: "E", text: "门将（GK）——你想当最后一道墙。所有人倒了，你还在。", effects: { position: "GK", flags: { pos_GK: true } }, next: "ch1_playstyle" }
     ]
   },
 
@@ -153,8 +153,8 @@ window.CHAPTER1 = { events: [
     id: "ch1_playstyle",
     chapter: 1,
     text: [
-      "李教习点了点头。「行。那你的踢法呢？」",
-      "他解释了一下。同一个位置。不同的踢法。完全不同的活法。「你想怎么踢？」"
+      "李教习点了点头。「行，那你的踢法呢？」",
+      "他解释了一下。同一个位置，不同的踢法，完全不同的活法。「你想怎么踢？」"
     ],
     choices: [
       // 前锋
@@ -184,10 +184,10 @@ window.CHAPTER1 = { events: [
     chapter: 1,
     type: "train",
     text: [
-      "晚上。宿舍。{companion1Name}已经睡了。打呼。很响。",
-      "你睡不着。你盯着天花板。脑子里全是白天的画面。土场。铁门。李教习的哨声。",
+      "晚上，宿舍。{companion1Name}已经睡了，打呼，很响。",
+      "你睡不着，盯着天花板，脑子里全是白天的画面——土场，铁门，李教习的哨声。",
       "你现在有{trainPoints}个修炼点。每回合都有。你可以把它们分配到任何属性上。灵根亲和的属性，成长更快；非亲和的，慢，而且有个上限，你过不去。",
-      "你闭上眼。在心里把点分好了。明天开始。正式练。"
+      "你闭上眼，在心里把点分好了。明天开始，正式练。"
     ],
     next: "ch1_lesson"
   },
@@ -198,11 +198,11 @@ window.CHAPTER1 = { events: [
     chapter: 1,
     text: [
       "早上六点。哨响。",
-      "你跑到土场上的时候。{companion1Name}已经在了。他在颠球。球老掉。他骂了一句。捡起来。继续。",
-      "李教习站在中间。手里拿着球。「今天。基本功。」他把球扔给你。「接。停。传。来回。一百组。」",
-      "你接。停。传。{companion1Name}接。停。传。球在两个人之间滚。土场的地面不平。球弹。你得用脚底去够。去压。去控制。",
-      "五十组的时候。你的脚踝开始酸。八十组的时候。{companion1Name}的传球开始歪。一百组。李教习吹哨。「行了。喝水。」",
-      "你弯腰。手撑着膝盖。喘。土腥味钻进鼻子。「明天。二百组。」"
+      "你跑到土场上的时候，{companion1Name}已经在了。他在颠球，球老掉，他骂了一句，捡起来，继续。",
+      "李教习站在中间，手里拿着球。「今天，基本功。」他把球扔给你。「接，停，传，来回，一百组。」",
+      "你接，停，传。{companion1Name}接，停，传。球在两个人之间滚。土场的地面不平，球弹，你得用脚底去够，去压，去控制。",
+      "五十组的时候，你的脚踝开始酸。八十组的时候，{companion1Name}的传球开始歪。一百组，李教习吹哨。「行了，喝水。」",
+      "你弯腰，手撑着膝盖，喘。土腥味钻进鼻子。「明天，二百组。」"
     ],
     effects: { attrs: { dribble: 1, passing: 1 }, stamina: -10 },
     next: "ch1_nighttalk"
@@ -213,11 +213,11 @@ window.CHAPTER1 = { events: [
     id: "ch1_nighttalk",
     chapter: 1,
     text: [
-      "晚上。宿舍。{companion1Name}没睡。他坐在床上。抱着球。",
+      "晚上，宿舍。{companion1Name}没睡，他坐在床上，抱着球。",
       "「你说。」他突然开口。「咱们能踢出来吗？」你没回答。",
-      "「我今天看了。这二十个人。」他说。「没一个灵根比咱俩好的。但是。这地方。太破了。没有五行室。没有灵脉。连个像样的教练都没有。」",
-      "他沉默了一会儿。「但是。」他又说了这个词。他好像很喜欢这个词。「但是。破地方出来的。才狠。」",
-      "他把球往地上一拍。「睡吧。明天二百组。」"
+      "「我今天看了，这二十个人，」他说，「没一个灵根比咱俩好的。但是，这地方，太破了，没有五行室，没有灵脉，连个像样的教练都没有。」",
+      "他沉默了一会儿。「但是。」他又说了这个词，他好像很喜欢这个词。「但是，破地方出来的，才狠。」",
+      "他把球往地上一拍。「睡吧，明天二百组。」"
     ],
     choices: [
       { id: "A", text: "「能。」", effects: { bonds: { tongpao: 2 }, flags: { promise: true } }, next: "ch1_match_n1" },
@@ -231,19 +231,19 @@ window.CHAPTER1 = { events: [
     id: "ch1_match_n1",
     chapter: 1,
     text: [
-      "一周后。李教习宣布：「明天。和隔壁{rivalAcademy}踢一场。正式的。」",
-      "{rivalAcademy}。也是D级。土场。铁门。和你们一样破。",
-      "第二天。下午。两块土场之间的空地。没有看台。没有解说。只有二十个人。和两个教练。哨响。",
-      "球来了。你第一次在正式比赛里触球。心跳很快。腿有点软。但你动了。"
+      "一周后，李教习宣布：「明天，和隔壁{rivalAcademy}踢一场，正式的。」",
+      "{rivalAcademy}，也是D级，土场，铁门，和你们一样破。",
+      "第二天，下午，两块土场之间的空地。没有看台，没有解说，只有二十个人和两个教练。哨响。",
+      "球来了。你第一次在正式比赛里触球，心跳很快，腿有点软。但你动了。"
     ],
     choices: [
       { id: "A", text: "按训练时的方式来", check: { attrs: ["dribble", "shooting"], difficulty: 18, tag: "基本功" }, next: "ch1_match_n2",
         success: { text: "你{elementAdj}地完成动作。球到了该去的地方。李教习在场边点了点头。", effects: { reputation: 2 } },
-        fail: { text: "动作变形了。球飞了。对方笑了。你的脸烫。", effects: { stamina: -3 } }
+        fail: { text: "动作变形了，球飞了，对方笑了。你的脸烫。", effects: { stamina: -3 } }
       },
       { id: "B", text: "不管了。凭本能", check: { attrs: ["burst", "resolve"], difficulty: 20, tag: "爆发+决断" }, next: "ch1_match_n2",
-        success: { text: "你没想。身体自己动了。球进了。所有人都愣了。包括你自己。", effects: { reputation: 5, goals: 1, attrs: { burst: 1 } } },
-        fail: { text: "你冲了。但方向不对。球丢了。李教习在场边叹了口气。", effects: { demonValue: 2 } }
+        success: { text: "你没想，身体自己动了。球进了！所有人都愣了，包括你自己。", effects: { reputation: 5, goals: 1, attrs: { burst: 1 } } },
+        fail: { text: "你冲了，但方向不对，球丢了。李教习在场边叹了口气。", effects: { demonValue: 2 } }
       }
     ]
   },
@@ -253,16 +253,16 @@ window.CHAPTER1 = { events: [
     id: "ch1_match_n2",
     chapter: 1,
     text: [
-      "对方反击了。一个高球。你的队友没顶到。球落在对方前锋脚下。他朝你冲过来。"
+      "对方反击了，一个高球，你的队友没顶到，球落在对方前锋脚下。他朝你冲过来。"
     ],
     choices: [
       { id: "A", text: "正面拦截", check: { attrs: ["tackle", "intercept"], difficulty: 18, tag: "铲断+拦截" }, next: "ch1_match_n3",
-        success: { text: "你伸脚。球断了。干净利落。对方前锋愣了。", effects: { reputation: 2 } },
-        fail: { text: "你伸脚。慢了。他抹过去了。你摔在土里。嘴里全是灰。", effects: { stamina: -5 } }
+        success: { text: "你伸脚，球断了，干净利落。对方前锋愣了。", effects: { reputation: 2 } },
+        fail: { text: "你伸脚，慢了。他抹过去了，你摔在土里，嘴里全是灰。", effects: { stamina: -5 } }
       },
-      { id: "B", text: "卡位置。不伸脚", check: { attrs: ["positioning", "balance"], difficulty: 16, tag: "站位+平衡" }, next: "ch1_match_n3",
-        success: { text: "你没动。你只是站在那里。他过不去。他急了。传球了。危机解除。", effects: { reputation: 1, attrs: { positioning: 1 } } },
-        fail: { text: "你卡了。但他比你快。一个变向。你被过了。", effects: { stamina: -3 } }
+      { id: "B", text: "卡位置，不伸脚", check: { attrs: ["positioning", "balance"], difficulty: 16, tag: "站位+平衡" }, next: "ch1_match_n3",
+        success: { text: "你没动，你只是站在那里。他过不去，他急了，传球了。危机解除。", effects: { reputation: 1, attrs: { positioning: 1 } } },
+        fail: { text: "你卡了，但他比你快，一个变向，你被过了。", effects: { stamina: -3 } }
       }
     ]
   },
@@ -272,17 +272,17 @@ window.CHAPTER1 = { events: [
     id: "ch1_match_n3",
     chapter: 1,
     text: [
-      "最后五分钟。0-0。你拿到球。面前只有一个人。"
+      "最后五分钟，0-0。你拿到球，面前只有一个人。"
     ],
     choices: [
       { id: "A", text: "自己来", check: { attrs: ["shooting", "burst"], difficulty: 22, tag: "射门+爆发" }, next: "ch1_match_after",
-        success: { text: "你过了他。射门。球进了。麻绳网晃了三下。你跪在土场上。吼了一声。", effects: { reputation: 8, goals: 1, attrs: { shooting: 1 } } },
-        critical: { text: "【灵光一闪】你甚至没看清自己做了什么。球已经在网里了。{companion1Name}冲过来。把你扑倒。「你他妈！」", effects: { reputation: 12, goals: 1, attrs: { shooting: 1, burst: 1 } } },
-        fail: { text: "你射了。偏了。球飞过了铁门。飞进了旁边的荒地。哨响了。0-0。", effects: { demonValue: 2, stamina: -5 } }
+        success: { text: "你过了他，射门，球进了！麻绳网晃了三下。你跪在土场上，吼了一声。", effects: { reputation: 8, goals: 1, attrs: { shooting: 1 } } },
+        critical: { text: "【灵光一闪】你甚至没看清自己做了什么。球已经在网里了！{companion1Name}冲过来，把你扑倒。「你他妈！」", effects: { reputation: 12, goals: 1, attrs: { shooting: 1, burst: 1 } } },
+        fail: { text: "你射了，偏了。球飞过了铁门，飞进了旁边的荒地。哨响了，{lastScore}。", effects: { demonValue: 2, stamina: -5 } }
       },
       { id: "B", text: "传给{companion1Name}", check: { attrs: ["passing", "vision"], difficulty: 18, tag: "传球+视野" }, next: "ch1_match_after",
-        success: { text: "你没贪。你传了。{companion1Name}接球。转身。射。进了。他朝你跑过来。你们撞了一下胸。", effects: { reputation: 5, assists: 1, bonds: { tongpao: 2 } } },
-        fail: { text: "传球力量大了。{companion1Name}没追上。球出了底线。他朝你摊了摊手。", effects: { stamina: -3 } }
+        success: { text: "你没贪，你传了。{companion1Name}接球，转身，射，进了！他朝你跑过来，你们撞了一下胸。", effects: { reputation: 5, assists: 1, bonds: { tongpao: 2 } } },
+        fail: { text: "传球力量大了，{companion1Name}没追上，球出了底线。他朝你摊了摊手。", effects: { stamina: -3 } }
       }
     ]
   },
@@ -293,9 +293,9 @@ window.CHAPTER1 = { events: [
     chapter: 1,
     text: [
       "哨响。1-0。赢了。",
-      "李教习走过来。脸上没什么表情。「还行。」他说。然后转身走了。",
-      "{companion1Name}搂着你的肩膀。「第一场。赢了。」他笑。「以后会赢更多。」",
-      "你看着那块土场。铁门。麻绳网。歪牌子。以后。"
+      "李教习走过来，脸上没什么表情。「还行。」他说，然后转身走了。",
+      "{companion1Name}搂着你的肩膀。「第一场，赢了。」他笑。「以后会赢更多。」",
+      "你看着那块土场。铁门，麻绳网，歪牌子。以后。"
     ],
     effects: { reputation: 3, matches: 1, wins: 1, chapter: 1, age: 1 },
     next: "ch2_opening"

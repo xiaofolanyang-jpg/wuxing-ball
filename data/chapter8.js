@@ -11,7 +11,7 @@ window.CHAPTER8 = { events: [
     chapter: 8,
     text: [
       "新赛季。",
-      "你不再是「新人」了。你是「核心」。或者至少——你是「之一」。",
+      "你不再是「新人」了，你是「核心」。或者至少——你是「之一」。",
       "{companion1Name}站在你旁边。「第二年。」他说。「不一样了。」",
       "「哪不一样？」",
       "「他们怕我们了。」"
@@ -26,12 +26,12 @@ window.CHAPTER8 = { events: [
     id: "ch8_newmate",
     chapter: 8,
     text: [
-      "新来的。很强。但——不合群。",
-      "训练的时候。他不传球。自己带。自己射。",
+      "新来的，很强。但——不合群。",
+      "训练的时候，他不传球，自己带，自己射。",
       "{companion1Name}看不下去了。「你他妈——」",
       "你拉住了他。「给他时间。」",
       "「给什么时间？联赛不等人。」",
-      "「一周。」你说。「一周之后。他还不传。我亲自跟他说。」"
+      "「一周。」你说。「一周之后，他还不传，我亲自跟他说。」"
     ],
     effects: { flags: { newTeammateIntroduced: true } },
     next: "ch8_integrate"
@@ -42,12 +42,12 @@ window.CHAPTER8 = { events: [
     id: "ch8_integrate",
     chapter: 8,
     text: [
-      "一周后。训练赛。",
-      "新来的拿球。三个人围上来。他带了两步。没空间了。",
-      "他抬头。看到了{companion1Name}。",
+      "一周后，训练赛。",
+      "新来的拿球，三个人围上来。他带了两步，没空间了。",
+      "他抬头，看到了{companion1Name}。",
       "他传了。",
-      "{companion1Name}接了。射了。进了。",
-      "新来的站在原地。愣了一下。然后——笑了。",
+      "{companion1Name}接了，射了，进了。",
+      "新来的站在原地，愣了一下，然后——笑了。",
       "「不错。」他说。",
       "「你也是。」{companion1Name}说。"
     ],
@@ -77,9 +77,9 @@ window.CHAPTER8 = { events: [
     chapter: 8,
     type: "match",
     text: [
-      "第六场。对面有三个传奇。",
-      "三个。化域境。",
-      "你站在场中央。看着他们。",
+      "第六场，对面有三个传奇。",
+      "三个，化域境。",
+      "你站在场中央，看着他们。",
       "「三个。」{companion1Name}说。声音有点干。",
       "「嗯。」",
       "「怕吗？」",
@@ -87,14 +87,31 @@ window.CHAPTER8 = { events: [
       "「我有点。」",
       "「那就对了。」你说。「怕了才认真。」"
     ],
-    opponent: { name: "五院·三传奇", element: "火", strength: 60 },
-    teamBase: 36,
+    opponent: { name: "五院·三传奇", element: "火", strength: 70 },
+    teamBase: 38,
     result: {
-      bigwin: { text: "你赢了。三个传奇。你赢了。全场起立。你站在场中央。腿在抖。不是怕。是——爽。", effects: { reputation: 18 } },
-      win:     { text: "你赢了。2-1。三个传奇。你进了一个。在三个化域境面前。你进了一个。", effects: { reputation: 15 } },
-      draw:    { text: "平了。1-1。你进了一个。在三个化域境面前。你进了一个。够了。", effects: { reputation: 12 } },
-      lose:    { text: "0-3。输了。但你进了一个。在三个化域境面前。你进了一个。虽败犹荣。", effects: { reputation: 12, goals: 1 } }
+      bigwin: { text: "你赢了。三个传奇，你赢了。全场起立。你站在场中央，腿在抖。不是怕，是——爽。", effects: { reputation: 18 } },
+      win:     { text: "你赢了，{lastScore}。三个传奇，你进了一个。在三个化域境面前，你进了一个。", effects: { reputation: 15 } },
+      draw:    { text: "平了，{lastScore}。你进了一个，在三个化域境面前，你进了一个。够了。", effects: { reputation: 12 } },
+      lose:    { text: "{lastScore}，输了。但你进了一个，在三个化域境面前，你进了一个。虽败犹荣。", effects: { reputation: 12, goals: 1 } }
     },
+    next: "ch8_midseason"
+  },
+
+  // ===== 事件5.5：赛季中段·喘息 =====
+  {
+    id: "ch8_midseason",
+    chapter: 8,
+    text: [
+      "三传奇，你赢了，或者输了。但——你踢了。",
+      "消息传开了。「那个新人，能跟传奇对位。」",
+      "你走在路上，有人看你，有人指你。",
+      "{companion1Name}说。「习惯了。」",
+      "「习惯什么？」",
+      "「被看。」",
+      "你笑了。但你知道，下一场，更重要。"
+    ],
+    effects: { reputation: 5, demonValue: -2 },
     next: "ch8_title"
   },
 
@@ -104,17 +121,17 @@ window.CHAPTER8 = { events: [
     chapter: 8,
     type: "match",
     text: [
-      "第十场。如果赢了。排名第一。",
-      "两万人。全在喊。",
-      "你听不见。你只听到自己的心跳。和球碰脚背的声音。"
+      "第十场，如果赢了，排名第一。",
+      "两万人，全在喊。",
+      "你听不见。你只听到自己的心跳，和球碰脚背的声音。"
     ],
-    opponent: { name: "天罡·天王山", element: "金", strength: 54 },
-    teamBase: 38,
+    opponent: { name: "天罡·天王山", element: "金", strength: 64 },
+    teamBase: 40,
     result: {
-      bigwin: { text: "大胜。排名第一。两万人在喊你的名字。你站在场中央。风把汗吹凉了。你笑了。", effects: { reputation: 15, flags: { titleRace: true } } },
-      win:     { text: "赢了。2-1。排名第一。{companion1Name}冲过来。「第一！我们是第一！」", effects: { reputation: 12, flags: { titleRace: true } } },
-      draw:    { text: "平了。2-2。最后五分钟。你射了。进了。但对面也进了。差一点。", effects: { reputation: 8 } },
-      lose:    { text: "输了。1-2。差一点。就差一点。你坐在场边。喘。", effects: { demonValue: 4 } }
+      bigwin: { text: "大胜，排名第一。两万人在喊你的名字。你站在场中央，风把汗吹凉了。你笑了。", effects: { reputation: 15, flags: { titleRace: true } } },
+      win:     { text: "赢了，{lastScore}，排名第一。{companion1Name}冲过来。「第一！我们是第一！」", effects: { reputation: 12, flags: { titleRace: true } } },
+      draw:    { text: "平了，{lastScore}。最后五分钟，你射了，进了。但对面也进了，差一点。", effects: { reputation: 8 } },
+      lose:    { text: "输了，{lastScore}。差一点，就差一点。你坐在场边，喘。", effects: { demonValue: 4 } }
     },
     next: "ch8_result_gate"
   },
@@ -123,7 +140,7 @@ window.CHAPTER8 = { events: [
   {
     id: "ch8_result_gate",
     chapter: 8,
-    text: "十四场结束。赛季结算。",
+    text: "十四场结束，赛季结算。",
     choices: [
       { id: "A", when: { flag: "titleRace" }, text: "继续", next: "ch8_champion" },
       { id: "B", when: { notFlag: "titleRace" }, text: "继续", next: "ch8_runner" }
@@ -133,11 +150,11 @@ window.CHAPTER8 = { events: [
     id: "ch8_champion",
     chapter: 8,
     text: [
-      "哨响。冠军。",
-      "{academyName}。天罡联赛冠军。",
-      "两万人。全在喊你的名字。",
+      "哨响，冠军。",
+      "{academyName}，天罡联赛冠军。",
+      "两万人，全在喊你的名字。",
       "{companion1Name}把你扑倒。「我们！他妈的！冠军！」",
-      "你躺在草皮上。看着天。灯很亮。",
+      "你躺在草皮上，看着天，灯很亮。",
       "你笑了。"
     ],
     effects: { reputation: 30, flags: { tiangangChampion: true } },
@@ -148,7 +165,7 @@ window.CHAPTER8 = { events: [
     chapter: 8,
     text: [
       "差一点。但——够了。够证明你们属于这里。",
-      "不是冠军。但你是天罡的亚军。升班马。第二年。亚军。",
+      "不是冠军。但你是天罡的亚军。升班马，第二年，亚军。",
       "{companion1Name}坐在场边。「明年。」他说。「冠军。」"
     ],
     effects: { reputation: 15 },
@@ -160,13 +177,13 @@ window.CHAPTER8 = { events: [
     id: "ch8_assembly",
     chapter: 8,
     text: [
-      "赛季结束。一封信。",
-      "不是给学院的。是给国家的。",
+      "赛季结束，一封信。",
+      "不是给学院的，是给国家的。",
       "「兹通知：本届五行大会将于明年举行。各国国主将于三个月内完成选拔。请符合条件者做好准备。」",
       "五行大会。",
-      "四年一次。五大洲。五支国家队。",
-      "你看着那封信。手在抖。",
-      "{companion1Name}凑过来。看了一眼。",
+      "四年一次，五大洲，五支国家队。",
+      "你看着那封信，手在抖。",
+      "{companion1Name}凑过来，看了一眼。",
       "「走。」他说。",
       "「去哪？」",
       "「训练。」"
@@ -182,10 +199,10 @@ window.CHAPTER8 = { events: [
     text: [
       "消息传开了。",
       "「国主在看。」所有人都在说。",
-      "你的每一场比赛。每一次触球。都可能被看到。",
-      "压力。巨大的压力。",
+      "你的每一场比赛，每一次触球，都可能被看到。",
+      "压力，巨大的压力。",
       "但也是——动力。",
-      "你开始加练。{companion1Name}也是。所有人都在加练。"
+      "你开始加练，{companion1Name}也是，所有人都在加练。"
     ],
     effects: { demonValue: 3, coreAttrs: 2, flags: { underObservation: true } },
     next: "ch8_national"
@@ -197,20 +214,20 @@ window.CHAPTER8 = { events: [
     chapter: 8,
     type: "match",
     text: [
-      "洲内国赛。五行大会的预选赛。",
-      "你入选了。国赛候选。",
-      "第一次穿上国家队的队服。不是学院的。是国家的。",
+      "洲内国赛，五行大会的预选赛。",
+      "你入选了，国赛候选。",
+      "第一次穿上国家队的队服。不是学院的，是国家的。",
       "{companion1Name}也入选了。",
       "「一起。」他说。",
       "「一起。」"
     ],
-    opponent: { name: "洲内国赛·精英", element: "水", strength: 50 },
-    teamBase: 38,
+    opponent: { name: "洲内国赛·精英", element: "水", strength: 60 },
+    teamBase: 40,
     result: {
-      bigwin: { text: "国赛冠军。国主在看台上。他站了起来。鼓了掌。你看到了。他鼓了掌。", effects: { reputation: 18, flags: { nationalCompetitionWin: true } } },
-      win:     { text: "赢了。国赛冠军。国主在看台上。他站了起来。鼓了掌。", effects: { reputation: 15, flags: { nationalCompetitionWin: true } } },
-      draw:    { text: "平了。加时。点球。赢了。国赛冠军。国主鼓了掌。", effects: { reputation: 12, flags: { nationalCompetitionWin: true } } },
-      lose:    { text: "输了。国赛。你坐在场边。喘。国主在看台上。没站起来。没关系。下次。", effects: { reputation: 5, demonValue: 3 } }
+      bigwin: { text: "国赛冠军。国主在看台上，他站了起来，鼓了掌。你看到了，他鼓了掌。", effects: { reputation: 18, flags: { nationalCompetitionWin: true } } },
+      win:     { text: "赢了，国赛冠军。国主在看台上，他站了起来，鼓了掌。", effects: { reputation: 15, flags: { nationalCompetitionWin: true } } },
+      draw:    { text: "平了，加时，点球，赢了。国赛冠军，国主鼓了掌。", effects: { reputation: 12, flags: { nationalCompetitionWin: true } } },
+      lose:    { text: "输了。国赛，你坐在场边，喘。国主在看台上，没站起来。没关系，下次。", effects: { reputation: 5, demonValue: 3 } }
     },
     effects: { chapter: 1, age: 1 },
     next: "ch9_opening"
